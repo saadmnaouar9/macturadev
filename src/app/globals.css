@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Mactura design tokens ───────────────────────── */
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Arabic", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Indigo Mactura — dérivé du logo (#3A3182) */
+  --color-brand-50: #f4f3fc;
+  --color-brand-100: #e8e6f8;
+  --color-brand-200: #d2cef1;
+  --color-brand-300: #b0a9e5;
+  --color-brand-400: #877ed4;
+  --color-brand-500: #6458c2;
+  --color-brand-600: #4f43ad;
+  --color-brand-700: #3a3182;
+  --color-brand-800: #2f286a;
+  --color-brand-900: #241f50;
+  --color-brand-950: #161232;
+
+  /* Orange Mactura — accent (#EE6136) */
+  --color-accent-50: #fef3ee;
+  --color-accent-100: #fde3d7;
+  --color-accent-400: #f3845f;
+  --color-accent-500: #ee6136;
+  --color-accent-600: #d94b21;
+
+  /* Neutres */
+  --color-ink: #0e1124;
+  --color-ink-soft: #3b3f55;
+  --color-muted: #646a82;
+  --color-faint: #9a9fb3;
+  --color-line: #e7e8ef;
+  --color-line-soft: #f0f1f5;
+  --color-canvas: #f8f8fb;
+  --color-surface: #ffffff;
+  --color-subtle: #f4f5f8;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+
+  --shadow-xs: 0 1px 2px rgb(16 18 35 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(16 18 35 / 0.04), 0 1px 3px rgb(16 18 35 / 0.04);
+  --shadow-md: 0 2px 4px -1px rgb(16 18 35 / 0.04), 0 4px 12px -2px rgb(16 18 35 / 0.06);
+  --shadow-lg: 0 8px 16px -4px rgb(16 18 35 / 0.08), 0 16px 40px -8px rgb(16 18 35 / 0.12);
+  --shadow-ring: 0 0 0 1px rgb(16 18 35 / 0.06);
+  --shadow-focus: 0 0 0 3px rgb(79 67 173 / 0.18);
+
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection {
+    background: var(--color-brand-100);
+    color: var(--color-brand-900);
+  }
+  * {
+    border-color: var(--color-line);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: none;
+  }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+}
+
+@layer components {
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  .skeleton {
+    background: linear-gradient(90deg, #eef0f4 0px, #f6f7fa 120px, #eef0f4 240px);
+    background-size: 800px 100%;
+    animation: var(--animate-shimmer);
+    border-radius: var(--radius-sm);
+  }
+
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #d7d9e2 transparent; }
+
+  /* Document (aperçu facture / devis) */
+  .paper {
+    background: #fff;
+    box-shadow: 0 0 0 1px rgb(16 18 35 / 0.06), 0 12px 32px -12px rgb(16 18 35 / 0.16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+}
+
+/* Menus, popovers, tooltips (Radix data-state) */
+@keyframes pop-in { from { opacity: 0; transform: translateY(-4px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes pop-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-2px) scale(0.98); } }
+@keyframes pop-in-up { from { opacity: 0; transform: translateY(4px) scale(0.97); } to { opacity: 1; transform: none; } }
+.pop[data-state="open"] { animation: pop-in 180ms var(--ease-out-expo); transform-origin: var(--radix-dropdown-menu-content-transform-origin, var(--radix-popover-content-transform-origin, top)); }
+.pop[data-state="open"][data-side="top"] { animation-name: pop-in-up; }
+.pop[data-state="closed"] { animation: pop-out 120ms ease-in forwards; }
+.pop[data-state="delayed-open"] { animation: pop-in 160ms var(--ease-out-expo); }
+
+/* ───────────── Pages d'authentification : thème « espace » ───────────── */
+@keyframes space-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes space-shine { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(260%) skewX(-18deg); } }
+
+.space-logo { animation: space-float 6s ease-in-out infinite; }
+.space-card { background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 55%, rgba(255, 255, 255, 0.01) 100%); box-shadow: 0 0 0 1px rgba(125, 170, 255, 0.25), 0 30px 90px -20px rgba(40, 90, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+.space-input:-webkit-autofill, .space-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #150f2e inset; -webkit-text-fill-color: #fff; caret-color: #fff; }
+.space-btn-shine { position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent); transform: translateX(-120%) skewX(-18deg); }
+.space-btn:hover .space-btn-shine { animation: space-shine 0.9s ease; }
