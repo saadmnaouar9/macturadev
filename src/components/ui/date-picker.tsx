@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { inputBase } from "./field";
 import { cn, formatDate, toDateInput, todayUTC } from "@/lib/utils";
 
-const WEEKDAYS = ["L", "M", "M", "J", "V", "S", "D"];
+const WEEKDAYS = ["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"];
 const monthFmt = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" });
 
 function startOfMonth(d: Date) {
@@ -20,6 +20,7 @@ export function DatePicker({
   id,
   invalid,
   placeholder = "Choisir une date",
+  className,
   ...aria
 }: {
   value: string;
@@ -27,6 +28,7 @@ export function DatePicker({
   id?: string;
   invalid?: boolean;
   placeholder?: string;
+  className?: string;
   "aria-describedby"?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -66,71 +68,83 @@ export function DatePicker({
           type="button"
           aria-invalid={invalid || undefined}
           aria-describedby={aria["aria-describedby"]}
-          className={cn(inputBase, "flex h-9 items-center gap-2 text-left", !value && "text-faint")}
+          className={cn(inputBase, "flex h-9 items-center gap-2 text-left", !value && "text-faint", className)}
         >
           <CalendarDays className="h-4 w-4 shrink-0 text-faint" />
           <span className="truncate">{selected ? formatDate(selected, "long") : placeholder}</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[296px] p-3" align="start">
-        <div className="mb-2 flex items-center justify-between">
-          <button type="button" onClick={() => shift(-1)} className="rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink" aria-label="Mois précédent">
+      <PopoverContent className="w-[308px] overflow-hidden rounded-2xl p-0" align="start">
+        {/* En-tête : mois courant sur fond dégradé, navigation animée */}
+        <div className="flex items-center justify-between bg-gradient-to-br from-brand-500/15 via-violet-500/10 to-transparent px-3 py-3">
+          <button type="button" onClick={() => shift(-1)} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois précédent">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="text-sm font-semibold capitalize text-ink">{monthFmt.format(month)}</div>
-          <button type="button" onClick={() => shift(1)} className="rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink" aria-label="Mois suivant">
+          <div className="relative h-6 min-w-[140px] overflow-hidden text-center">
+            <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+              <motion.div key={month.toISOString()} custom={dir} initial={{ opacity: 0, y: dir * 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: dir * -14 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }} className="text-sm font-semibold capitalize leading-6 text-ink">
+                {monthFmt.format(month)}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <button type="button" onClick={() => shift(1)} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois suivant">
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-        <div className="grid grid-cols-7 gap-0.5 pb-1 text-center text-[11px] font-medium text-faint">
-          {WEEKDAYS.map((d, i) => (
-            <div key={i} className="py-1">{d}</div>
-          ))}
+        <div className="px-3 pb-3 pt-2">
+          <div className="grid grid-cols-7 gap-1 pb-1.5 text-center text-[10.5px] font-semibold uppercase tracking-[0.06em] text-faint">
+            {WEEKDAYS.map((d) => (
+              <div key={d} className="py-1">{d}</div>
+            ))}
+          </div>
+          <div className="relative overflow-hidden">
+            <AnimatePresence mode="popLayout" initial={false} custom={dir}>
+              <motion.div
+                key={month.toISOString()}
+                custom={dir}
+                initial={{ opacity: 0, x: dir * 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: dir * -28 }}
+                transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+                className="grid grid-cols-7 gap-1"
+              >
+                {days.map((d) => {
+                  const iso = toDateInput(d);
+                  const inMonth = d.getUTCMonth() === month.getUTCMonth();
+                  const isSel = iso === value;
+                  const isToday = iso === today;
+                  return (
+                    <button
+                      key={iso}
+                      type="button"
+                      onClick={() => {
+                        onChange(iso);
+                        setOpen(false);
+                      }}
+                      aria-label={formatDate(d, "long")}
+                      aria-pressed={isSel}
+                      className={cn(
+                        "relative flex h-9 items-center justify-center rounded-xl text-[13px] tabular transition-all duration-150",
+                        inMonth ? "text-ink" : "text-faint/60",
+                        isSel
+                          ? "bg-gradient-to-br from-brand-500 to-violet-500 font-semibold text-white shadow-[0_6px_16px_-6px_rgb(59_110_245/0.7)]"
+                          : "hover:scale-110 hover:bg-brand-500/10 hover:text-brand-700",
+                        isToday && !isSel && "font-semibold text-brand-700 ring-1 ring-inset ring-brand-500/50",
+                      )}
+                    >
+                      {d.getUTCDate()}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
-        <div className="relative overflow-hidden">
-          <AnimatePresence mode="popLayout" initial={false} custom={dir}>
-            <motion.div
-              key={month.toISOString()}
-              custom={dir}
-              initial={{ opacity: 0, x: dir * 24 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: dir * -24 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="grid grid-cols-7 gap-0.5"
-            >
-              {days.map((d) => {
-                const iso = toDateInput(d);
-                const inMonth = d.getUTCMonth() === month.getUTCMonth();
-                const isSel = iso === value;
-                const isToday = iso === today;
-                return (
-                  <button
-                    key={iso}
-                    type="button"
-                    onClick={() => {
-                      onChange(iso);
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "relative flex h-9 items-center justify-center rounded-md text-[13px] tabular transition-colors",
-                      inMonth ? "text-ink" : "text-faint/70",
-                      isSel ? "bg-brand-500 font-semibold text-white shadow-sm" : "hover:bg-subtle",
-                      isToday && !isSel && "font-semibold text-brand-700",
-                    )}
-                  >
-                    {d.getUTCDate()}
-                    {isToday && !isSel && <span className="absolute bottom-1 h-1 w-1 rounded-full bg-accent-500" />}
-                  </button>
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        <div className="mt-2 flex justify-between border-t border-line-soft pt-2">
-          <button type="button" className="rounded-md px-2 py-1 text-xs font-medium text-brand-700 hover:bg-brand-50" onClick={() => { onChange(today); setOpen(false); }}>
+        <div className="flex items-center justify-between border-t border-line-soft bg-canvas/40 px-3 py-2">
+          <button type="button" className="rounded-lg px-2.5 py-1 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-500/10" onClick={() => { onChange(today); setOpen(false); }}>
             Aujourd&apos;hui
           </button>
-          <button type="button" className="rounded-md px-2 py-1 text-xs font-medium text-muted hover:bg-subtle" onClick={() => setOpen(false)}>
+          <button type="button" className="rounded-lg px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:bg-subtle hover:text-ink" onClick={() => setOpen(false)}>
             Fermer
           </button>
         </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { Banknote, CalendarRange, Download, Filter, Percent, ShoppingCart, TrendingUp, Trophy } from "lucide-react";
 import type { ReportsData } from "@/lib/reports";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Card, CardHeader } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -44,6 +45,10 @@ function Table({ head, rows, empty }: { head: { label: string; right?: boolean }
 
 export function ReportsView({ data, from, to, today }: { data: ReportsData; from: string; to: string; today: string }) {
   const [tab, setTab] = useState("synthese");
+  const [fromV, setFromV] = useState(from);
+  const [toV, setToV] = useState(to);
+  // Les raccourcis de période changent from/to côté serveur : on resynchronise les sélecteurs
+  useEffect(() => { setFromV(from); setToV(to); }, [from, to]);
   const s = data.summary;
   const y = Number(today.slice(0, 4));
   const mo = today.slice(0, 7);
@@ -78,8 +83,16 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
           <div>
             <p className="mb-2.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-faint"><CalendarRange className="h-3.5 w-3.5" /> Période analysée</p>
             <form method="get" className="flex flex-wrap items-end gap-3">
-              <label className="text-xs font-medium text-muted">Du<input type="date" name="from" defaultValue={from} className="mt-1 block h-10 rounded-xl border border-line bg-canvas/60 px-3 text-sm text-ink transition-shadow focus:border-brand-400 focus:outline-none focus:shadow-[var(--shadow-focus)]" /></label>
-              <label className="text-xs font-medium text-muted">Au<input type="date" name="to" defaultValue={to} className="mt-1 block h-10 rounded-xl border border-line bg-canvas/60 px-3 text-sm text-ink transition-shadow focus:border-brand-400 focus:outline-none focus:shadow-[var(--shadow-focus)]" /></label>
+              <div className="w-[190px] text-xs font-medium text-muted">
+                <label htmlFor="rep-from">Du</label>
+                <input type="hidden" name="from" value={fromV} />
+                <div className="mt-1"><DatePicker id="rep-from" value={fromV} onChange={setFromV} className="h-10 rounded-xl bg-canvas/60" /></div>
+              </div>
+              <div className="w-[190px] text-xs font-medium text-muted">
+                <label htmlFor="rep-to">Au</label>
+                <input type="hidden" name="to" value={toV} />
+                <div className="mt-1"><DatePicker id="rep-to" value={toV} onChange={setToV} className="h-10 rounded-xl bg-canvas/60" /></div>
+              </div>
               <Button type="submit" variant="secondary"><Filter className="h-4 w-4" /> Appliquer</Button>
             </form>
           </div>
