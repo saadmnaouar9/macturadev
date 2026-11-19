@@ -31,7 +31,12 @@ Employés · Journal d'activité · Paramètres (entreprise, documents, TVA, éq
 - Graphiques (Recharts) chargés à la demande ; lignes de documents mémoïsées ; plus de double rafraîchissement après une modification.
 - Diagnostic SQL : `LOG_QUERIES=1 npm start` journalise chaque requête avec sa durée.
 
-## Design system « Midnight »
+## Design system « Midnight » — modes sombre et clair
+
+Bascule soleil/lune dans la barre supérieure ; le choix est mémorisé (cookie lu côté serveur, aucun flash au chargement).
+**La barre latérale a exactement les mêmes couleurs dans les deux modes** (elle porte `data-theme="dark"` et un fond opaque) ;
+seule la zone de contenu change (fond, cartes, tableaux, formulaires, dialogues, menus, graphiques). Les pages
+d'authentification restent sombres. Les jetons clairs sont dans `html[data-theme="light"]` (`src/app/globals.css`).
 
 Thème sombre unique (bleu nuit, fibres/particules bleues, verre dépoli, accents bleu · cyan · violet).
 Tout est piloté par les jetons de `src/app/globals.css` (`@theme`) : couleurs, ombres, rayons, palette d'états.

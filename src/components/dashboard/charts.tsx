@@ -10,13 +10,13 @@ import { cn } from "@/lib/utils";
 // Palette validée (CVD, contraste) : indigo Mactura + orange Mactura
 const C_PRIMARY = "#4a8df8";
 const C_SECONDARY = "#e86533";
-const GRID = "rgba(148,180,255,0.1)";
-const AXIS = "#7f8db3";
+const GRID = "var(--chart-grid)";
+const AXIS = "var(--chart-axis)";
 
 function ChartTooltip({ active, payload, label, names }: { active?: boolean; payload?: { dataKey: string; value: number; color: string }[]; label?: string; names: Record<string, string> }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="min-w-[200px] rounded-lg bg-surface px-3 py-2.5 shadow-[var(--shadow-ring),var(--shadow-lg)]">
+    <div className="min-w-[200px] rounded-lg bg-popover px-3 py-2.5 shadow-[var(--shadow-ring),var(--shadow-lg)]">
       <p className="mb-1.5 text-xs font-medium capitalize text-muted">{label}</p>
       {payload.map((p) => (
         <div key={p.dataKey} className="flex items-center justify-between gap-4 py-0.5 text-[13px]">
@@ -73,14 +73,14 @@ export function RevenueChart({ data }: { data: { month: string; invoiced: number
             <CartesianGrid vertical={false} stroke={GRID} strokeDasharray="0" />
             <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: AXIS, fontSize: 11 }} dy={8} interval="preserveStartEnd" />
             <YAxis tickLine={false} axisLine={false} tick={{ fill: AXIS, fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
-            <Tooltip content={<ChartTooltip names={{ invoiced: "Facturé", collected: "Encaissé" }} />} cursor={{ stroke: "rgba(148,180,255,0.35)", strokeWidth: 1 }} />
+            <Tooltip content={<ChartTooltip names={{ invoiced: "Facturé", collected: "Encaissé" }} />} cursor={{ stroke: "var(--chart-cursor)", strokeWidth: 1 }} />
             <Area
               type="monotone"
               dataKey="invoiced"
               stroke={C_PRIMARY}
               strokeWidth={2}
               fill="url(#g-inv)"
-              activeDot={{ r: 5, strokeWidth: 2, stroke: "#0a1430" }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--chart-dot)" }}
               isAnimationActive={!reduce}
               animationDuration={1100}
               animationEasing="ease-out"
@@ -91,7 +91,7 @@ export function RevenueChart({ data }: { data: { month: string; invoiced: number
               stroke={C_SECONDARY}
               strokeWidth={2}
               fill="url(#g-col)"
-              activeDot={{ r: 5, strokeWidth: 2, stroke: "#0a1430" }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--chart-dot)" }}
               isAnimationActive={!reduce}
               animationDuration={1100}
               animationBegin={150}

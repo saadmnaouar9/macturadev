@@ -275,7 +275,7 @@ function DocTable({ rows, secondLabel, extraLabel }: { rows: { id: string; href:
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} onClick={() => router.push(r.href)} className="cursor-pointer border-b border-line-soft last:border-0 hover:bg-white/[0.04]">
+            <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} onClick={() => router.push(r.href)} className="cursor-pointer border-b border-line-soft last:border-0 hover:bg-subtle">
               <td className="px-5 py-3 font-medium text-ink">{r.number}</td>
               <td className="px-4 py-3 text-[13px] text-ink-soft">{formatDate(r.date)}</td>
               <td className="px-4 py-3 text-[13px] text-ink-soft">{formatDate(r.second)}</td>

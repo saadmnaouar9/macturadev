@@ -63,7 +63,7 @@ export function SearchInput({ placeholder = "Rechercher…", className }: { plac
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder}
-        className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-8 text-sm text-ink shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] placeholder:text-faint hover:border-white/20 focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none"
+        className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-8 text-sm text-ink shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] placeholder:text-faint hover:border-line-strong focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none"
       />
       {value && (
         <button onClick={() => setValue("")} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-faint hover:text-ink" aria-label="Effacer la recherche">
@@ -162,7 +162,7 @@ export function Row({ children, href, index = 0, className }: { children: React.
         if (e.metaKey || e.ctrlKey) window.open(href, "_blank");
         else { startNavProgress(); router.push(href); }
       }}
-      className={cn("group border-b border-line-soft transition-colors last:border-0", href && "cursor-pointer hover:bg-white/[0.04]", className)}
+      className={cn("group border-b border-line-soft transition-colors last:border-0", href && "cursor-pointer hover:bg-subtle", className)}
     >
       {children}
     </motion.tr>

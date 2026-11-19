@@ -78,7 +78,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
                     onClick={() => setSelected(iso)}
                     aria-label={`${dayFmt.format(d)}${evs.length ? `, ${evs.length} événement${evs.length > 1 ? "s" : ""}` : ""}`}
                     aria-pressed={isSel}
-                    className={cn("flex min-h-[92px] flex-col gap-1 border-b border-r border-line-soft p-1.5 text-left transition-colors hover:bg-white/[0.04] max-sm:min-h-[56px]", (i + 1) % 7 === 0 && "border-r-0", !inMonth && "bg-canvas/40", isSel && "bg-brand-50/50")}
+                    className={cn("flex min-h-[92px] flex-col gap-1 border-b border-r border-line-soft p-1.5 text-left transition-colors hover:bg-subtle max-sm:min-h-[56px]", (i + 1) % 7 === 0 && "border-r-0", !inMonth && "bg-canvas/40", isSel && "bg-brand-50/50")}
                   >
                     <span className={cn("flex h-6 w-6 items-center justify-center self-start rounded-full text-xs tabular", isToday ? "bg-brand-500 font-semibold text-white" : inMonth ? "text-ink" : "text-faint")}>{d.getUTCDate()}</span>
                     <span className="hidden flex-col gap-0.5 sm:flex">

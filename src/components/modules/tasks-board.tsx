@@ -116,7 +116,7 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
         {COLUMNS.map((col, ci) => {
           const items = tasks.filter((t) => t.status === col.status);
           return (
-            <motion.section key={col.status} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: ci * 0.06, ease }} className="flex min-h-[200px] flex-col rounded-2xl bg-white/[0.035] p-2.5" aria-label={TASK_STATUS[col.status].label}>
+            <motion.section key={col.status} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: ci * 0.06, ease }} className="flex min-h-[200px] flex-col rounded-2xl bg-subtle p-2.5" aria-label={TASK_STATUS[col.status].label}>
               <header className="flex items-center gap-2 px-2 pb-2.5 pt-1.5">
                 <span className={cn("h-2 w-2 rounded-full", col.accent)} />
                 <h2 className="text-[13px] font-semibold text-ink">{TASK_STATUS[col.status].label}</h2>
@@ -132,7 +132,7 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
                       <motion.li key={t.id} layout="position" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} transition={{ duration: 0.25, ease }} className="group rounded-xl bg-surface p-3 shadow-[var(--shadow-ring),var(--shadow-xs)] transition-shadow hover:shadow-[var(--shadow-ring),var(--shadow-md)]">
                         <div className="flex items-start gap-2.5">
                           {canWrite && (
-                            <button onClick={() => move(t, t.status === "DONE" ? "TODO" : "DONE")} className={cn("mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition-colors", t.status === "DONE" ? "border-emerald-500 bg-emerald-500 text-white" : "border-white/25 hover:border-emerald-500")} aria-label={t.status === "DONE" ? "Rouvrir la tâche" : "Marquer comme terminée"}>
+                            <button onClick={() => move(t, t.status === "DONE" ? "TODO" : "DONE")} className={cn("mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition-colors", t.status === "DONE" ? "border-emerald-500 bg-emerald-500 text-white" : "border-line-strong hover:border-emerald-500")} aria-label={t.status === "DONE" ? "Rouvrir la tâche" : "Marquer comme terminée"}>
                               {t.status === "DONE" && <Check className="h-3 w-3" strokeWidth={3} />}
                             </button>
                           )}
@@ -160,7 +160,7 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
                   })}
                 </AnimatePresence>
                 {items.length === 0 && (
-                  <li className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-white/20 px-3 py-8 text-center text-xs text-faint"><ListChecks className="h-4 w-4" /> Aucune tâche</li>
+                  <li className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-line-strong px-3 py-8 text-center text-xs text-faint"><ListChecks className="h-4 w-4" /> Aucune tâche</li>
                 )}
               </ul>
             </motion.section>

@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const inputBase =
-  "w-full rounded-lg border border-line bg-[rgb(5_11_30/0.55)] px-3 text-sm text-ink placeholder:text-faint shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] duration-150 hover:border-white/20 focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgb(244_63_94/0.15)]";
+  "w-full rounded-lg border border-line bg-field px-3 text-sm text-ink placeholder:text-faint shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] duration-150 hover:border-line-strong focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgb(244_63_94/0.15)]";
 
 export function Label({ children, htmlFor, required, className }: { children: React.ReactNode; htmlFor?: string; required?: boolean; className?: string }) {
   return (
@@ -154,7 +154,7 @@ export function Switch({ checked, onChange, label, id }: { checked: boolean; onC
       onClick={() => onChange(!checked)}
       className={cn(
         "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200",
-        checked ? "bg-brand-600" : "bg-white/20",
+        checked ? "bg-brand-600" : "bg-line-strong",
       )}
     >
       <motion.span

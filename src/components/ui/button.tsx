@@ -17,9 +17,9 @@ const variants: Record<Variant, string> = {
   accent: "bg-gradient-to-r from-accent-500 to-[#ff5f6d] text-white shadow-[0_8px_22px_-8px_rgb(255_110_70/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:-translate-y-px hover:brightness-110",
   success: "bg-emerald-400 text-emerald-950 shadow-[0_8px_22px_-10px_rgb(16_185_129/0.8)] hover:-translate-y-px hover:bg-emerald-300",
   secondary:
-    "bg-white/[0.05] text-ink shadow-[0_0_0_1px_rgb(148_180_255/0.16),inset_0_1px_0_rgb(255_255_255/0.04)] hover:bg-white/[0.09] hover:shadow-[0_0_0_1px_rgb(148_180_255/0.3),0_0_18px_-6px_rgb(59_130_246/0.5)]",
-  outline: "border border-line bg-transparent text-ink hover:bg-subtle hover:border-white/25",
-  ghost: "text-ink-soft hover:bg-white/[0.07] hover:text-ink",
+    "bg-subtle text-ink shadow-[0_0_0_1px_var(--color-line),var(--shadow-xs)] hover:bg-hover hover:shadow-[0_0_0_1px_var(--color-line-strong),0_0_18px_-6px_rgb(59_130_246/0.5)]",
+  outline: "border border-line bg-transparent text-ink hover:bg-subtle hover:border-line-strong",
+  ghost: "text-ink-soft hover:bg-hover hover:text-ink",
   danger: "bg-rose-500 text-white shadow-[0_8px_22px_-10px_rgb(244_63_94/0.8)] hover:-translate-y-px hover:bg-rose-400",
 };
 

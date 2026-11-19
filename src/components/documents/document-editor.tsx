@@ -662,7 +662,7 @@ export function DocumentEditor({
           </div>
 
           <div hidden={view !== "preview"}>
-            <div className="rounded-2xl bg-black/30 p-3 sm:p-8">
+            <div className="rounded-2xl bg-stage p-3 sm:p-8">
               <DocumentPaper
                 kind={kind}
                 number={documentNumber ?? (isQuote ? "Numéro attribué à la création" : null)}
@@ -719,10 +719,10 @@ export function DocumentEditor({
             </dl>
             <div className="bg-brand-950 px-5 py-4 text-white">
               <div className="flex items-baseline justify-between">
-                <span className="text-[13px] font-medium text-brand-200">Total TTC</span>
+                <span className="text-[13px] font-medium text-[#c3d6ff]">Total TTC</span>
                 <span className="text-2xl font-semibold tracking-tight" aria-live="polite"><AnimatedNumber value={totals.total} kind="mad" duration={0.5} /></span>
               </div>
-              <p className="mt-1.5 text-[11px] leading-snug text-brand-300/90">{amountToFrenchWords(totals.total)}</p>
+              <p className="mt-1.5 text-[11px] leading-snug text-[#a3bdf2]">{amountToFrenchWords(totals.total)}</p>
             </div>
             <div className="space-y-2 p-4">
               <Button className="w-full" size="lg" onClick={() => save(false)} loading={saving} disabled={saving || saveState === "saved"}>

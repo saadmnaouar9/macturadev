@@ -55,6 +55,10 @@
   --color-surface: rgb(11 22 50 / 0.72);
   --color-popover: #0d1838;
   --color-subtle: rgb(148 180 255 / 0.07);
+  --color-field: rgb(5 11 30 / 0.55);
+  --color-line-strong: rgb(148 180 255 / 0.3);
+  --color-hover: rgb(148 180 255 / 0.12);
+  --color-stage: rgb(0 0 0 / 0.3);
 
   --radius-xs: 4px;
   --radius-sm: 6px;
@@ -74,6 +78,177 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+
+/* ═════════ Thèmes ═════════
+   Sombre = valeurs de @theme ci-dessus (défaut).
+   [data-theme="dark"] re-déclare les valeurs sombres sur un élément : la BARRE LATÉRALE porte cet attribut,
+   elle garde donc exactement les mêmes couleurs en mode clair et en mode sombre.
+   html[data-theme="light"] ne change que la zone de contenu (fond, cartes, tableaux, formulaires, dialogues, menus). */
+:root {
+  --chart-grid: rgb(148 180 255 / 0.1);
+  --chart-axis: #7f8db3;
+  --chart-cursor: rgb(148 180 255 / 0.35);
+  --chart-dot: #0a1430;
+  --skeleton-a: rgb(148 180 255 / 0.06);
+  --skeleton-b: rgb(148 180 255 / 0.14);
+  --scroll-thumb: rgb(148 180 255 / 0.28);
+}
+[data-theme="dark"] {
+  --color-brand-50: rgb(59 130 246 / 0.12);
+  --color-brand-100: rgb(59 130 246 / 0.18);
+  --color-brand-200: rgb(96 165 250 / 0.30);
+  --color-brand-300: #7fb0ff;
+  --color-brand-400: #4d8dff;
+  --color-brand-500: #2b6bf3;
+  --color-brand-600: #5b9bff;
+  --color-brand-700: #8db8ff;
+  --color-brand-800: #b4d0ff;
+  --color-brand-900: #dbe8ff;
+  --color-brand-950: #0a1a4a;
+  --color-accent-50: rgb(255 122 69 / 0.14);
+  --color-accent-100: rgb(255 122 69 / 0.22);
+  --color-accent-400: #ff9366;
+  --color-accent-500: #ff7a45;
+  --color-accent-600: #ff9a70;
+  --color-emerald-50: rgb(16 185 129 / 0.13);
+  --color-emerald-100: rgb(16 185 129 / 0.2);
+  --color-emerald-200: rgb(52 211 153 / 0.32);
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+  --color-emerald-800: #a7f3d0;
+  --color-emerald-900: #d1fae5;
+  --color-emerald-950: #032b1e;
+  --color-rose-50: rgb(244 63 94 / 0.14);
+  --color-rose-100: rgb(244 63 94 / 0.2);
+  --color-rose-200: rgb(251 113 133 / 0.34);
+  --color-rose-300: #fda4af;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #fb7185;
+  --color-rose-700: #fda4af;
+  --color-rose-800: #fecdd3;
+  --color-rose-900: #ffe4e6;
+  --color-amber-50: rgb(245 158 11 / 0.14);
+  --color-amber-100: rgb(245 158 11 / 0.2);
+  --color-amber-200: rgb(251 191 36 / 0.34);
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+  --color-sky-50: rgb(14 165 233 / 0.14);
+  --color-sky-100: rgb(14 165 233 / 0.2);
+  --color-sky-200: rgb(56 189 248 / 0.34);
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #38bdf8;
+  --color-sky-700: #7dd3fc;
+  --color-sky-800: #bae6fd;
+  --color-sky-900: #e0f2fe;
+  --color-violet-50: rgb(139 92 246 / 0.16);
+  --color-violet-100: rgb(139 92 246 / 0.22);
+  --color-violet-200: rgb(167 139 250 / 0.36);
+  --color-violet-300: #c4b5fd;
+  --color-violet-400: #a78bfa;
+  --color-violet-500: #8b5cf6;
+  --color-violet-600: #a78bfa;
+  --color-violet-700: #c4b5fd;
+  --color-violet-800: #ddd6fe;
+  --color-violet-900: #ede9fe;
+  --color-ink: #e9eefc;
+  --color-ink-soft: #b9c5e4;
+  --color-muted: #8d9bc0;
+  --color-faint: #7d8ab2;
+  --color-line: rgb(148 180 255 / 0.13);
+  --color-line-soft: rgb(148 180 255 / 0.08);
+  --color-canvas: #050b1f;
+  --color-surface: rgb(11 22 50 / 0.72);
+  --color-popover: #0d1838;
+  --color-subtle: rgb(148 180 255 / 0.07);
+  --color-field: rgb(5 11 30 / 0.55);
+  --color-line-strong: rgb(148 180 255 / 0.3);
+  --color-hover: rgb(148 180 255 / 0.12);
+  --color-stage: rgb(0 0 0 / 0.3);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.25);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 14px -2px rgb(0 0 0 / 0.4), 0 0 24px -8px rgb(59 130 246 / 0.25);
+  --shadow-lg: 0 18px 50px -10px rgb(0 0 0 / 0.65), 0 0 60px -20px rgb(59 130 246 / 0.4);
+  --shadow-ring: 0 0 0 1px rgb(148 180 255 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.04);
+  --shadow-focus: 0 0 0 3px rgb(59 130 246 / 0.28), 0 0 22px rgb(59 130 246 / 0.25);
+  --chart-grid: rgb(148 180 255 / 0.1);
+  --chart-axis: #7f8db3;
+  --chart-cursor: rgb(148 180 255 / 0.35);
+  --chart-dot: #0a1430;
+  --skeleton-a: rgb(148 180 255 / 0.06);
+  --skeleton-b: rgb(148 180 255 / 0.14);
+  --scroll-thumb: rgb(148 180 255 / 0.28);
+  color-scheme: dark;
+  color: var(--color-ink); /* le texte hérité à l'intérieur d'une zone sombre (barre latérale) reste clair en mode clair */
+}
+html[data-theme="light"] {
+  /* encres et surfaces */
+  --color-ink: #0e1730;
+  --color-ink-soft: #334168;
+  --color-muted: #55638b;
+  --color-faint: #5e6b93;
+  --color-line: rgb(24 44 110 / 0.13);
+  --color-line-soft: rgb(24 44 110 / 0.075);
+  --color-canvas: #f1f4fa;
+  --color-surface: rgb(255 255 255 / 0.84);
+  --color-popover: #ffffff;
+  --color-subtle: rgb(24 44 110 / 0.055);
+  --color-field: #ffffff;
+  --color-line-strong: rgb(24 44 110 / 0.28);
+  --color-hover: rgb(24 44 110 / 0.085);
+  --color-stage: rgb(24 44 110 / 0.07);
+  /* bleu Mactura : 50-200 teintes, 500 plein, 600-900 textes foncés */
+  --color-brand-50: rgb(43 107 243 / 0.08);
+  --color-brand-100: rgb(43 107 243 / 0.14);
+  --color-brand-200: rgb(43 107 243 / 0.28);
+  --color-brand-300: #7aa5f7;
+  --color-brand-400: #4a85f5;
+  --color-brand-500: #2b6bf3;
+  --color-brand-600: #2458d6;
+  --color-brand-700: #1d4ab8;
+  --color-brand-800: #173a94;
+  --color-brand-900: #112b70;
+  --color-brand-950: #0b1d52;
+  --color-accent-50: rgb(255 122 69 / 0.12);
+  --color-accent-100: rgb(255 122 69 / 0.2);
+  --color-accent-400: #ff8a5c;
+  --color-accent-500: #ff7a45;
+  --color-accent-600: #b9420f;
+  /* états */
+  --color-emerald-50: #ecfdf5; --color-emerald-100: #d1fae5; --color-emerald-200: #a7f3d0; --color-emerald-300: #6ee7b7; --color-emerald-400: #34d399; --color-emerald-500: #10b981; --color-emerald-600: #059669; --color-emerald-700: #047857; --color-emerald-800: #065f46; --color-emerald-900: #064e3b; --color-emerald-950: #022c22;
+  --color-rose-50: #fff1f2; --color-rose-100: #ffe4e6; --color-rose-200: #fecdd3; --color-rose-300: #fda4af; --color-rose-400: #fb7185; --color-rose-500: #f43f5e; --color-rose-600: #e11d48; --color-rose-700: #be123c; --color-rose-800: #9f1239; --color-rose-900: #881337;
+  --color-amber-50: #fffbeb; --color-amber-100: #fef3c7; --color-amber-200: #fde68a; --color-amber-300: #fcd34d; --color-amber-400: #fbbf24; --color-amber-500: #f59e0b; --color-amber-600: #d97706; --color-amber-700: #b45309; --color-amber-800: #92400e; --color-amber-900: #78350f;
+  --color-sky-50: #f0f9ff; --color-sky-100: #e0f2fe; --color-sky-200: #bae6fd; --color-sky-300: #7dd3fc; --color-sky-400: #38bdf8; --color-sky-500: #0ea5e9; --color-sky-600: #0284c7; --color-sky-700: #0369a1; --color-sky-800: #075985; --color-sky-900: #0c4a6e;
+  --color-violet-50: #f5f3ff; --color-violet-100: #ede9fe; --color-violet-200: #ddd6fe; --color-violet-300: #c4b5fd; --color-violet-400: #a78bfa; --color-violet-500: #8b5cf6; --color-violet-600: #7c3aed; --color-violet-700: #6d28d9; --color-violet-800: #5b21b6; --color-violet-900: #4c1d95;
+  /* ombres */
+  --shadow-xs: 0 1px 2px rgb(16 28 70 / 0.06);
+  --shadow-sm: 0 1px 2px rgb(16 28 70 / 0.06), 0 2px 8px rgb(16 28 70 / 0.05);
+  --shadow-md: 0 4px 16px -2px rgb(16 28 70 / 0.1), 0 1px 3px rgb(16 28 70 / 0.05);
+  --shadow-lg: 0 20px 50px -12px rgb(16 28 70 / 0.28), 0 0 0 1px rgb(24 44 110 / 0.06);
+  --shadow-ring: 0 0 0 1px rgb(24 44 110 / 0.1);
+  --shadow-focus: 0 0 0 3px rgb(43 107 243 / 0.22);
+  /* graphiques, squelettes, barres de défilement */
+  --chart-grid: rgb(24 44 110 / 0.1);
+  --chart-axis: #5d6b94;
+  --chart-cursor: rgb(24 44 110 / 0.3);
+  --chart-dot: #ffffff;
+  --skeleton-a: rgb(24 44 110 / 0.06);
+  --skeleton-b: rgb(24 44 110 / 0.13);
+  --scroll-thumb: rgb(24 44 110 / 0.25);
+  color-scheme: light;
+  background: #eef2fa;
+}
+
 @keyframes shimmer {
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
@@ -88,7 +263,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    color-scheme: dark;
     background: #040a1c;
   }
   body {
@@ -126,20 +300,20 @@
   }
   button { cursor: pointer; }
   button:disabled { cursor: not-allowed; }
-  option { background: #0d1838; color: #e9eefc; }
+  option { background: var(--color-popover); color: var(--color-ink); }
 }
 
 @layer components {
   .tabular { font-variant-numeric: tabular-nums; }
 
   .skeleton {
-    background: linear-gradient(90deg, rgb(148 180 255 / 0.06) 0px, rgb(148 180 255 / 0.14) 120px, rgb(148 180 255 / 0.06) 240px);
+    background: linear-gradient(90deg, var(--skeleton-a) 0px, var(--skeleton-b) 120px, var(--skeleton-a) 240px);
     background-size: 800px 100%;
     animation: var(--animate-shimmer);
     border-radius: var(--radius-sm);
   }
 
-  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgb(148 180 255 / 0.28) transparent; }
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
 
   /* Verre dépoli : surfaces principales (cartes, tableaux) */
   .glass {
@@ -189,3 +363,22 @@
 .space-input:-webkit-autofill, .space-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #150f2e inset; -webkit-text-fill-color: #fff; caret-color: #fff; }
 .space-btn-shine { position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent); transform: translateX(-120%) skewX(-18deg); }
 .space-btn:hover .space-btn-shine { animation: space-shine 0.9s ease; }
+
+
+/* ───────────── Mode clair : zone de contenu uniquement ───────────── */
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 55% 40% at 88% -8%, rgb(43 107 243 / 0.1), transparent 62%),
+    radial-gradient(ellipse 45% 38% at 0% 105%, rgb(124 92 255 / 0.08), transparent 62%),
+    linear-gradient(#f5f8fd, #edf1f9);
+}
+html[data-theme="light"] .glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.92) 0%, rgb(255 255 255 / 0.8) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+html[data-theme="light"] .ambient-orb { display: none; }
+html[data-theme="light"] ::selection { background: rgb(43 107 243 / 0.22); color: #0e1730; }
+/* Le mode clair n'affecte jamais la barre latérale ni les pages d'authentification */
+[data-theme="dark"] .glass { background: linear-gradient(180deg, rgb(16 30 66 / 0.62) 0%, rgb(9 18 42 / 0.7) 100%); }
+html[data-theme="light"] .paper { box-shadow: 0 0 0 1px rgb(24 44 110 / 0.14), 0 18px 44px -18px rgb(16 28 70 / 0.3); }

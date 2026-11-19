@@ -18,7 +18,7 @@ export default async function Home() {
   return (
     <div className="min-h-dvh bg-surface">
       <header className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Logo className="h-6" priority />
+        <Logo adaptive className="h-6" priority />
         <nav className="flex items-center gap-2">
           <Link href="/login" className="rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-subtle hover:text-ink">
             Connexion
