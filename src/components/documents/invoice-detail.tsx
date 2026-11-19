@@ -89,8 +89,8 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
             {active && <Badge tone={LIFECYCLE[inv.lifecycle].tone} dot={false}>{LIFECYCLE[inv.lifecycle].label}</Badge>}
           </div>
           <p className="mt-1 text-sm text-muted">
-            <Link href={`/clients/${inv.customer.id}`} className="font-medium text-ink-soft hover:text-brand-700">{inv.customer.name}</Link> · {formatMAD(inv.total)} TTC · échéance le {formatDate(inv.dueDate, "long")}
-            {inv.quote && <> · issue du devis <Link href={`/devis/${inv.quote.id}`} className="font-mono text-ink-soft hover:text-brand-700">{inv.quote.number}</Link></>}
+            <Link prefetch={false} href={`/clients/${inv.customer.id}`} className="font-medium text-ink-soft hover:text-brand-700">{inv.customer.name}</Link> · {formatMAD(inv.total)} TTC · échéance le {formatDate(inv.dueDate, "long")}
+            {inv.quote && <> · issue du devis <Link prefetch={false} href={`/devis/${inv.quote.id}`} className="font-mono text-ink-soft hover:text-brand-700">{inv.quote.number}</Link></>}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -218,7 +218,7 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
               <div className="flex justify-between"><dt className="text-muted">Émission</dt><dd>{formatDate(inv.issueDate, "long")}</dd></div>
               <div className="flex justify-between"><dt className="text-muted">Échéance</dt><dd className={cn(inv.status === "OVERDUE" && "font-medium text-rose-600")}>{formatDate(inv.dueDate, "long")}</dd></div>
               {paper.paymentTerms && <div className="flex justify-between gap-4"><dt className="text-muted">Conditions</dt><dd className="text-right">{paper.paymentTerms}</dd></div>}
-              {inv.quote && <div className="flex justify-between"><dt className="text-muted">Devis d&apos;origine</dt><dd><Link href={`/devis/${inv.quote.id}`} className="inline-flex items-center gap-1 font-mono text-brand-700 hover:underline"><FileText className="h-3.5 w-3.5" />{inv.quote.number}</Link></dd></div>}
+              {inv.quote && <div className="flex justify-between"><dt className="text-muted">Devis d&apos;origine</dt><dd><Link prefetch={false} href={`/devis/${inv.quote.id}`} className="inline-flex items-center gap-1 font-mono text-brand-700 hover:underline"><FileText className="h-3.5 w-3.5" />{inv.quote.number}</Link></dd></div>}
               <div className="flex justify-between border-t border-line-soft pt-2"><dt className="text-muted">Total HT net</dt><dd className="tabular">{formatMAD(paper.totals.taxableTotal)}</dd></div>
               <div className="flex justify-between"><dt className="text-muted">TVA</dt><dd className="tabular">{formatMAD(paper.totals.taxTotal)}</dd></div>
               <div className="flex justify-between font-semibold"><dt>Total TTC</dt><dd className="tabular">{formatMAD(paper.totals.total)}</dd></div>
@@ -229,8 +229,8 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
         </div>
       </div>
 
-      <VoidPaymentDialog action={voidPayment} payment={voiding} onOpenChange={(o) => !o && setVoiding(null)} onDone={() => { setVoiding(null); router.refresh(); }} />
-      <PaymentDialog open={payOpen} onOpenChange={setPayOpen} submit={(d) => addPayment({ invoiceId: inv.id, ...d })} balance={balance} issueDate={inv.issueDate} onDone={() => { setPayOpen(false); router.refresh(); }} />
+      <VoidPaymentDialog action={voidPayment} payment={voiding} onOpenChange={(o) => !o && setVoiding(null)} onDone={() => { setVoiding(null); }} />
+      <PaymentDialog open={payOpen} onOpenChange={setPayOpen} submit={(d) => addPayment({ invoiceId: inv.id, ...d })} balance={balance} issueDate={inv.issueDate} onDone={() => { setPayOpen(false); }} />
     </div>
   );
 }

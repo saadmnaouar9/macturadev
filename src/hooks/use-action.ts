@@ -19,7 +19,6 @@ export function useServerAction() {
         if (res.ok) {
           if (!opts?.silent && res.message) toast.success(res.message);
           if (opts?.redirect) router.push(opts.redirect(res.data));
-          router.refresh();
           return res.data;
         }
         toast.error(res.error);

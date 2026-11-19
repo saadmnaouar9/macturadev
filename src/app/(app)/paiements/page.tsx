@@ -98,7 +98,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                     <Row key={r.id} index={i} href={r.href}>
                       <Td className="text-[13px] text-ink-soft">{formatDate(r.date)}</Td>
                       <Td><span className="font-mono text-[13px] font-medium text-ink">{r.doc}</span></Td>
-                      <Td><Link href={r.partyHref} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{r.party}</Link></Td>
+                      <Td><Link prefetch={false} href={r.partyHref} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{r.party}</Link></Td>
                       <Td className="hidden text-[13px] text-ink-soft md:table-cell">{PAYMENT_METHODS[r.method]}</Td>
                       <Td className="hidden text-xs text-muted lg:table-cell">{r.reference ?? "—"}</Td>
                       <Td align="right">

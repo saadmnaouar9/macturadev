@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, ChevronsUpDown, Loader2, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { startNavProgress } from "@/components/layout/top-progress";
 
 const Ctx = createContext<{ pending: boolean; setParams: (patch: Record<string, string | null>) => void }>({ pending: false, setParams: () => {} });
 
@@ -153,13 +154,13 @@ export function Row({ children, href, index = 0, className }: { children: React.
     <motion.tr
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, delay: Math.min(index, 12) * 0.022, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.18, delay: Math.min(index, 10) * 0.01, ease: [0.16, 1, 0.3, 1] }}
       onClick={(e) => {
         if (!href) return;
         const target = e.target as HTMLElement;
         if (target.closest("a,button,[role=menuitem],[data-no-row-click]")) return;
         if (e.metaKey || e.ctrlKey) window.open(href, "_blank");
-        else router.push(href);
+        else { startNavProgress(); router.push(href); }
       }}
       className={cn("group border-b border-line-soft transition-colors last:border-0", href && "cursor-pointer hover:bg-white/[0.04]", className)}
     >

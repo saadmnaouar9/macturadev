@@ -131,7 +131,7 @@ export function QuotesTable({
                       <span className="font-mono text-[13px] font-medium text-ink group-hover:text-brand-700">{q.number}</span>
                       {q.reference && <span className="block max-w-[160px] truncate text-xs text-muted">{q.reference}</span>}
                     </Td>
-                    <Td><Link href={`/clients/${q.customer.id}`} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{q.customer.name}</Link></Td>
+                    <Td><Link prefetch={false} href={`/clients/${q.customer.id}`} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{q.customer.name}</Link></Td>
                     <Td className="hidden text-[13px] text-ink-soft md:table-cell">{formatDate(q.issueDate)}</Td>
                     <Td className="hidden text-[13px] text-ink-soft lg:table-cell">{formatDate(q.expiryDate)}</Td>
                     <Td align="right" className="text-[13px] font-semibold tabular text-ink">{formatMAD(q.total)}</Td>

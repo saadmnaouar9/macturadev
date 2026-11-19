@@ -72,7 +72,7 @@ export function CustomerForm({ initial, customerId, onCreated, onCancel, compact
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (customerId) {
-      submit(() => updateCustomer(customerId, payload()), { onSuccess: () => { router.push(`/clients/${customerId}`); router.refresh(); } });
+      submit(() => updateCustomer(customerId, payload()), { onSuccess: () => { router.push(`/clients/${customerId}`); } });
     } else {
       submit(() => createCustomer(payload()), {
         onSuccess: (c) => {

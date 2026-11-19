@@ -62,19 +62,18 @@ export const getAuth = cache(async (): Promise<AuthContext | null> => {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
   if (!token) return null;
-  const session = await db.session.findUnique({
-    where: { tokenHash: hashToken(token) },
-    include: { user: true, company: true },
-  });
+  const session = await db.session.findUnique({ where: { tokenHash: hashToken(token) }, select: { id: true, userId: true, companyId: true, expiresAt: true } });
   if (!session || session.expiresAt < new Date()) return null;
+  // Appartenance + utilisateur + entreprise en une seule requête imbriquée (au lieu de trois requêtes séparées)
   const membership = await db.membership.findUnique({
     where: { userId_companyId: { userId: session.userId, companyId: session.companyId } },
+    select: { id: true, role: true, notificationsSeenAt: true, user: { select: { id: true, email: true, name: true } }, company: { select: { id: true, name: true } } },
   });
   if (!membership) return null;
   return {
     sessionId: session.id,
-    user: { id: session.user.id, email: session.user.email, name: session.user.name },
-    company: { id: session.company.id, name: session.company.name },
+    user: membership.user,
+    company: membership.company,
     role: membership.role,
     membershipId: membership.id,
     notificationsSeenAt: membership.notificationsSeenAt,

@@ -56,9 +56,9 @@ export function CalendarView({ month, events, today }: { month: string; events: 
           <div className="flex items-center justify-between border-b border-line-soft px-4 py-3">
             <h2 className="text-[15px] font-semibold capitalize text-ink">{monthFmt.format(first)}</h2>
             <div className="flex items-center gap-1">
-              <Link href={`/calendrier?m=${shift(month, -1)}`} className="rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink" aria-label="Mois précédent"><ChevronLeft className="h-4 w-4" /></Link>
-              <Link href={`/calendrier?m=${today.slice(0, 7)}`} className="rounded-md px-2.5 py-1 text-[13px] font-medium text-ink-soft hover:bg-subtle">Aujourd&apos;hui</Link>
-              <Link href={`/calendrier?m=${shift(month, 1)}`} className="rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink" aria-label="Mois suivant"><ChevronRight className="h-4 w-4" /></Link>
+              <Link prefetch={false} href={`/calendrier?m=${shift(month, -1)}`} className="rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink" aria-label="Mois précédent"><ChevronLeft className="h-4 w-4" /></Link>
+              <Link prefetch={false} href={`/calendrier?m=${today.slice(0, 7)}`} className="rounded-md px-2.5 py-1 text-[13px] font-medium text-ink-soft hover:bg-subtle">Aujourd&apos;hui</Link>
+              <Link prefetch={false} href={`/calendrier?m=${shift(month, 1)}`} className="rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink" aria-label="Mois suivant"><ChevronRight className="h-4 w-4" /></Link>
             </div>
           </div>
           <div className="grid grid-cols-7 border-b border-line-soft bg-canvas/70 text-center text-[11px] font-medium uppercase tracking-[0.05em] text-muted">
@@ -100,7 +100,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
             <ul className="mt-3 space-y-2">
               {selEvents.map((e) => (
                 <li key={e.id}>
-                  <Link href={e.href} className="flex gap-3 rounded-lg p-2 transition-colors hover:bg-subtle">
+                  <Link prefetch={false} href={e.href} className="flex gap-3 rounded-lg p-2 transition-colors hover:bg-subtle">
                     <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", KINDS[e.kind].dot)} />
                     <span className="min-w-0">
                       <span className={cn("block text-[13px] font-medium", e.late ? "text-rose-700" : "text-ink")}>{e.title}{e.late ? " · en retard" : ""}</span>

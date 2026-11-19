@@ -69,7 +69,7 @@ function RowActions({ row, canWrite, canDelete }: { row: CustomerRow; canWrite: 
             <DropdownItem
               onSelect={async () => {
                 const res = await setCustomerArchived(row.id, !row.archived);
-                if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+                if (res.ok) { toast.success(res.message); } else toast.error(res.error);
               }}
             >
               {row.archived ? <><ArchiveRestore /> Restaurer</> : <><Archive /> Archiver</>}
@@ -83,7 +83,7 @@ function RowActions({ row, canWrite, canDelete }: { row: CustomerRow; canWrite: 
               const ok = await confirm({ title: `Supprimer ${row.name} ?`, description: "Cette action est définitive. Le client sera supprimé de votre espace.", confirmLabel: "Supprimer", danger: true });
               if (!ok) return;
               const res = await deleteCustomer(row.id);
-              if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+              if (res.ok) { toast.success(res.message); } else toast.error(res.error);
             }}
           >
             <Trash2 /> Supprimer

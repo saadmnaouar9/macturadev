@@ -42,19 +42,19 @@ export function CategoriesDialog({ open, onOpenChange, categories, canDelete }: 
   const create = () =>
     start(async () => {
       const res = await saveCategory(null, { name, color });
-      if (res.ok) { toast.success(res.message); setName(""); router.refresh(); } else toast.error(res.fieldErrors?.name ?? res.error);
+      if (res.ok) { toast.success(res.message); setName(""); } else toast.error(res.fieldErrors?.name ?? res.error);
     });
   const update = () =>
     editing &&
     start(async () => {
       const res = await saveCategory(editing.id, { name: editing.name, color: editing.color });
-      if (res.ok) { toast.success(res.message); setEditing(null); router.refresh(); } else toast.error(res.fieldErrors?.name ?? res.error);
+      if (res.ok) { toast.success(res.message); setEditing(null); } else toast.error(res.fieldErrors?.name ?? res.error);
     });
   const remove = async (c: CategoryItem) => {
     const ok = await confirm({ title: `Supprimer « ${c.name} » ?`, description: c.count ? `${c.count} article(s) resteront dans le catalogue, sans catégorie.` : "Cette catégorie sera supprimée.", confirmLabel: "Supprimer", danger: true });
     if (!ok) return;
     const res = await deleteCategory(c.id);
-    if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message); } else toast.error(res.error);
   };
 
   return (

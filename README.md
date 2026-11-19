@@ -20,6 +20,17 @@ Tableau de bord · Prospects · Clients · Devis · Factures · Paiements · Con
 Trésorerie · Caisse · Rapports (ventes, TVA, créances, achats, export CSV) · Projets · Tâches · Calendrier ·
 Employés · Journal d'activité · Paramètres (entreprise, documents, TVA, équipe, profil).
 
+## Performance
+
+- **Pour une vitesse maximale, utilisez la version de production** : `npm run start:prod` (build + serveur).
+  Le mode `npm run dev` compile chaque page à sa première visite (1 à 4 s) et exécute du code non optimisé ; ce n'est pas représentatif.
+  `npm run dev` utilise Turbopack ; `npm run dev:webpack` reste disponible.
+- Navigation : cache du routeur client (30 s, invalidé par les modifications), aucun écran de chargement intermédiaire
+  (React retient le contenu 300 ms après un écran de chargement) mais une barre de progression fine, liens de téléchargement
+  (PDF, exports) en HTML simple pour éviter un préchargement qui génère le PDF en arrière-plan.
+- Graphiques (Recharts) chargés à la demande ; lignes de documents mémoïsées ; plus de double rafraîchissement après une modification.
+- Diagnostic SQL : `LOG_QUERIES=1 npm start` journalise chaque requête avec sa durée.
+
 ## Design system « Midnight »
 
 Thème sombre unique (bleu nuit, fibres/particules bleues, verre dépoli, accents bleu · cyan · violet).

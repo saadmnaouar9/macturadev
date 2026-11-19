@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
@@ -56,6 +56,107 @@ function DiscountToggle({ value, onChange, label }: { value: DiscountKind; onCha
     </button>
   );
 }
+
+/** Ligne d'article mémoïsée : seule la ligne modifiée est re-rendue à chaque frappe (et non les N lignes du document). */
+const LineRow = memo(function LineRow({
+  it, i, count, lineNet, lineDiscount, errors, products, taxRates, onUpdate, onRemove, onMove, onDuplicate,
+}: {
+  it: EditorItem; i: number; count: number; lineNet: number; lineDiscount: number; errors: Record<string, string>;
+  products: EditorProduct[]; taxRates: { name: string; rate: number }[];
+  onUpdate: (key: string, patch: Partial<EditorItem>) => void; onRemove: (key: string) => void; onMove: (key: string, dir: -1 | 1) => void; onDuplicate: (it: EditorItem) => void;
+}) {
+  const n = i + 1;
+  const err = (f: string) => errors[`items.${i}.${f}`];
+  return (
+    <motion.li
+      layout="position"
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0, transition: { duration: 0.18 } }}
+      transition={{ duration: 0.3, ease }}
+      className="group/line overflow-hidden border-b border-line-soft"
+    >
+      <div className="grid grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-4 lg:grid-cols-[20px_minmax(0,1fr)_76px_76px_108px_118px_84px_108px_32px] lg:items-start lg:py-2">
+        <div className="hidden flex-col items-center pt-1 lg:flex">
+          <span className="flex h-7 w-5 items-center justify-center text-[11px] font-medium tabular text-faint group-focus-within/line:hidden group-hover/line:hidden">{n}</span>
+          <span className="hidden flex-col group-focus-within/line:flex group-hover/line:flex">
+            <button type="button" onClick={() => onMove(it.key, -1)} disabled={i === 0} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-20" aria-label={`Monter la ligne ${n}`}><ArrowUp className="h-3 w-3" /></button>
+            <button type="button" onClick={() => onMove(it.key, 1)} disabled={i === count - 1} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-20" aria-label={`Descendre la ligne ${n}`}><ArrowDown className="h-3 w-3" /></button>
+          </span>
+        </div>
+        <div className="col-span-2 sm:col-span-4 lg:col-span-1">
+          <label htmlFor={`d-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Désignation (ligne {n})</label>
+          <div className="flex items-center gap-1">
+            {it.productId && (
+              <span title="Article du catalogue" className="hidden shrink-0 text-faint lg:block">
+                {products.find((p) => p.id === it.productId)?.type === "SERVICE" ? <Wrench className="h-3.5 w-3.5" /> : <Box className="h-3.5 w-3.5" />}
+              </span>
+            )}
+            <input id={`d-${it.key}`} dir="auto" aria-invalid={!!err("description") || undefined} value={it.description} onChange={(e) => onUpdate(it.key, { description: e.target.value })} placeholder="Désignation de l'article ou du service" className={cn(cellInput, "font-medium")} />
+          </div>
+          <AnimatePresence initial={false}>
+            {it.showDetails && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                <textarea dir="auto" rows={2} aria-label={`Description détaillée (ligne ${n})`} value={it.details} onChange={(e) => onUpdate(it.key, { details: e.target.value })} placeholder="Description détaillée (facultatif)" className={cn(cellInput, "mt-1 h-auto resize-y py-1.5 text-[13px] text-ink-soft")} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {err("description") && <p className="mt-1 px-2 text-xs text-rose-600">{err("description")}</p>}
+        </div>
+        <div>
+          <label htmlFor={`q-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Quantité (ligne {n})</label>
+          <input id={`q-${it.key}`} inputMode="decimal" aria-invalid={!!err("quantity") || undefined} value={it.quantity} onChange={(e) => onUpdate(it.key, { quantity: e.target.value })} className={cn(cellInput, "text-right tabular")} />
+          {err("quantity") && <p className="mt-1 text-right text-[11px] text-rose-600">{err("quantity")}</p>}
+        </div>
+        <div>
+          <label htmlFor={`u-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Unité (ligne {n})</label>
+          <input id={`u-${it.key}`} value={it.unit} list="editor-units" onChange={(e) => onUpdate(it.key, { unit: e.target.value })} className={cellInput} />
+        </div>
+        <div>
+          <label htmlFor={`p-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Prix unitaire HT (ligne {n})</label>
+          <input id={`p-${it.key}`} inputMode="decimal" aria-invalid={!!err("unitPrice") || undefined} value={it.unitPrice} onChange={(e) => onUpdate(it.key, { unitPrice: e.target.value })} placeholder="0,00" className={cn(cellInput, "text-right tabular")} />
+          {err("unitPrice") && <p className="mt-1 text-right text-[11px] text-rose-600">{err("unitPrice")}</p>}
+        </div>
+        <div>
+          <label htmlFor={`r-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Remise (ligne {n})</label>
+          <div className="flex gap-1">
+            <input id={`r-${it.key}`} inputMode="decimal" aria-invalid={!!err("discount") || undefined} value={it.discount} onChange={(e) => onUpdate(it.key, { discount: e.target.value })} placeholder="0" className={cn(cellInput, "min-w-0 text-right tabular")} />
+            <DiscountToggle value={it.discountType} onChange={(t) => onUpdate(it.key, { discountType: t, discount: "" })} label={`Type de remise, ligne ${n}`} />
+          </div>
+          {err("discount") && <p className="mt-1 text-right text-[11px] text-rose-600">{err("discount")}</p>}
+        </div>
+        <div>
+          <label htmlFor={`t-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">TVA (ligne {n})</label>
+          <select id={`t-${it.key}`} value={it.taxRate} onChange={(e) => onUpdate(it.key, { taxRate: Number(e.target.value) })} className={cn(cellInput, "cursor-pointer appearance-none pr-1")}>
+            {taxRates.map((t) => <option key={t.rate} value={t.rate}>{formatRate(t.rate)} %</option>)}
+            {!taxRates.some((t) => t.rate === it.taxRate) && <option value={it.taxRate}>{formatRate(it.taxRate)} %</option>}
+          </select>
+        </div>
+        <div className="flex items-end justify-between gap-2 sm:col-span-2 lg:col-span-1 lg:block lg:pt-2 lg:text-right">
+          <span className="text-xs font-medium text-muted lg:hidden">Total HT</span>
+          <span className="text-sm font-semibold tabular text-ink" aria-label={`Total HT ligne ${n}`}>{formatMAD(lineNet)}</span>
+          {lineDiscount > 0 && <span className="block text-[11px] tabular text-emerald-600 max-lg:hidden">−{formatMAD(lineDiscount)}</span>}
+        </div>
+        <div className="col-span-2 flex items-center justify-end gap-1 sm:col-span-4 lg:col-span-1 lg:flex-col lg:pt-0.5">
+          <button type="button" aria-pressed={it.showDetails} onClick={() => onUpdate(it.key, { showDetails: !it.showDetails })} className={cn("rounded-md p-1.5 transition-colors hover:bg-subtle", it.showDetails ? "text-brand-600" : "text-faint hover:text-ink")} aria-label={`Description détaillée, ligne ${n}`} title="Description détaillée">
+            <AlignLeft className="h-3.5 w-3.5" />
+          </button>
+          <button type="button" onClick={() => onRemove(it.key)} className="rounded-md p-1.5 text-faint transition-colors hover:bg-rose-50 hover:text-rose-600" aria-label={`Supprimer la ligne ${n}`} title="Supprimer">
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+          <button type="button" onClick={() => onDuplicate(it)} className="rounded-md p-1.5 text-faint transition-colors hover:bg-subtle hover:text-ink lg:hidden" aria-label={`Dupliquer la ligne ${n}`}>
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+          <span className="flex gap-1 lg:hidden">
+            <button type="button" onClick={() => onMove(it.key, -1)} disabled={i === 0} className="rounded-md p-1.5 text-faint hover:bg-subtle disabled:opacity-20" aria-label={`Monter la ligne ${n}`}><ArrowUp className="h-3.5 w-3.5" /></button>
+            <button type="button" onClick={() => onMove(it.key, 1)} disabled={i === count - 1} className="rounded-md p-1.5 text-faint hover:bg-subtle disabled:opacity-20" aria-label={`Descendre la ligne ${n}`}><ArrowDown className="h-3.5 w-3.5" /></button>
+          </span>
+        </div>
+      </div>
+    </motion.li>
+  );
+});
+
 
 function SaveIndicator({ state }: { state: SaveState }) {
   const cfg = {
@@ -169,40 +270,62 @@ export function DocumentEditor({
     [markDirty],
   );
 
-  const updateItem = (key: string, patch: Partial<EditorItem>) => {
-    const idx = v.items.findIndex((i) => i.key === key);
-    setV((s) => ({ ...s, items: s.items.map((it) => (it.key === key ? { ...it, ...patch } : it)) }));
-    markDirty();
-    setErrors((e) => {
-      const n = { ...e };
-      for (const f of Object.keys(patch)) delete n[`items.${idx}.${f}`];
-      if (patch.discountType) delete n[`items.${idx}.discount`];
-      delete n.items;
-      return n;
-    });
-  };
+  // Gestionnaires stables (identité constante) : indispensable pour que les lignes mémoïsées ne se re-rendent pas
+  const itemsRef = useRef(v.items);
+  itemsRef.current = v.items;
+  const updateItem = useCallback(
+    (key: string, patch: Partial<EditorItem>) => {
+      const idx = itemsRef.current.findIndex((i) => i.key === key);
+      setV((s) => ({ ...s, items: s.items.map((it) => (it.key === key ? { ...it, ...patch } : it)) }));
+      markDirty();
+      setErrors((e) => {
+        const dead = [...Object.keys(patch).map((f) => `items.${idx}.${f}`), ...(patch.discountType ? [`items.${idx}.discount`] : []), "items"].filter((k) => k in e);
+        if (dead.length === 0) return e; // aucune erreur à retirer : on conserve le même objet (pas de re-rendu)
+        const n = { ...e };
+        for (const k of dead) delete n[k];
+        return n;
+      });
+    },
+    [markDirty],
+  );
 
-  const addItem = (item?: EditorItem) => {
-    setV((s) => ({ ...s, items: [...s.items, item ?? blankItem(defaultTaxRate)] }));
-    markDirty();
-  };
-  const removeItem = (key: string) => {
-    setV((s) => ({ ...s, items: s.items.length > 1 ? s.items.filter((i) => i.key !== key) : [blankItem(defaultTaxRate)] }));
-    setErrors({});
-    markDirty();
-  };
-  const moveItem = (key: string, dir: -1 | 1) => {
-    setV((s) => {
-      const i = s.items.findIndex((x) => x.key === key);
-      const j = i + dir;
-      if (j < 0 || j >= s.items.length) return s;
-      const items = [...s.items];
-      [items[i], items[j]] = [items[j], items[i]];
-      return { ...s, items };
-    });
-    setErrors({});
-    markDirty();
-  };
+  const addItem = useCallback(
+    (item?: EditorItem) => {
+      setV((s) => ({ ...s, items: [...s.items, item ?? blankItem(defaultTaxRate)] }));
+      markDirty();
+    },
+    [markDirty, defaultTaxRate],
+  );
+  const duplicateItem = useCallback(
+    (it: EditorItem) => {
+      setV((s) => ({ ...s, items: [...s.items, { ...it, key: newKey() }] }));
+      markDirty();
+    },
+    [markDirty],
+  );
+  const removeItem = useCallback(
+    (key: string) => {
+      setV((s) => ({ ...s, items: s.items.length > 1 ? s.items.filter((i) => i.key !== key) : [blankItem(defaultTaxRate)] }));
+      setErrors({});
+      markDirty();
+    },
+    [markDirty, defaultTaxRate],
+  );
+  const moveItem = useCallback(
+    (key: string, dir: -1 | 1) => {
+      setV((s) => {
+        const i = s.items.findIndex((x) => x.key === key);
+        const j = i + dir;
+        if (j < 0 || j >= s.items.length) return s;
+        const items = [...s.items];
+        [items[i], items[j]] = [items[j], items[i]];
+        return { ...s, items };
+      });
+      setErrors({});
+      markDirty();
+    },
+    [markDirty],
+  );
 
   const insertProduct = (p: EditorProduct) => {
     const item: EditorItem = {
@@ -325,8 +448,7 @@ export function DocumentEditor({
       doneRef.current = true; // le document est créé : plus aucun nouvel envoi depuis cet écran
       setSaveState("saved");
       router.push(`/${isQuote ? "devis" : "factures"}/${res.data.id}`);
-      router.refresh();
-    } finally {
+          } finally {
       savingRef.current = false;
     }
   };
@@ -498,97 +620,22 @@ export function DocumentEditor({
                 <ul aria-label="Lignes du document">
                   <AnimatePresence initial={false}>
                     {v.items.map((it, i) => {
-                      const err = (f: string) => errors[`items.${i}.${f}`];
-                      const line = totals.lines[i];
-                      const n = i + 1;
                       return (
-                        <motion.li
+                        <LineRow
                           key={it.key}
-                          layout="position"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0, transition: { duration: 0.18 } }}
-                          transition={{ duration: 0.3, ease }}
-                          className="group/line overflow-hidden border-b border-line-soft"
-                        >
-                          <div className="grid grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-4 lg:grid-cols-[20px_minmax(0,1fr)_76px_76px_108px_118px_84px_108px_32px] lg:items-start lg:py-2">
-                            <div className="hidden flex-col items-center pt-1 lg:flex">
-                              <span className="flex h-7 w-5 items-center justify-center text-[11px] font-medium tabular text-faint group-focus-within/line:hidden group-hover/line:hidden">{n}</span>
-                              <span className="hidden flex-col group-focus-within/line:flex group-hover/line:flex">
-                                <button type="button" onClick={() => moveItem(it.key, -1)} disabled={i === 0} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-20" aria-label={`Monter la ligne ${n}`}><ArrowUp className="h-3 w-3" /></button>
-                                <button type="button" onClick={() => moveItem(it.key, 1)} disabled={i === v.items.length - 1} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-20" aria-label={`Descendre la ligne ${n}`}><ArrowDown className="h-3 w-3" /></button>
-                              </span>
-                            </div>
-                            <div className="col-span-2 sm:col-span-4 lg:col-span-1">
-                              <label htmlFor={`d-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Désignation (ligne {n})</label>
-                              <div className="flex items-center gap-1">
-                                {it.productId && (
-                                  <span title="Article du catalogue" className="hidden shrink-0 text-faint lg:block">
-                                    {products.find((p) => p.id === it.productId)?.type === "SERVICE" ? <Wrench className="h-3.5 w-3.5" /> : <Box className="h-3.5 w-3.5" />}
-                                  </span>
-                                )}
-                                <input id={`d-${it.key}`} dir="auto" aria-invalid={!!err("description") || undefined} value={it.description} onChange={(e) => updateItem(it.key, { description: e.target.value })} placeholder="Désignation de l'article ou du service" className={cn(cellInput, "font-medium")} />
-                              </div>
-                              <AnimatePresence initial={false}>
-                                {it.showDetails && (
-                                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                                    <textarea dir="auto" rows={2} aria-label={`Description détaillée (ligne ${n})`} value={it.details} onChange={(e) => updateItem(it.key, { details: e.target.value })} placeholder="Description détaillée (facultatif)" className={cn(cellInput, "mt-1 h-auto resize-y py-1.5 text-[13px] text-ink-soft")} />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                              {err("description") && <p className="mt-1 px-2 text-xs text-rose-600">{err("description")}</p>}
-                            </div>
-                            <div>
-                              <label htmlFor={`q-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Quantité (ligne {n})</label>
-                              <input id={`q-${it.key}`} inputMode="decimal" aria-invalid={!!err("quantity") || undefined} value={it.quantity} onChange={(e) => updateItem(it.key, { quantity: e.target.value })} className={cn(cellInput, "text-right tabular")} />
-                              {err("quantity") && <p className="mt-1 text-right text-[11px] text-rose-600">{err("quantity")}</p>}
-                            </div>
-                            <div>
-                              <label htmlFor={`u-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Unité (ligne {n})</label>
-                              <input id={`u-${it.key}`} value={it.unit} list="editor-units" onChange={(e) => updateItem(it.key, { unit: e.target.value })} className={cellInput} />
-                            </div>
-                            <div>
-                              <label htmlFor={`p-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Prix unitaire HT (ligne {n})</label>
-                              <input id={`p-${it.key}`} inputMode="decimal" aria-invalid={!!err("unitPrice") || undefined} value={it.unitPrice} onChange={(e) => updateItem(it.key, { unitPrice: e.target.value })} placeholder="0,00" className={cn(cellInput, "text-right tabular")} />
-                              {err("unitPrice") && <p className="mt-1 text-right text-[11px] text-rose-600">{err("unitPrice")}</p>}
-                            </div>
-                            <div>
-                              <label htmlFor={`r-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">Remise (ligne {n})</label>
-                              <div className="flex gap-1">
-                                <input id={`r-${it.key}`} inputMode="decimal" aria-invalid={!!err("discount") || undefined} value={it.discount} onChange={(e) => updateItem(it.key, { discount: e.target.value })} placeholder="0" className={cn(cellInput, "min-w-0 text-right tabular")} />
-                                <DiscountToggle value={it.discountType} onChange={(t) => updateItem(it.key, { discountType: t, discount: "" })} label={`Type de remise, ligne ${n}`} />
-                              </div>
-                              {err("discount") && <p className="mt-1 text-right text-[11px] text-rose-600">{err("discount")}</p>}
-                            </div>
-                            <div>
-                              <label htmlFor={`t-${it.key}`} className="mb-1 block text-xs font-medium text-muted lg:sr-only">TVA (ligne {n})</label>
-                              <select id={`t-${it.key}`} value={it.taxRate} onChange={(e) => updateItem(it.key, { taxRate: Number(e.target.value) })} className={cn(cellInput, "cursor-pointer appearance-none pr-1")}>
-                                {taxRates.map((t) => <option key={t.rate} value={t.rate}>{formatRate(t.rate)} %</option>)}
-                                {!taxRates.some((t) => t.rate === it.taxRate) && <option value={it.taxRate}>{formatRate(it.taxRate)} %</option>}
-                              </select>
-                            </div>
-                            <div className="flex items-end justify-between gap-2 sm:col-span-2 lg:col-span-1 lg:block lg:pt-2 lg:text-right">
-                              <span className="text-xs font-medium text-muted lg:hidden">Total HT</span>
-                              <span className="text-sm font-semibold tabular text-ink" aria-label={`Total HT ligne ${n}`}>{formatMAD(line?.net ?? 0)}</span>
-                              {(line?.lineDiscount ?? 0) > 0 && <span className="block text-[11px] tabular text-emerald-600 max-lg:hidden">−{formatMAD(line.lineDiscount)}</span>}
-                            </div>
-                            <div className="col-span-2 flex items-center justify-end gap-1 sm:col-span-4 lg:col-span-1 lg:flex-col lg:pt-0.5">
-                              <button type="button" aria-pressed={it.showDetails} onClick={() => updateItem(it.key, { showDetails: !it.showDetails })} className={cn("rounded-md p-1.5 transition-colors hover:bg-subtle", it.showDetails ? "text-brand-600" : "text-faint hover:text-ink")} aria-label={`Description détaillée, ligne ${n}`} title="Description détaillée">
-                                <AlignLeft className="h-3.5 w-3.5" />
-                              </button>
-                              <button type="button" onClick={() => removeItem(it.key)} className="rounded-md p-1.5 text-faint transition-colors hover:bg-rose-50 hover:text-rose-600" aria-label={`Supprimer la ligne ${n}`} title="Supprimer">
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                              <button type="button" onClick={() => addItem({ ...it, key: newKey() })} className="rounded-md p-1.5 text-faint transition-colors hover:bg-subtle hover:text-ink lg:hidden" aria-label={`Dupliquer la ligne ${n}`}>
-                                <Copy className="h-3.5 w-3.5" />
-                              </button>
-                              <span className="flex gap-1 lg:hidden">
-                                <button type="button" onClick={() => moveItem(it.key, -1)} disabled={i === 0} className="rounded-md p-1.5 text-faint hover:bg-subtle disabled:opacity-20" aria-label={`Monter la ligne ${n}`}><ArrowUp className="h-3.5 w-3.5" /></button>
-                                <button type="button" onClick={() => moveItem(it.key, 1)} disabled={i === v.items.length - 1} className="rounded-md p-1.5 text-faint hover:bg-subtle disabled:opacity-20" aria-label={`Descendre la ligne ${n}`}><ArrowDown className="h-3.5 w-3.5" /></button>
-                              </span>
-                            </div>
-                          </div>
-                        </motion.li>
+                          it={it}
+                          i={i}
+                          count={v.items.length}
+                          lineNet={totals.lines[i]?.net ?? 0}
+                          lineDiscount={totals.lines[i]?.lineDiscount ?? 0}
+                          errors={errors}
+                          products={products}
+                          taxRates={taxRates}
+                          onUpdate={updateItem}
+                          onRemove={removeItem}
+                          onMove={moveItem}
+                          onDuplicate={duplicateItem}
+                        />
                       );
                     })}
                   </AnimatePresence>
@@ -703,8 +750,7 @@ export function DocumentEditor({
               setCustomers(list);
               onCustomerChange(created.id, list);
               setNewCustomerOpen(false);
-              router.refresh();
-            }}
+                          }}
           />
         </div>
       </Dialog>

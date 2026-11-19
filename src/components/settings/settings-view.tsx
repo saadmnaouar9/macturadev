@@ -73,7 +73,7 @@ function CompanyTab({ initial, canEdit }: { initial: Record<string, string>; can
     </Field>
   );
   return (
-    <form onSubmit={(e) => { e.preventDefault(); submit(() => updateCompany(values), { onSuccess: () => router.refresh() }); }} className="space-y-5" noValidate>
+    <form onSubmit={(e) => { e.preventDefault(); submit(() => updateCompany(values)); }} className="space-y-5" noValidate>
       <Section title="Identité" description="Affichée en en-tête de vos devis et factures.">
         <div className="grid gap-4 sm:grid-cols-2">
           {f("name", "Raison sociale", { span: true })}
@@ -127,7 +127,7 @@ function DocumentsTab({ initial, taxRates, canEdit }: { initial: Record<string, 
       className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
-        submit(() => updateDocumentSettings({ ...values, defaultTaxRate: Number(values.defaultTaxRate) }), { onSuccess: () => router.refresh() });
+        submit(() => updateDocumentSettings({ ...values, defaultTaxRate: Number(values.defaultTaxRate) }));
       }}
     >
       <Section title="Numérotation" description="Séquence continue par année, attribuée automatiquement.">
@@ -181,7 +181,7 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
     if (bp === null || bp > 10000) return toast.error("Taux invalide (0 à 100 %)");
     start(async () => {
       const res = await saveTaxRate(null, { name: name || `TVA ${formatRate(bp)} %`, rate: bp });
-      if (res.ok) { toast.success(res.message); setName(""); setRate(""); router.refresh(); } else toast.error(res.error);
+      if (res.ok) { toast.success(res.message); setName(""); setRate(""); } else toast.error(res.error);
     });
   };
   return (
@@ -197,7 +197,7 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
                   onClick={async () => {
                     if (!(await confirm({ title: `Supprimer « ${t.name} » ?`, description: "Le taux ne sera plus proposé. Les documents existants ne sont pas modifiés.", confirmLabel: "Supprimer", danger: true }))) return;
                     const res = await deleteTaxRate(t.id);
-                    if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+                    if (res.ok) { toast.success(res.message); } else toast.error(res.error);
                   }}
                   className="rounded-md p-1.5 text-faint hover:bg-rose-50 hover:text-rose-600"
                   aria-label={`Supprimer ${t.name}`}
@@ -256,7 +256,7 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
                     value={m.role}
                     onChange={async (e) => {
                       const res = await updateMemberRole(m.id, e.target.value);
-                      if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+                      if (res.ok) { toast.success(res.message); } else toast.error(res.error);
                     }}
                     className="h-8 w-40 text-[13px]"
                   >
@@ -268,7 +268,7 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
                     onClick={async () => {
                       if (!(await confirm({ title: `Retirer ${m.user.name} ?`, description: "Cette personne perdra immédiatement l'accès à l'espace.", confirmLabel: "Retirer", danger: true }))) return;
                       const res = await removeMember(m.id);
-                      if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+                      if (res.ok) { toast.success(res.message); } else toast.error(res.error);
                     }}
                     className="rounded-md p-1.5 text-faint hover:bg-rose-50 hover:text-rose-600"
                     aria-label={`Retirer ${m.user.name}`}
@@ -288,7 +288,7 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
         onOpenChange={setOpen}
         title="Ajouter un membre"
         description="Communiquez-lui son mot de passe provisoire de manière sécurisée."
-        footer={<><Button variant="secondary" onClick={() => setOpen(false)}>Annuler</Button><Button loading={pending} onClick={() => submit(() => addMember(values), { onSuccess: () => { setOpen(false); router.refresh(); } })}>Ajouter</Button></>}
+        footer={<><Button variant="secondary" onClick={() => setOpen(false)}>Annuler</Button><Button loading={pending} onClick={() => submit(() => addMember(values), { onSuccess: () => { setOpen(false); } })}>Ajouter</Button></>}
       >
         <div className="space-y-4">
           <Field label="Nom complet" required error={errors.name}>{(p) => <Input {...p} autoFocus value={values.name} onChange={(e) => set("name", e.target.value)} />}</Field>
@@ -315,7 +315,7 @@ function ProfileTab({ profile }: { profile: Props["profile"] }) {
   const pw = useForm({ current: "", next: "", confirm: "" });
   return (
     <div className="space-y-5">
-      <form onSubmit={(e) => { e.preventDefault(); prof.submit(() => updateProfile(prof.values), { onSuccess: () => router.refresh() }); }} noValidate>
+      <form onSubmit={(e) => { e.preventDefault(); prof.submit(() => updateProfile(prof.values)); }} noValidate>
         <Section title="Mon profil" footer={<Button type="submit" loading={prof.pending}>Enregistrer</Button>}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Nom complet" error={prof.errors.name}>{(p) => <Input {...p} value={prof.values.name} onChange={(e) => prof.set("name", e.target.value)} />}</Field>

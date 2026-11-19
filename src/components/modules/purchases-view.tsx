@@ -84,7 +84,7 @@ export function PurchasesView({ suppliers, taxRates, ...p }: Common & { supplier
                 onSelect: async () => {
                   if (!(await confirm({ title: `Annuler ${r.reference} ?`, description: "La facture restera dans l'historique avec le statut « Annulée ».", confirmLabel: "Annuler la facture", danger: true }))) return;
                   const res = await cancelPurchase(r.id);
-                  if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+                  if (res.ok) { toast.success(res.message); } else toast.error(res.error);
                 },
               }]
             : []),
@@ -153,9 +153,9 @@ export function PurchasesView({ suppliers, taxRates, ...p }: Common & { supplier
             balance={current.balance}
             issueDate={current.issueDate}
             submit={(d) => addPurchasePayment({ purchaseId: current.id, ...d })}
-            onDone={() => { setPaying(false); router.refresh(); }}
+            onDone={() => { setPaying(false); }}
           />
-          <VoidPaymentDialog action={voidPurchasePayment} payment={voiding} onOpenChange={(o) => !o && setVoiding(null)} onDone={() => { setVoiding(null); router.refresh(); }} />
+          <VoidPaymentDialog action={voidPurchasePayment} payment={voiding} onOpenChange={(o) => !o && setVoiding(null)} onDone={() => { setVoiding(null); }} />
         </>
       )}
     </>

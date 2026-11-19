@@ -36,11 +36,17 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { formatMAD } from "@/lib/money";
 import { PAYMENT_METHODS } from "@/lib/status";
 import { cn, formatDate, formatRelative, initials } from "@/lib/utils";
-import { RevenueChart, QuotesChart, StatusDonut } from "./charts";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Recharts est chargé après l'affichage de la page : le tableau de bord devient interactif plus tôt
+const RevenueChart = dynamic(() => import("./charts").then((m) => m.RevenueChart), { ssr: false, loading: () => <Skeleton className="mx-3 mb-3 h-[300px]" /> });
+const QuotesChart = dynamic(() => import("./charts").then((m) => m.QuotesChart), { ssr: false, loading: () => <Skeleton className="mx-3 mb-3 h-[260px]" /> });
+const StatusDonut = dynamic(() => import("./charts").then((m) => m.StatusDonut), { ssr: false, loading: () => <Skeleton className="mx-5 mb-5 h-[300px]" /> });
 
 const ease = [0.16, 1, 0.3, 1] as const;
-const container: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
-const item: Variants = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease } } };
+const container: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.03 } } };
+const item: Variants = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.3, ease } } };
 
 const PERIOD_LABEL: Record<Period, string> = { "30d": "30 derniers jours", ytd: "depuis le 1er janvier", "12m": "12 derniers mois" };
 
@@ -92,7 +98,7 @@ function Kpi({
     </motion.div>
   );
   return href ? (
-    <Link href={href} className="block rounded-xl focus-visible:outline-offset-4">
+    <Link prefetch={false} href={href} className="block rounded-xl focus-visible:outline-offset-4">
       {inner}
     </Link>
   ) : (
@@ -165,7 +171,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                   { href: "/produits?new=1", label: "2. Ajouter un produit", icon: PackagePlus },
                   { href: "/devis/new", label: "3. Créer un devis", icon: FileText },
                 ].map((s) => (
-                  <Link key={s.href} href={s.href} className="inline-flex items-center gap-2 rounded-lg bg-subtle px-3 py-2 text-[13px] font-medium text-ink ring-1 ring-inset ring-line transition-colors hover:bg-brand-50 hover:text-brand-800 hover:ring-brand-200">
+                  <Link prefetch={false} key={s.href} href={s.href} className="inline-flex items-center gap-2 rounded-lg bg-subtle px-3 py-2 text-[13px] font-medium text-ink ring-1 ring-inset ring-line transition-colors hover:bg-brand-50 hover:text-brand-800 hover:ring-brand-200">
                     <s.icon className="h-4 w-4" /> {s.label}
                   </Link>
                 ))}
@@ -258,7 +264,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
       </motion.div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.2, ease }} className="xl:col-span-2">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06, ease }} className="xl:col-span-2">
           <Card className="h-full">
             <CardHeader title="Évolution du chiffre d'affaires" description="Montants facturés et encaissés (TTC) sur les 12 derniers mois" />
             <div className="px-2 pb-4 pt-2 sm:px-4">
@@ -266,7 +272,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             </div>
           </Card>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.27, ease }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.08, ease }}>
           <Card className="h-full">
             <CardHeader title="Répartition des factures" description={`Montants TTC — ${PERIOD_LABEL[data.period]}`} />
             <StatusDonut data={data.statusBreakdown} />
@@ -275,7 +281,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
       </div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.3, ease }} className="xl:col-span-2">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.09, ease }} className="xl:col-span-2">
           <Card className="h-full">
             <CardHeader title="Performance commerciale" description="Devis émis et acceptés par mois (montants TTC)" />
             <div className="px-2 pb-4 pt-2 sm:px-4">
@@ -283,7 +289,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             </div>
           </Card>
         </motion.div>
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.36, ease }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.11, ease }}>
           <Card className="h-full">
             <CardHeader title="Indicateurs clés" description={PERIOD_LABEL[data.period]} />
             <div className="grid grid-cols-2 gap-3 p-5">
@@ -314,16 +320,16 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.4, ease }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.12, ease }}>
           <Card className="h-full">
-            <CardHeader title="Transactions récentes" description="Derniers paiements reçus" action={<Link href="/factures?status=PAID" className="text-[13px] font-medium text-brand-700 hover:underline">Tout voir</Link>} />
+            <CardHeader title="Transactions récentes" description="Derniers paiements reçus" action={<Link prefetch={false} href="/factures?status=PAID" className="text-[13px] font-medium text-brand-700 hover:underline">Tout voir</Link>} />
             {data.recentPayments.length === 0 ? (
               <EmptyState icon={CircleDollarSign} title="Aucun paiement" description="Les règlements enregistrés sur vos factures apparaîtront ici." />
             ) : (
               <ul className="mt-3 divide-y divide-line-soft">
                 {data.recentPayments.map((p, i) => (
                   <motion.li key={p.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 + i * 0.04, duration: 0.35, ease }}>
-                    <Link href={`/factures/${p.invoiceId}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-canvas">
+                    <Link prefetch={false} href={`/factures/${p.invoiceId}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-canvas">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-100">{initials(p.customerName)}</span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13px] font-medium text-ink">{p.customerName}</span>
@@ -341,7 +347,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.46, ease }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.14, ease }}>
           <Card className="h-full">
             <CardHeader title="Meilleurs clients" description={`Chiffre facturé — ${PERIOD_LABEL[data.period]}`} />
             {data.topCustomers.length === 0 ? (
@@ -352,7 +358,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                   const max = data.topCustomers[0].amount || 1;
                   return (
                     <li key={c.id}>
-                      <Link href={`/clients/${c.id}`} className="group block">
+                      <Link prefetch={false} href={`/clients/${c.id}`} className="group block">
                         <div className="flex items-baseline justify-between gap-3">
                           <span className="truncate text-[13px] font-medium text-ink group-hover:text-brand-700">{c.name}</span>
                           <span className="shrink-0 text-[13px] font-semibold tabular text-ink">{formatMAD(c.amount)}</span>
@@ -375,7 +381,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.52, ease }} className="lg:col-span-2 xl:col-span-1">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.16, ease }} className="lg:col-span-2 xl:col-span-1">
           <Card className="h-full">
             <CardHeader title="Activité récente" description="Les derniers événements de votre espace" />
             {data.activities.length === 0 ? (
@@ -398,7 +404,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                   );
                   return (
                     <motion.li key={a.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 + i * 0.04, duration: 0.35, ease }} className="mb-4 last:mb-0">
-                      {a.href ? <Link href={a.href} className="group flex gap-3">{body}</Link> : <div className="flex gap-3">{body}</div>}
+                      {a.href ? <Link prefetch={false} href={a.href} className="group flex gap-3">{body}</Link> : <div className="flex gap-3">{body}</div>}
                     </motion.li>
                   );
                 })}
@@ -409,14 +415,14 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
       </div>
 
       {canWrite && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.58, ease }} className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.17, ease }} className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {[
             { href: "/factures/new", label: "Nouvelle facture", desc: "Facturer un client", icon: Receipt },
             { href: "/devis/new", label: "Nouveau devis", desc: "Proposer une offre", icon: FileText },
             { href: "/clients/new", label: "Nouveau client", desc: "Particulier ou entreprise", icon: UserPlus },
             { href: "/produits?new=1", label: "Nouveau produit", desc: "Enrichir le catalogue", icon: PackagePlus },
           ].map((a) => (
-            <Link key={a.href} href={a.href} className="group flex items-center gap-3 rounded-xl bg-surface p-4 shadow-[var(--shadow-ring)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-ring),var(--shadow-md)]">
+            <Link prefetch={false} key={a.href} href={a.href} className="group flex items-center gap-3 rounded-xl bg-surface p-4 shadow-[var(--shadow-ring)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-ring),var(--shadow-md)]">
               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700 transition-colors group-hover:bg-brand-500 group-hover:text-white">
                 <a.icon className="h-[18px] w-[18px]" />
               </span>

@@ -9,6 +9,7 @@ import { SidebarContent } from "./sidebar";
 import { Topbar } from "./topbar";
 import { BreadcrumbProvider } from "./breadcrumbs";
 import { CommandPalette } from "./command-palette";
+import { TopProgress } from "./top-progress";
 import type { NotificationItem } from "./notifications";
 
 export interface ShellUser {
@@ -62,9 +63,10 @@ export function AppShell({
 
   return (
     <BreadcrumbProvider>
+      <TopProgress />
       <div aria-hidden className="no-print pointer-events-none fixed inset-0 -z-[1] overflow-hidden">
-        <div className="ambient-orb -right-24 top-10 h-[360px] w-[460px] bg-blue-600/25" />
-        <div className="ambient-orb bottom-0 left-1/4 h-[320px] w-[420px] bg-violet-600/20 [animation-delay:-8s]" />
+        <div className="ambient-orb -right-40 -top-10 h-[620px] w-[760px] bg-[radial-gradient(closest-side,rgb(37_99_235/0.3),transparent)]" />
+        <div className="ambient-orb -bottom-24 left-1/4 h-[560px] w-[700px] bg-[radial-gradient(closest-side,rgb(124_58_237/0.24),transparent)] [animation-delay:-8s]" />
       </div>
       <div className="flex min-h-dvh">
         {/* Barre latérale desktop */}

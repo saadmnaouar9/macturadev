@@ -84,12 +84,13 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
 
   const move = async (t: TaskRow, status: TaskStatus) => {
     const res = await setTaskStatus(t.id, status);
-    if (res.ok) router.refresh(); else toast.error(res.error);
+    // setTaskStatus appelle revalidatePath : la réponse de l'action contient déjà les données à jour (pas de refresh supplémentaire)
+    if (!res.ok) toast.error(res.error);
   };
   const remove = async (t: TaskRow) => {
     if (!(await confirm({ title: "Supprimer cette tâche ?", description: t.title, confirmLabel: "Supprimer", danger: true }))) return;
     const res = await deleteTask(t.id);
-    if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message); } else toast.error(res.error);
   };
 
   const initial = toFormValues(fields, drawer.task as unknown as Record<string, unknown> | null, { status: "TODO", priority: "MEDIUM", projectId: defaultProject });
@@ -175,7 +176,7 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
         initial={initial}
         submitLabel={drawer.task ? "Enregistrer" : "Créer"}
         onSubmit={(payload) => saveTask(drawer.task?.id ?? null, payload)}
-        onSaved={() => { setDrawer({ open: false, task: null }); router.refresh(); }}
+        onSaved={() => { setDrawer({ open: false, task: null }); }}
       />
     </>
   );

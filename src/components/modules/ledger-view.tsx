@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import dynamic from "next/dynamic";
 import { ArrowDownLeft, ArrowUpRight, Banknote, Landmark, Pencil, Plus, Scale, Settings2, Trash2, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -40,6 +40,8 @@ export interface LedgerRow {
 }
 
 const ease = [0.16, 1, 0.3, 1] as const;
+// Recharts (≈100 ko) n'est chargé que sur la page Trésorerie, après l'affichage de la page
+const CashflowChart = dynamic(() => import("./cashflow-chart").then((m) => m.CashflowChart), { ssr: false, loading: () => <div className="skeleton h-full w-full" /> });
 const C_IN = "#4a8df8";
 const C_OUT = "#e86533";
 
@@ -83,7 +85,7 @@ export function LedgerView(p: {
   const remove = async (r: LedgerRow) => {
     if (!r.entryId || !(await confirm({ title: "Supprimer cette opération ?", description: r.label, confirmLabel: "Supprimer", danger: true }))) return;
     const res = await deleteCashEntry(r.entryId);
-    if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message); } else toast.error(res.error);
   };
 
   const saveOpening = async () => {
@@ -92,7 +94,7 @@ export function LedgerView(p: {
     setSaving(true);
     const res = await updateOpeningBalances({ openingCash: c, openingBank: b });
     setSaving(false);
-    if (res.ok) { toast.success(res.message); setOpeningOpen(false); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message); setOpeningOpen(false); } else toast.error(res.error);
   };
 
   const cards = isCash
@@ -146,20 +148,7 @@ export function LedgerView(p: {
                 <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ background: C_OUT }} />Décaissements</span>
               </div>
               <div className="h-[240px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={p.cashflow} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={2} barCategoryGap="26%">
-                    <CartesianGrid vertical={false} stroke="rgba(148,180,255,0.1)" />
-                    <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#7f8db3", fontSize: 11 }} dy={8} interval="preserveStartEnd" />
-                    <YAxis tickLine={false} axisLine={false} tick={{ fill: "#7f8db3", fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
-                    <Tooltip cursor={{ fill: "rgb(74 141 248 / 0.09)" }} content={({ active, payload, label }) => active && payload?.length ? (
-                      <div className="min-w-[190px] rounded-lg bg-surface px-3 py-2.5 shadow-[var(--shadow-ring),var(--shadow-lg)]">
-                        <p className="mb-1.5 text-xs font-medium text-muted">{label}</p>
-                        {payload.map((x) => <div key={String(x.dataKey)} className="flex justify-between gap-4 py-0.5 text-[13px]"><span className="flex items-center gap-2 text-ink-soft"><span className="h-2 w-2 rounded-full" style={{ background: x.color }} />{x.dataKey === "inflow" ? "Encaissé" : "Décaissé"}</span><span className="font-semibold tabular">{formatMAD(Number(x.value))}</span></div>)}
-                      </div>) : null} />
-                    <Bar dataKey="inflow" fill={C_IN} radius={[4, 4, 0, 0]} maxBarSize={22} animationDuration={900} />
-                    <Bar dataKey="outflow" fill={C_OUT} radius={[4, 4, 0, 0]} maxBarSize={22} animationDuration={900} animationBegin={120} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <CashflowChart data={p.cashflow} />
               </div>
             </div>
           </Card>
@@ -208,7 +197,7 @@ export function LedgerView(p: {
                     <Row key={r.id} index={i}>
                       <Td className="whitespace-nowrap text-[13px] text-ink-soft">{formatDate(r.date)}</Td>
                       <Td>
-                        <span className="text-[13px] font-medium text-ink">{r.href ? <Link href={r.href} className="hover:text-brand-700">{r.label}</Link> : r.label}</span>
+                        <span className="text-[13px] font-medium text-ink">{r.href ? <Link prefetch={false} href={r.href} className="hover:text-brand-700">{r.label}</Link> : r.label}</span>
                         {(r.detail || r.reference) && <span className="block max-w-[300px] truncate text-xs text-muted">{[r.detail, r.reference].filter(Boolean).join(" · ")}</span>}
                       </Td>
                       {!isCash && <Td className="hidden md:table-cell"><Badge tone={r.account === "CASH" ? "success" : "info"} dot={false}>{r.account === "CASH" ? "Caisse" : "Banque"}</Badge></Td>}
@@ -246,7 +235,7 @@ export function LedgerView(p: {
         initial={initial}
         submitLabel={drawer.row ? "Enregistrer" : "Enregistrer l'opération"}
         onSubmit={(payload) => saveCashEntry(drawer.row?.entryId ?? null, { ...payload, account: isCash ? "CASH" : payload.account })}
-        onSaved={() => { setDrawer({ open: false, row: null }); router.refresh(); }}
+        onSaved={() => { setDrawer({ open: false, row: null }); }}
       />
 
       <Dialog

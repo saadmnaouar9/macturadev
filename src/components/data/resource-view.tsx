@@ -149,7 +149,7 @@ export function ResourceView(p: ResourceViewProps) {
     const ok = await confirm({ title: `Supprimer ce ${p.entity} ?`, description: "Cette action est définitive.", confirmLabel: "Supprimer", danger: true });
     if (!ok) return;
     const res = await p.onRemove(row.id);
-    if (res.ok) { toast.success(res.message ?? "Supprimé"); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message ?? "Supprimé"); } else toast.error(res.error);
   };
 
   const toneCls = { default: "text-ink", good: "text-emerald-700", warn: "text-amber-700", bad: "text-rose-600" };
@@ -275,7 +275,7 @@ export function ResourceView(p: ResourceViewProps) {
         initial={initial}
         submitLabel={drawer.row ? "Enregistrer" : "Créer"}
         onSubmit={(payload) => p.onSave(drawer.row?.id ?? null, payload)}
-        onSaved={() => { setDrawer({ open: false, row: null }); router.refresh(); }}
+        onSaved={() => { setDrawer({ open: false, row: null }); }}
       />
       <span className="sr-only">{plural}</span>
     </>

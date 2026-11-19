@@ -11,7 +11,7 @@ const FORMATS = {
 };
 
 /** Compteur animé — la valeur finale est toujours exacte (formatée par `format`). */
-export function AnimatedNumber({ value, kind = "int", duration = 1.1 }: { value: number; kind?: keyof typeof FORMATS; duration?: number }) {
+export function AnimatedNumber({ value, kind = "int", duration = 0.8 }: { value: number; kind?: keyof typeof FORMATS; duration?: number }) {
   const format = FORMATS[kind];
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });

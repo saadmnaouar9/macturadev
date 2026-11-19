@@ -148,7 +148,7 @@
     -webkit-backdrop-filter: blur(14px) saturate(1.2);
   }
   /* Halo animé discret derrière l'en-tête des pages */
-  .ambient-orb { position: absolute; border-radius: 9999px; filter: blur(80px); pointer-events: none; animation: ambient-drift 16s ease-in-out infinite; }
+  .ambient-orb { position: absolute; border-radius: 9999px; pointer-events: none; will-change: transform, opacity; animation: ambient-drift 16s ease-in-out infinite; }
 
   /* Document (aperçu facture / devis) : reste une feuille blanche, comme à l'impression */
   .paper {

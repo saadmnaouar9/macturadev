@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import dynamic from "next/dynamic";
 import { Download, Filter } from "lucide-react";
 import type { ReportsData } from "@/lib/reports";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ const TABS = [
   { id: "achats", label: "Achats" },
 ];
 const ease = [0.16, 1, 0.3, 1] as const;
+const SalesChart = dynamic(() => import("./sales-chart").then((m) => m.SalesChart), { ssr: false, loading: () => <div className="skeleton h-full w-full" /> });
 
 function Table({ head, rows, empty }: { head: { label: string; right?: boolean }[]; rows: React.ReactNode[][]; empty: string }) {
   if (rows.length === 0) return <p className="px-5 py-10 text-center text-sm text-muted">{empty}</p>;
@@ -78,7 +79,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
           </form>
           <div className="flex flex-wrap gap-1.5">
             {presets.map((p) => (
-              <Link key={p.label} href={`/rapports?from=${p.from}&to=${p.to}`} className={cn("rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset transition-colors", p.from === from && p.to === to ? "bg-brand-50 text-brand-700 ring-brand-200" : "text-muted ring-line hover:bg-subtle hover:text-ink")}>{p.label}</Link>
+              <Link prefetch={false} key={p.label} href={`/rapports?from=${p.from}&to=${p.to}`} className={cn("rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset transition-colors", p.from === from && p.to === to ? "bg-brand-50 text-brand-700 ring-brand-200" : "text-muted ring-line hover:bg-subtle hover:text-ink")}>{p.label}</Link>
             ))}
           </div>
         </div>
@@ -119,26 +120,13 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
               <div className="px-2 pb-4 pt-3 sm:px-4">
                 <div className="mb-2 flex gap-5 px-3 text-xs text-muted"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#4a8df8]" />Ventes</span><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#e86533]" />Achats</span></div>
                 <div className="h-[260px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data.months} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={2} barCategoryGap="26%">
-                      <CartesianGrid vertical={false} stroke="rgba(148,180,255,0.1)" />
-                      <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#7f8db3", fontSize: 11 }} dy={8} />
-                      <YAxis tickLine={false} axisLine={false} tick={{ fill: "#7f8db3", fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
-                      <Tooltip cursor={{ fill: "rgb(74 141 248 / 0.09)" }} content={({ active, payload, label }) => active && payload?.length ? (
-                        <div className="min-w-[190px] rounded-lg bg-surface px-3 py-2.5 shadow-[var(--shadow-ring),var(--shadow-lg)]">
-                          <p className="mb-1.5 text-xs font-medium text-muted">{label}</p>
-                          {payload.map((x) => <div key={String(x.dataKey)} className="flex justify-between gap-4 py-0.5 text-[13px]"><span className="flex items-center gap-2 text-ink-soft"><span className="h-2 w-2 rounded-full" style={{ background: x.color }} />{x.dataKey === "sales" ? "Ventes" : "Achats"}</span><span className="font-semibold tabular">{formatMAD(Number(x.value))}</span></div>)}
-                        </div>) : null} />
-                      <Bar dataKey="sales" fill="#4a8df8" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={900} />
-                      <Bar dataKey="purchases" fill="#e86533" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={900} animationBegin={120} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <SalesChart data={data.months} />
                 </div>
               </div>
             </Card>
             <Card className="xl:col-span-2">
               <CardHeader title="Meilleurs clients" description="Chiffre d'affaires HT" />
-              <Table head={[{ label: "Client" }, { label: "Factures", right: true }, { label: "CA HT", right: true }]} empty="Aucune vente sur la période." rows={data.topCustomers.map((c) => [<Link key="n" href={`/clients/${c.id}`} className="font-medium text-ink hover:text-brand-700">{c.name}</Link>, c.count, formatMAD(c.ht)])} />
+              <Table head={[{ label: "Client" }, { label: "Factures", right: true }, { label: "CA HT", right: true }]} empty="Aucune vente sur la période." rows={data.topCustomers.map((c) => [<Link prefetch={false} key="n" href={`/clients/${c.id}`} className="font-medium text-ink hover:text-brand-700">{c.name}</Link>, c.count, formatMAD(c.ht)])} />
             </Card>
             <Card>
               <CardHeader title="Produits & services" description="Meilleures ventes HT" />
@@ -188,7 +176,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
             </Card>
             <Card>
               <CardHeader title="Plus gros retards" />
-              <Table head={[{ label: "Facture" }, { label: "Retard", right: true }, { label: "Reste", right: true }]} empty="Aucun retard de paiement 🎉" rows={data.lateInvoices.map((i) => [<Link key="n" href={`/factures/${i.id}`} className="block font-medium text-ink hover:text-brand-700"><span className="font-mono text-xs">{i.number}</span><span className="block text-xs font-normal text-muted">{i.customer}</span></Link>, <span key="d" className="text-rose-600">{i.days} j</span>, formatMAD(i.balance)])} />
+              <Table head={[{ label: "Facture" }, { label: "Retard", right: true }, { label: "Reste", right: true }]} empty="Aucun retard de paiement 🎉" rows={data.lateInvoices.map((i) => [<Link prefetch={false} key="n" href={`/factures/${i.id}`} className="block font-medium text-ink hover:text-brand-700"><span className="font-mono text-xs">{i.number}</span><span className="block text-xs font-normal text-muted">{i.customer}</span></Link>, <span key="d" className="text-rose-600">{i.days} j</span>, formatMAD(i.balance)])} />
             </Card>
           </div>
         )}

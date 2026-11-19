@@ -64,6 +64,15 @@ export function ButtonLink({
   children,
   ...props
 }: { href: string; variant?: Variant; size?: Size } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">) {
+  // Les routes /api/* (PDF, exports) sont des téléchargements : lien HTML simple, jamais de préchargement Next.js
+  // (sinon le serveur génère le PDF en arrière-plan à chaque ouverture d'une facture ou d'un devis).
+  if (href.startsWith("/api/")) {
+    return (
+      <a href={href} className={cn(base, variants[variant], sizes[size], className)} {...props}>
+        {children}
+      </a>
+    );
+  }
   return (
     <Link href={href} className={cn(base, variants[variant], sizes[size], className)} {...props}>
       {children}

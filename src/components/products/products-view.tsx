@@ -71,7 +71,7 @@ export function ProductsView({
 
   const toggleActive = async (p: ProductRow) => {
     const res = await setProductActive(p.id, !p.active);
-    if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message); } else toast.error(res.error);
   };
   const remove = async (p: ProductRow) => {
     const ok = await confirm({
@@ -82,7 +82,7 @@ export function ProductsView({
     });
     if (!ok) return;
     const res = await deleteProduct(p.id);
-    if (res.ok) { toast.success(res.message); router.refresh(); } else toast.error(res.error);
+    if (res.ok) { toast.success(res.message); } else toast.error(res.error);
   };
 
   return (
@@ -202,7 +202,7 @@ export function ProductsView({
         categories={categories}
         taxRates={taxRates}
         defaultTaxRate={defaultTaxRate}
-        onSaved={() => { closeDrawer(false); router.refresh(); }}
+        onSaved={() => { closeDrawer(false); }}
       />
       <CategoriesDialog open={catOpen} onOpenChange={setCatOpen} categories={categories} canDelete={canDelete} />
     </>

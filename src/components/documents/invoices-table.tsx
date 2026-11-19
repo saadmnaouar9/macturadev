@@ -147,7 +147,7 @@ export function InvoicesTable({
                         <span className={cn("font-mono text-[13px] font-medium group-hover:text-brand-700", inv.number ? "text-ink" : "italic text-muted")}>{inv.number ?? "Brouillon"}</span>
                         {(inv.reference || inv.quoteNumber) && <span className="block max-w-[170px] truncate text-xs text-muted">{inv.quoteNumber ? `Devis ${inv.quoteNumber}` : inv.reference}</span>}
                       </Td>
-                      <Td><Link href={`/clients/${inv.customer.id}`} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{inv.customer.name}</Link></Td>
+                      <Td><Link prefetch={false} href={`/clients/${inv.customer.id}`} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{inv.customer.name}</Link></Td>
                       <Td className="hidden text-[13px] text-ink-soft md:table-cell">{formatDate(inv.issueDate)}</Td>
                       <Td className={cn("hidden text-[13px] lg:table-cell", inv.status === "OVERDUE" ? "font-medium text-rose-600" : "text-ink-soft")}>{formatDate(inv.dueDate)}</Td>
                       <Td align="right" className="text-[13px] font-semibold tabular text-ink">{formatMAD(inv.total)}</Td>
