@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import {
   AlertTriangle,
   ArrowDownRight,
-  ArrowRight,
   ArrowUpRight,
   CheckCircle2,
   CircleDollarSign,
@@ -63,7 +62,56 @@ function Change({ value, invert }: { value: number | null; invert?: boolean }) {
   );
 }
 
-function Kpi({
+/** Grande carte d'indicateur (chiffres principaux) */
+function KpiFeatured({
+  label,
+  value,
+  kind = "mad",
+  icon: Icon,
+  accent,
+  tone,
+  footer,
+  href,
+}: {
+  label: string;
+  value: number;
+  kind?: "mad" | "int";
+  icon: LucideIcon;
+  accent: string;
+  tone: string;
+  footer: React.ReactNode;
+  href?: string;
+}) {
+  const inner = (
+    <motion.div variants={item} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 400, damping: 30 }} className="h-full">
+      <div className="group relative h-full overflow-hidden rounded-3xl border border-line-soft bg-surface p-5 shadow-[var(--shadow-sm)] transition-shadow duration-300 hover:shadow-[var(--shadow-lg)]">
+        <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1 bg-gradient-to-r", accent)} />
+        <span aria-hidden className={cn("pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-gradient-to-br opacity-[0.12] blur-2xl transition-opacity duration-300 group-hover:opacity-25", accent)} />
+        <div className="relative flex items-start justify-between gap-2">
+          <p className="text-[13px] font-medium text-muted">{label}</p>
+          <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110", tone)}>
+            <Icon className="h-5 w-5" />
+          </span>
+        </div>
+        <p className="relative mt-4 text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink sm:text-[30px]">
+          <AnimatedNumber value={value} kind={kind} />
+        </p>
+        <div className="relative mt-3 flex min-h-5 items-center gap-2 text-xs text-muted">{footer}</div>
+        {href && <ArrowUpRight className="absolute bottom-4 right-4 h-4 w-4 text-faint opacity-0 transition-all duration-200 group-hover:opacity-100" />}
+      </div>
+    </motion.div>
+  );
+  return href ? (
+    <Link prefetch={false} href={href} className="block rounded-3xl focus-visible:outline-offset-4">
+      {inner}
+    </Link>
+  ) : (
+    inner
+  );
+}
+
+/** Tuile compacte (indicateurs secondaires) */
+function KpiTile({
   label,
   value,
   kind = "mad",
@@ -81,24 +129,21 @@ function Kpi({
   href?: string;
 }) {
   const inner = (
-    <motion.div variants={item} whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400, damping: 30 }} className="h-full">
-      <Card className="group relative h-full overflow-hidden p-5 transition-shadow duration-300 hover:shadow-[var(--shadow-ring),var(--shadow-md)]">
-        <div className="flex items-start justify-between">
-          <p className="text-[13px] font-medium text-muted">{label}</p>
-          <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg ring-1 ring-inset", tone)}>
-            <Icon className="h-4 w-4" />
-          </span>
+    <motion.div variants={item} whileHover={{ y: -3 }} transition={{ type: "spring", stiffness: 400, damping: 30 }} className="h-full">
+      <div className="group flex h-full items-start gap-3 rounded-2xl border border-line-soft bg-surface p-4 shadow-[var(--shadow-xs)] transition-all duration-200 hover:border-line hover:shadow-[var(--shadow-md)]">
+        <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110", tone)}>
+          <Icon className="h-[18px] w-[18px]" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-medium text-muted">{label}</p>
+          <p className="mt-1 whitespace-nowrap text-lg font-semibold leading-tight tracking-[-0.02em] text-ink"><AnimatedNumber value={value} kind={kind} /></p>
+          <div className="mt-1.5 flex min-h-4 items-center gap-1.5 text-[11.5px] leading-snug text-muted">{footer}</div>
         </div>
-        <p className="mt-3 text-[26px] font-semibold leading-none tracking-[-0.025em] text-ink">
-          <AnimatedNumber value={value} kind={kind} />
-        </p>
-        <div className="mt-3 flex min-h-5 items-center gap-2 text-xs text-muted">{footer}</div>
-        {href && <ArrowUpRight className="absolute bottom-5 right-5 h-4 w-4 text-faint opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />}
-      </Card>
+      </div>
     </motion.div>
   );
   return href ? (
-    <Link prefetch={false} href={href} className="block rounded-xl focus-visible:outline-offset-4">
+    <Link prefetch={false} href={href} className="block rounded-2xl focus-visible:outline-offset-4">
       {inner}
     </Link>
   ) : (
@@ -135,27 +180,49 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
   return (
     <div>
-      <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-          <h1 className="text-2xl font-semibold tracking-[-0.025em] text-ink">
-            {greeting}, {firstName}
-          </h1>
-          <p className="mt-1 text-sm text-muted">Voici la situation de votre activité sur les {PERIOD_LABEL[data.period].replace("depuis", "mois écoulés depuis")}.</p>
-        </motion.div>
-        <div className="flex items-center gap-3">
-          {pending && <Loader2 className="h-4 w-4 animate-spin text-faint" />}
-          <SegmentedControl<Period>
-            layoutId="period"
-            value={data.period}
-            onChange={(p) => start(() => router.replace(`${pathname}?period=${p}`, { scroll: false }))}
-            options={[
-              { value: "30d", label: "30 jours" },
-              { value: "ytd", label: "Cette année" },
-              { value: "12m", label: "12 mois" },
-            ]}
-          />
+      <motion.section initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="relative mb-6 overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+        <div aria-hidden className="pointer-events-none absolute -left-24 -top-28 h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-32 right-10 h-64 w-64 rounded-full bg-violet-500/12 blur-3xl" />
+        <div className="relative flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-600">Tableau de bord</p>
+            <h1 className="mt-1.5 text-3xl font-semibold tracking-[-0.03em] text-ink">
+              {greeting}, {firstName}
+            </h1>
+            <p className="mt-1.5 text-sm text-muted">Voici la situation de votre activité sur les {PERIOD_LABEL[data.period].replace("depuis", "mois écoulés depuis")}.</p>
+          </div>
+          <div className="flex flex-col gap-3 lg:items-end">
+            <div className="flex items-center gap-3">
+              {pending && <Loader2 className="h-4 w-4 animate-spin text-faint" />}
+              <SegmentedControl<Period>
+                layoutId="period"
+                value={data.period}
+                onChange={(p) => start(() => router.replace(`${pathname}?period=${p}`, { scroll: false }))}
+                options={[
+                  { value: "30d", label: "30 jours" },
+                  { value: "ytd", label: "Cette année" },
+                  { value: "12m", label: "12 mois" },
+                ]}
+              />
+            </div>
+            {canWrite && (
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { href: "/factures/new", label: "Nouvelle facture", icon: Receipt },
+                  { href: "/devis/new", label: "Nouveau devis", icon: FileText },
+                  { href: "/clients/new", label: "Nouveau client", icon: UserPlus },
+                  { href: "/produits?new=1", label: "Nouveau produit", icon: PackagePlus },
+                ].map((a) => (
+                  <Link prefetch={false} key={a.href} href={a.href} aria-label={a.label} className="group inline-flex items-center gap-1.5 rounded-xl border border-line-soft bg-canvas/60 px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-all hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-brand-500/10 hover:text-brand-700">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-brand-500/12 text-brand-600 transition-colors group-hover:bg-brand-500 group-hover:text-white"><a.icon className="h-3 w-3" /></span>
+                    <span>{a.label}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </motion.section>
 
       {isEmpty && canWrite && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-6">
@@ -181,91 +248,99 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
         </motion.div>
       )}
 
-      <motion.div key={data.period} variants={container} initial="hidden" animate="show" className={cn("grid gap-4 transition-opacity sm:grid-cols-2 xl:grid-cols-3", pending && "opacity-60")}>
-        <Kpi
-          label="Chiffre d'affaires encaissé"
-          value={kpis.collected.value}
-          icon={Wallet}
-          tone="bg-brand-50 text-brand-700 ring-brand-100"
-          footer={<><Change value={kpis.collected.change} /> {kpis.collected.change !== null && <span>vs période précédente</span>}</>}
-        />
-        <Kpi
-          label="Total facturé (TTC)"
-          value={kpis.invoiced.value}
-          icon={Receipt}
-          tone="bg-sky-50 text-sky-700 ring-sky-100"
-          href="/factures"
-          footer={<><Change value={kpis.invoiced.change} /> <span>{kpis.invoiced.count} factures émises</span></>}
-        />
-        <Kpi
-          label="Factures payées"
-          value={kpis.paid.value}
-          icon={CheckCircle2}
-          tone="bg-emerald-50 text-emerald-700 ring-emerald-100"
-          href="/factures?status=PAID"
-          footer={<span><span className="font-medium text-ink-soft">{kpis.paid.count}</span> factures soldées sur la période</span>}
-        />
-        <Kpi
-          label="Factures impayées"
-          value={kpis.unpaid.value}
-          icon={Hourglass}
-          tone="bg-amber-50 text-amber-700 ring-amber-100"
-          href="/factures?status=OUTSTANDING"
-          footer={<span><span className="font-medium text-ink-soft">{kpis.unpaid.count}</span> factures en attente de règlement</span>}
-        />
-        <Kpi
-          label="Paiements en retard"
-          value={kpis.overdue.value}
-          icon={AlertTriangle}
-          tone="bg-rose-50 text-rose-700 ring-rose-100"
-          href="/factures?status=OVERDUE"
-          footer={
-            kpis.overdue.count > 0 ? (
-              <span className="text-rose-700"><span className="font-semibold">{kpis.overdue.count}</span> factures échues à relancer</span>
-            ) : (
-              <span className="text-emerald-700">Aucun retard de paiement</span>
-            )
-          }
-        />
-        <Kpi
-          label="Clients"
-          value={kpis.customers.value}
-          kind="int"
-          icon={Users}
-          tone="bg-accent-50 text-accent-600 ring-accent-100"
-          href="/clients"
-          footer={<span><span className="font-medium text-ink-soft">+{kpis.customers.newCount}</span> nouveaux sur la période</span>}
-        />
-        <Kpi
-          label="Trésorerie"
-          value={data.extra.treasury}
-          icon={Landmark}
-          tone="bg-brand-50 text-brand-700 ring-brand-100"
-          href="/tresorerie"
-          footer={<span>Banque <span className="font-medium text-ink-soft">{formatMAD(data.extra.bank)}</span> · Caisse <span className="font-medium text-ink-soft">{formatMAD(data.extra.cash)}</span></span>}
-        />
-        <Kpi
-          label="Dettes fournisseurs"
-          value={data.extra.payable}
-          icon={ShoppingCart}
-          tone="bg-accent-50 text-accent-600 ring-accent-100"
-          href="/achats"
-          footer={data.extra.payableOverdue > 0 ? <span className="text-rose-700"><span className="font-semibold">{data.extra.payableOverdue}</span> factures échues à régler</span> : <span>{data.extra.payableCount} factures en attente</span>}
-        />
-        <Kpi
-          label="Tâches en cours"
-          value={data.extra.openTasks}
-          kind="int"
-          icon={ListChecks}
-          tone="bg-violet-50 text-violet-700 ring-violet-100"
-          href="/taches"
-          footer={data.extra.lateTasks > 0 ? <span className="text-rose-700"><span className="font-semibold">{data.extra.lateTasks}</span> en retard</span> : <span className="text-emerald-700">Aucun retard</span>}
-        />
+      <motion.div key={data.period} variants={container} initial="hidden" animate="show" className={cn("space-y-3 transition-opacity", pending && "opacity-60")}>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <KpiFeatured
+            label="Chiffre d'affaires encaissé"
+            value={kpis.collected.value}
+            icon={Wallet}
+            accent="from-brand-500 to-violet-500"
+            tone="bg-brand-500/12 text-brand-600"
+            footer={<><Change value={kpis.collected.change} /> {kpis.collected.change !== null && <span>vs période précédente</span>}</>}
+          />
+          <KpiFeatured
+            label="Total facturé (TTC)"
+            value={kpis.invoiced.value}
+            icon={Receipt}
+            accent="from-sky-500 to-cyan-400"
+            tone="bg-sky-500/12 text-sky-600"
+            href="/factures"
+            footer={<><Change value={kpis.invoiced.change} /> <span>{kpis.invoiced.count} factures émises</span></>}
+          />
+          <KpiFeatured
+            label="Trésorerie"
+            value={data.extra.treasury}
+            icon={Landmark}
+            accent="from-emerald-500 to-teal-400"
+            tone="bg-emerald-500/12 text-emerald-600"
+            href="/tresorerie"
+            footer={<span>Banque <span className="font-medium text-ink-soft">{formatMAD(data.extra.bank)}</span> · Caisse <span className="font-medium text-ink-soft">{formatMAD(data.extra.cash)}</span></span>}
+          />
+          <KpiFeatured
+            label="Paiements en retard"
+            value={kpis.overdue.value}
+            icon={AlertTriangle}
+            accent="from-rose-500 to-orange-400"
+            tone="bg-rose-500/12 text-rose-600"
+            href="/factures?status=OVERDUE"
+            footer={
+              kpis.overdue.count > 0 ? (
+                <span className="text-rose-700"><span className="font-semibold">{kpis.overdue.count}</span> factures échues à relancer</span>
+              ) : (
+                <span className="text-emerald-700">Aucun retard de paiement</span>
+              )
+            }
+          />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <KpiTile
+            label="Factures payées"
+            value={kpis.paid.value}
+            icon={CheckCircle2}
+            tone="bg-emerald-500/12 text-emerald-600"
+            href="/factures?status=PAID"
+            footer={<span><span className="font-medium text-ink-soft">{kpis.paid.count}</span> factures soldées sur la période</span>}
+          />
+          <KpiTile
+            label="Factures impayées"
+            value={kpis.unpaid.value}
+            icon={Hourglass}
+            tone="bg-amber-500/12 text-amber-600"
+            href="/factures?status=OUTSTANDING"
+            footer={<span><span className="font-medium text-ink-soft">{kpis.unpaid.count}</span> factures en attente de règlement</span>}
+          />
+          <KpiTile
+            label="Clients"
+            value={kpis.customers.value}
+            kind="int"
+            icon={Users}
+            tone="bg-orange-500/12 text-accent-600"
+            href="/clients"
+            footer={<span><span className="font-medium text-ink-soft">+{kpis.customers.newCount}</span> nouveaux sur la période</span>}
+          />
+          <KpiTile
+            label="Dettes fournisseurs"
+            value={data.extra.payable}
+            icon={ShoppingCart}
+            tone="bg-orange-500/12 text-accent-600"
+            href="/achats"
+            footer={data.extra.payableOverdue > 0 ? <span className="text-rose-700"><span className="font-semibold">{data.extra.payableOverdue}</span> factures échues à régler</span> : <span>{data.extra.payableCount} factures en attente</span>}
+          />
+          <KpiTile
+            label="Tâches en cours"
+            value={data.extra.openTasks}
+            kind="int"
+            icon={ListChecks}
+            tone="bg-violet-500/12 text-violet-600"
+            href="/taches"
+            footer={data.extra.lateTasks > 0 ? <span className="text-rose-700"><span className="font-semibold">{data.extra.lateTasks}</span> en retard</span> : <span className="text-emerald-700">Aucun retard</span>}
+          />
+        </div>
       </motion.div>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06, ease }} className="xl:col-span-2">
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Évolution du chiffre d'affaires" description="Montants facturés et encaissés (TTC) sur les 12 derniers mois" />
             <div className="px-2 pb-4 pt-2 sm:px-4">
               <RevenueChart data={data.revenueSeries} />
@@ -273,7 +348,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.08, ease }}>
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Répartition des factures" description={`Montants TTC — ${PERIOD_LABEL[data.period]}`} />
             <StatusDonut data={data.statusBreakdown} />
           </Card>
@@ -282,7 +357,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.09, ease }} className="xl:col-span-2">
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Performance commerciale" description="Devis émis et acceptés par mois (montants TTC)" />
             <div className="px-2 pb-4 pt-2 sm:px-4">
               <QuotesChart data={data.quoteSeries} />
@@ -290,7 +365,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.11, ease }}>
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Indicateurs clés" description={PERIOD_LABEL[data.period]} />
             <div className="grid grid-cols-2 gap-3 p-5">
               {[
@@ -299,8 +374,8 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                 { label: "Délai moyen de paiement", icon: Timer, value: data.indicators.avgDelay, kind: "days" as const, hint: "émission → règlement" },
                 { label: "Facture moyenne", icon: Receipt, value: data.indicators.avgInvoice, kind: "mad" as const, hint: "montant TTC" },
               ].map((k) => (
-                <div key={k.label} className="rounded-lg bg-canvas p-3.5 ring-1 ring-inset ring-line-soft">
-                  <k.icon className="h-4 w-4 text-faint" />
+                <div key={k.label} className="rounded-2xl bg-canvas/60 p-4 ring-1 ring-inset ring-line-soft transition-all duration-200 hover:-translate-y-0.5 hover:bg-canvas hover:shadow-[var(--shadow-sm)]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><k.icon className="h-4 w-4" /></span>
                   <p className="mt-2.5 text-[17px] font-semibold tracking-tight text-ink">
                     {k.value === null ? (
                       <span className="text-faint">—</span>
@@ -321,7 +396,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.12, ease }}>
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Transactions récentes" description="Derniers paiements reçus" action={<Link prefetch={false} href="/factures?status=PAID" className="text-[13px] font-medium text-brand-700 hover:underline">Tout voir</Link>} />
             {data.recentPayments.length === 0 ? (
               <EmptyState icon={CircleDollarSign} title="Aucun paiement" description="Les règlements enregistrés sur vos factures apparaîtront ici." />
@@ -348,7 +423,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.14, ease }}>
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Meilleurs clients" description={`Chiffre facturé — ${PERIOD_LABEL[data.period]}`} />
             {data.topCustomers.length === 0 ? (
               <EmptyState icon={Users} title="Pas encore de données" description="Vos principaux clients s'afficheront dès les premières factures émises." />
@@ -360,18 +435,18 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                     <li key={c.id}>
                       <Link prefetch={false} href={`/clients/${c.id}`} className="group block">
                         <div className="flex items-baseline justify-between gap-3">
-                          <span className="truncate text-[13px] font-medium text-ink group-hover:text-brand-700">{c.name}</span>
+                          <span className="flex min-w-0 items-center gap-2.5"><span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold", i === 0 ? "bg-amber-500/15 text-amber-700" : "bg-subtle text-muted")}>{i + 1}</span><span className="truncate text-[13px] font-medium text-ink group-hover:text-brand-700">{c.name}</span></span>
                           <span className="shrink-0 text-[13px] font-semibold tabular text-ink">{formatMAD(c.amount)}</span>
                         </div>
                         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-subtle">
                           <motion.div
-                            className="h-full rounded-full bg-brand-600"
+                            className="h-full rounded-full bg-gradient-to-r from-brand-500 to-violet-500"
                             initial={{ width: 0 }}
                             animate={{ width: `${(c.amount / max) * 100}%` }}
                             transition={{ duration: 0.9, delay: 0.5 + i * 0.08, ease }}
                           />
                         </div>
-                        {c.city && <span className="mt-1 block text-[11px] text-faint">{c.city}</span>}
+                        {c.city && <span className="mt-1 block pl-[34px] text-[11px] text-faint">{c.city}</span>}
                       </Link>
                     </li>
                   );
@@ -382,7 +457,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.16, ease }} className="lg:col-span-2 xl:col-span-1">
-          <Card className="h-full">
+          <Card className="h-full rounded-3xl">
             <CardHeader title="Activité récente" description="Les derniers événements de votre espace" />
             {data.activities.length === 0 ? (
               <EmptyState icon={Clock} title="Aucune activité" description="Vos actions apparaîtront ici." />
@@ -413,28 +488,6 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
       </div>
-
-      {canWrite && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.17, ease }} className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            { href: "/factures/new", label: "Nouvelle facture", desc: "Facturer un client", icon: Receipt },
-            { href: "/devis/new", label: "Nouveau devis", desc: "Proposer une offre", icon: FileText },
-            { href: "/clients/new", label: "Nouveau client", desc: "Particulier ou entreprise", icon: UserPlus },
-            { href: "/produits?new=1", label: "Nouveau produit", desc: "Enrichir le catalogue", icon: PackagePlus },
-          ].map((a) => (
-            <Link prefetch={false} key={a.href} href={a.href} className="group flex items-center gap-3 rounded-xl bg-surface p-4 shadow-[var(--shadow-ring)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-ring),var(--shadow-md)]">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700 transition-colors group-hover:bg-brand-500 group-hover:text-white">
-                <a.icon className="h-[18px] w-[18px]" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold text-ink">{a.label}</span>
-                <span className="block text-xs text-muted">{a.desc}</span>
-              </span>
-              <ArrowRight className="h-4 w-4 text-faint transition-transform group-hover:translate-x-0.5 group-hover:text-ink" />
-            </Link>
-          ))}
-        </motion.div>
-      )}
     </div>
   );
 }
