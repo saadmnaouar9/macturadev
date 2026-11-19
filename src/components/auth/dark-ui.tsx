@@ -53,12 +53,11 @@ export function DarkButton({ loading, children, className, ...props }: React.But
       disabled={props.disabled || loading}
       className={cn(
         "space-btn group relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500 text-sm font-semibold text-white",
-        "shadow-[0_10px_34px_-8px_rgba(124,92,255,0.8),inset_0_1px_0_rgba(255,255,255,0.25)] transition-all duration-200 hover:-translate-y-px hover:shadow-[0_14px_42px_-8px_rgba(124,92,255,0.95),inset_0_1px_0_rgba(255,255,255,0.3)] hover:brightness-110",
+        "shadow-[0_10px_34px_-8px_rgba(124,92,255,0.8),inset_0_1px_0_rgba(255,255,255,0.25)] transition-transform duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0520] active:translate-y-0 active:scale-[0.985] disabled:pointer-events-none disabled:opacity-60",
         className,
       )}
     >
-      <span className="space-btn-shine" aria-hidden />
       {loading && <Loader2 className="relative h-4 w-4 animate-spin" aria-hidden />}
       <span className="relative flex items-center gap-2">{children}</span>
     </button>
