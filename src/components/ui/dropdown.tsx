@@ -15,7 +15,7 @@ export function DropdownContent({ children, align = "end", className, sideOffset
         sideOffset={sideOffset}
         collisionPadding={12}
         className={cn(
-          "pop z-50 min-w-[200px] overflow-hidden rounded-xl bg-surface p-1 shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none",
+          "pop z-50 min-w-[200px] overflow-hidden rounded-xl bg-popover p-1 shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none",
           className,
         )}
       >

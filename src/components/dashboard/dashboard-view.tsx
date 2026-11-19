@@ -417,7 +417,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             { href: "/produits?new=1", label: "Nouveau produit", desc: "Enrichir le catalogue", icon: PackagePlus },
           ].map((a) => (
             <Link key={a.href} href={a.href} className="group flex items-center gap-3 rounded-xl bg-surface p-4 shadow-[var(--shadow-ring)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-ring),var(--shadow-md)]">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700 transition-colors group-hover:bg-brand-700 group-hover:text-white">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-700 transition-colors group-hover:bg-brand-500 group-hover:text-white">
                 <a.icon className="h-[18px] w-[18px]" />
               </span>
               <span className="min-w-0 flex-1">

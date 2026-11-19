@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /** Logo officiel (PNG fourni) */
 export function Logo({ className, priority }: { className?: string; priority?: boolean }) {
-  return <Image src="/brand/mactura-logo.png" alt="Mactura" width={2138} height={282} priority={priority} className={cn("h-6 w-auto", className)} />;
+  return <Image src="/brand/mactura-logo-light.png" alt="Mactura" width={2138} height={282} priority={priority} className={cn("h-6 w-auto", className)} />;
 }
 
 /** Icône officielle « a. » — barre latérale repliée, favicon, écrans d'authentification */

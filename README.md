@@ -20,6 +20,14 @@ Tableau de bord · Prospects · Clients · Devis · Factures · Paiements · Con
 Trésorerie · Caisse · Rapports (ventes, TVA, créances, achats, export CSV) · Projets · Tâches · Calendrier ·
 Employés · Journal d'activité · Paramètres (entreprise, documents, TVA, équipe, profil).
 
+## Design system « Midnight »
+
+Thème sombre unique (bleu nuit, fibres/particules bleues, verre dépoli, accents bleu · cyan · violet).
+Tout est piloté par les jetons de `src/app/globals.css` (`@theme`) : couleurs, ombres, rayons, palette d'états.
+Surfaces en verre : classe `.glass` (cartes) ; menus, dialogues et tiroirs utilisent `bg-popover` (opaque, lisible).
+Le contraste des textes sur fond sombre et des couleurs de graphiques a été vérifié (≥ 4,5:1 pour le texte).
+Les aperçus de documents restent des feuilles blanches, comme à l'impression ; les PDF ne sont pas affectés.
+
 ## Règles métier
 
 - Montants en centimes (BigInt), quantités en millièmes, taux en points de base : aucun calcul flottant.

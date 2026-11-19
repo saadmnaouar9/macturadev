@@ -140,7 +140,7 @@ export function CustomerDetail({ customer: c, stats, invoices, quotes, payments,
           <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)} className={cn("relative flex shrink-0 items-center gap-1.5 px-3 pb-2.5 pt-1 text-sm font-medium transition-colors", tab === t.id ? "text-ink" : "text-muted hover:text-ink")}>
             {t.label}
             {t.count !== undefined && <span className="rounded bg-subtle px-1.5 text-[11px] tabular text-muted">{t.count}</span>}
-            {tab === t.id && <motion.span layoutId="customer-tab" className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-brand-700" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
+            {tab === t.id && <motion.span layoutId="customer-tab" className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-brand-500" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
           </button>
         ))}
       </div>
@@ -275,7 +275,7 @@ function DocTable({ rows, secondLabel, extraLabel }: { rows: { id: string; href:
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} onClick={() => router.push(r.href)} className="cursor-pointer border-b border-line-soft last:border-0 hover:bg-[#fafafc]">
+            <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} onClick={() => router.push(r.href)} className="cursor-pointer border-b border-line-soft last:border-0 hover:bg-white/[0.04]">
               <td className="px-5 py-3 font-medium text-ink">{r.number}</td>
               <td className="px-4 py-3 text-[13px] text-ink-soft">{formatDate(r.date)}</td>
               <td className="px-4 py-3 text-[13px] text-ink-soft">{formatDate(r.second)}</td>

@@ -25,7 +25,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
           <D.Portal forceMount>
             <D.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-50 bg-[#0e1124]/30 backdrop-blur-[2px]"
+                className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[2px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -36,7 +36,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
               <D.Content asChild forceMount>
                 <motion.div
                   className={cn(
-                    "pointer-events-auto relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-surface shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none sm:max-w-lg sm:rounded-2xl",
+                    "pointer-events-auto relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-popover shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none sm:max-w-lg sm:rounded-2xl",
                     className,
                   )}
                   initial={{ opacity: 0, y: 24, scale: 0.97 }}
@@ -77,7 +77,7 @@ export function Drawer({ open, onOpenChange, title, description, children, foote
           <D.Portal forceMount>
             <D.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-50 bg-[#0e1124]/25 backdrop-blur-[1px]"
+                className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[1px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -87,7 +87,7 @@ export function Drawer({ open, onOpenChange, title, description, children, foote
             <D.Content asChild forceMount>
               <motion.div
                 className={cn(
-                  "fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-surface shadow-[var(--shadow-lg)] focus:outline-none sm:w-[480px] sm:rounded-l-2xl",
+                  "fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-popover shadow-[var(--shadow-lg)] focus:outline-none sm:w-[480px] sm:rounded-l-2xl",
                   className,
                 )}
                 initial={{ x: "100%" }}

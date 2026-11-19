@@ -8,7 +8,7 @@ export default function NotFound() {
       <p className="mt-8 font-mono text-sm font-medium text-brand-700">404</p>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Page introuvable</h1>
       <p className="mt-2 max-w-sm text-sm text-muted">Ce document n&apos;existe pas ou n&apos;appartient pas à votre espace.</p>
-      <Link href="/dashboard" className="mt-6 rounded-lg bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800">Retour au tableau de bord</Link>
+      <Link href="/dashboard" className="mt-6 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-400">Retour au tableau de bord</Link>
     </div>
   );
 }

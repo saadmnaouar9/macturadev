@@ -18,7 +18,7 @@ export function Topbar({
   canWrite: boolean;
 }) {
   return (
-    <header className="no-print sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-black/[0.05] bg-canvas/80 px-4 backdrop-blur-xl sm:px-6">
+    <header className="no-print sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.05] bg-canvas/80 px-4 backdrop-blur-xl sm:px-6">
       <button onClick={onOpenMenu} className="-ml-1.5 rounded-md p-1.5 text-muted hover:bg-subtle hover:text-ink lg:hidden" aria-label="Ouvrir le menu">
         <Menu className="h-5 w-5" />
       </button>
@@ -28,7 +28,7 @@ export function Topbar({
 
       <button
         onClick={onOpenSearch}
-        className="group hidden h-8 w-64 items-center gap-2 rounded-lg bg-surface px-2.5 text-[13px] text-faint shadow-[0_0_0_1px_var(--color-line),var(--shadow-xs)] transition-shadow hover:shadow-[0_0_0_1px_#d6d8e2,var(--shadow-sm)] md:flex"
+        className="group hidden h-8 w-64 items-center gap-2 rounded-lg bg-surface px-2.5 text-[13px] text-faint shadow-[0_0_0_1px_var(--color-line),var(--shadow-xs)] transition-shadow hover:shadow-[0_0_0_1px_rgba(148,180,255,0.3)] md:flex"
       >
         <Search className="h-4 w-4" />
         <span className="flex-1 text-left">Rechercher…</span>

@@ -33,11 +33,11 @@ function NavLink({ item, collapsed, active, count, onNavigate, layoutId }: { ite
       {active && (
         <motion.span
           layoutId={layoutId}
-          className="absolute inset-0 rounded-lg bg-surface shadow-[0_0_0_1px_var(--color-line),0_1px_2px_rgb(16_18_35/0.06)]"
+          className="absolute inset-0 rounded-lg bg-gradient-to-r from-brand-500/25 to-[#7357f5]/10 shadow-[inset_0_0_0_1px_rgb(120_170_255/0.28),0_0_26px_-8px_rgb(59_130_246/0.7)]"
           transition={{ type: "spring", stiffness: 520, damping: 40 }}
         />
       )}
-      {!active && <span className="absolute inset-0 rounded-lg bg-black/[0.035] opacity-0 transition-opacity group-hover:opacity-100" />}
+      {!active && <span className="absolute inset-0 rounded-lg bg-white/[0.035] opacity-0 transition-opacity group-hover:opacity-100" />}
       <Icon className={cn("relative h-[18px] w-[18px] shrink-0 transition-colors", active ? "text-brand-700" : "text-faint group-hover:text-ink-soft")} strokeWidth={active ? 2.2 : 1.9} />
       <AnimatePresence initial={false}>
         {!collapsed && (
@@ -123,7 +123,7 @@ export function SidebarContent({
   );
 
   const renderGroup = (g: NavGroup & { items: NavItem[] }) => {
-    if (collapsed) return <div key={g.id} className="space-y-0.5 border-t border-black/[0.05] pt-2">{g.items.map(link)}</div>;
+    if (collapsed) return <div key={g.id} className="space-y-0.5 border-t border-white/[0.05] pt-2">{g.items.map(link)}</div>;
     const isOpen = !!open[g.id];
     const hasActive = g.id === activeGroup;
     return (
@@ -131,7 +131,7 @@ export function SidebarContent({
         <button
           onClick={() => toggle(g.id)}
           aria-expanded={isOpen}
-          className={cn("group flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-[13.5px] font-medium transition-colors hover:bg-black/[0.035]", hasActive ? "text-ink" : "text-muted hover:text-ink")}
+          className={cn("group flex h-9 w-full items-center gap-3 rounded-lg px-2.5 text-[13.5px] font-medium transition-colors hover:bg-white/[0.035]", hasActive ? "text-ink" : "text-muted hover:text-ink")}
         >
           <g.icon className={cn("h-[18px] w-[18px] shrink-0", hasActive ? "text-brand-700" : "text-faint group-hover:text-ink-soft")} strokeWidth={1.9} />
           <span className="flex-1 text-left">{g.label}</span>
@@ -140,7 +140,7 @@ export function SidebarContent({
         <AnimatePresence initial={false}>
           {isOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease }} className="overflow-hidden">
-              <div className="ml-[18px] space-y-0.5 border-l border-black/[0.07] py-0.5 pl-2">{g.items.map(link)}</div>
+              <div className="ml-[18px] space-y-0.5 border-l border-white/[0.07] py-0.5 pl-2">{g.items.map(link)}</div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -165,14 +165,14 @@ export function SidebarContent({
           </AnimatePresence>
         </Link>
         {onToggle && !collapsed && (
-          <button onClick={onToggle} className="rounded-md p-1.5 text-faint transition-colors hover:bg-black/[0.04] hover:text-ink" aria-label="Replier la barre latérale">
+          <button onClick={onToggle} className="rounded-md p-1.5 text-faint transition-colors hover:bg-white/[0.04] hover:text-ink" aria-label="Replier la barre latérale">
             <PanelLeftClose className="h-4 w-4" />
           </button>
         )}
       </div>
 
       <div className={cn("px-3 pb-3 pt-1", collapsed && "px-2")}>
-        <div className={cn("flex items-center gap-2.5 rounded-lg bg-black/[0.03] px-2.5 py-2 ring-1 ring-inset ring-black/[0.04]", collapsed && "justify-center px-0")}>
+        <div className={cn("flex items-center gap-2.5 rounded-lg bg-white/[0.03] px-2.5 py-2 ring-1 ring-inset ring-white/[0.04]", collapsed && "justify-center px-0")}>
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-brand-600 to-brand-800 text-[11px] font-bold text-white shadow-sm">
             {initials(user.companyName)}
           </div>
@@ -188,23 +188,23 @@ export function SidebarContent({
       <nav className={cn("scrollbar-thin flex-1 space-y-0.5 overflow-y-auto px-3 pb-2", collapsed && "space-y-2 px-2")} aria-label="Navigation principale">
         <div className="space-y-0.5">{top.map(link)}</div>
         {groups.map(renderGroup)}
-        <div className={cn("space-y-0.5 border-t border-black/[0.05] pt-2", !collapsed && "mt-2")}>{bottom.map(link)}</div>
+        <div className={cn("space-y-0.5 border-t border-white/[0.05] pt-2", !collapsed && "mt-2")}>{bottom.map(link)}</div>
       </nav>
 
       {onToggle && collapsed && (
         <div className="flex justify-center pb-2">
           <Tooltip content="Déplier" side="right">
-            <button onClick={onToggle} className="rounded-md p-2 text-faint transition-colors hover:bg-black/[0.04] hover:text-ink" aria-label="Déplier la barre latérale">
+            <button onClick={onToggle} className="rounded-md p-2 text-faint transition-colors hover:bg-white/[0.04] hover:text-ink" aria-label="Déplier la barre latérale">
               <PanelLeftOpen className="h-4 w-4" />
             </button>
           </Tooltip>
         </div>
       )}
 
-      <div className={cn("border-t border-black/[0.05] p-3", collapsed && "p-2")}>
+      <div className={cn("border-t border-white/[0.05] p-3", collapsed && "p-2")}>
         <DropdownMenu>
           <DropdownTrigger asChild>
-            <button className={cn("flex w-full items-center gap-2.5 rounded-lg p-1.5 text-left transition-colors hover:bg-black/[0.04] data-[state=open]:bg-black/[0.04]", collapsed && "justify-center")}>
+            <button className={cn("flex w-full items-center gap-2.5 rounded-lg p-1.5 text-left transition-colors hover:bg-white/[0.04] data-[state=open]:bg-white/[0.04]", collapsed && "justify-center")}>
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-50 text-xs font-semibold text-accent-600 ring-1 ring-inset ring-accent-100">
                 {initials(user.name)}
               </span>

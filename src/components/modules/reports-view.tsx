@@ -106,7 +106,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
         {TABS.map((t) => (
           <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)} className={cn("relative shrink-0 px-3 pb-2.5 pt-1 text-sm font-medium transition-colors", tab === t.id ? "text-ink" : "text-muted hover:text-ink")}>
             {t.label}
-            {tab === t.id && <motion.span layoutId="reports-tab" className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-brand-700" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
+            {tab === t.id && <motion.span layoutId="reports-tab" className="absolute inset-x-1 -bottom-px h-0.5 rounded-full bg-brand-500" transition={{ type: "spring", stiffness: 500, damping: 40 }} />}
           </button>
         ))}
       </div>
@@ -117,20 +117,20 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
             <Card className="xl:col-span-3">
               <CardHeader title="Ventes et achats par mois" description="Montants HT" />
               <div className="px-2 pb-4 pt-3 sm:px-4">
-                <div className="mb-2 flex gap-5 px-3 text-xs text-muted"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#4f43ad]" />Ventes</span><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#ee6136]" />Achats</span></div>
+                <div className="mb-2 flex gap-5 px-3 text-xs text-muted"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#4a8df8]" />Ventes</span><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#e86533]" />Achats</span></div>
                 <div className="h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data.months} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={2} barCategoryGap="26%">
-                      <CartesianGrid vertical={false} stroke="#eceef3" />
-                      <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#9a9fb3", fontSize: 11 }} dy={8} />
-                      <YAxis tickLine={false} axisLine={false} tick={{ fill: "#9a9fb3", fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
-                      <Tooltip cursor={{ fill: "rgb(79 67 173 / 0.05)" }} content={({ active, payload, label }) => active && payload?.length ? (
+                      <CartesianGrid vertical={false} stroke="rgba(148,180,255,0.1)" />
+                      <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "#7f8db3", fontSize: 11 }} dy={8} />
+                      <YAxis tickLine={false} axisLine={false} tick={{ fill: "#7f8db3", fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
+                      <Tooltip cursor={{ fill: "rgb(74 141 248 / 0.09)" }} content={({ active, payload, label }) => active && payload?.length ? (
                         <div className="min-w-[190px] rounded-lg bg-surface px-3 py-2.5 shadow-[var(--shadow-ring),var(--shadow-lg)]">
                           <p className="mb-1.5 text-xs font-medium text-muted">{label}</p>
                           {payload.map((x) => <div key={String(x.dataKey)} className="flex justify-between gap-4 py-0.5 text-[13px]"><span className="flex items-center gap-2 text-ink-soft"><span className="h-2 w-2 rounded-full" style={{ background: x.color }} />{x.dataKey === "sales" ? "Ventes" : "Achats"}</span><span className="font-semibold tabular">{formatMAD(Number(x.value))}</span></div>)}
                         </div>) : null} />
-                      <Bar dataKey="sales" fill="#4f43ad" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={900} />
-                      <Bar dataKey="purchases" fill="#ee6136" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={900} animationBegin={120} />
+                      <Bar dataKey="sales" fill="#4a8df8" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={900} />
+                      <Bar dataKey="purchases" fill="#e86533" radius={[4, 4, 0, 0]} maxBarSize={24} animationDuration={900} animationBegin={120} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

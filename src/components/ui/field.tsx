@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const inputBase =
-  "w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-faint shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] duration-150 hover:border-[#d6d8e2] focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgb(244_63_94/0.15)]";
+  "w-full rounded-lg border border-line bg-[rgb(5_11_30/0.55)] px-3 text-sm text-ink placeholder:text-faint shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] duration-150 hover:border-white/20 focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgb(244_63_94/0.15)]";
 
 export function Label({ children, htmlFor, required, className }: { children: React.ReactNode; htmlFor?: string; required?: boolean; className?: string }) {
   return (
@@ -131,7 +131,7 @@ export function SegmentedControl<T extends string>({
             {active && (
               <motion.span
                 layoutId={layoutId}
-                className="absolute inset-0 rounded-md bg-surface shadow-[0_0_0_1px_var(--color-line),0_1px_2px_rgb(16_18_35/0.06)]"
+                className="absolute inset-0 rounded-md bg-brand-500/25 shadow-[0_0_0_1px_rgb(96_165_250/0.4),0_0_16px_-4px_rgb(59_130_246/0.6)]"
                 transition={{ type: "spring", stiffness: 500, damping: 38 }}
               />
             )}
@@ -154,7 +154,7 @@ export function Switch({ checked, onChange, label, id }: { checked: boolean; onC
       onClick={() => onChange(!checked)}
       className={cn(
         "relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200",
-        checked ? "bg-brand-600" : "bg-[#dcdee6]",
+        checked ? "bg-brand-600" : "bg-white/20",
       )}
     >
       <motion.span

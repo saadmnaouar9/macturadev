@@ -128,7 +128,7 @@ export function CommandPalette({ open, onOpenChange, canWrite }: { open: boolean
         {open && (
           <D.Portal forceMount>
             <D.Overlay asChild forceMount>
-              <motion.div className="fixed inset-0 z-50 bg-[#0e1124]/25 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} />
+              <motion.div className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} />
             </D.Overlay>
             <div className="pointer-events-none fixed inset-0 z-50 flex justify-center px-3 pt-[12vh]">
               <D.Content asChild forceMount>
@@ -137,7 +137,7 @@ export function CommandPalette({ open, onOpenChange, canWrite }: { open: boolean
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                  className="pointer-events-auto flex h-fit max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-ring),0_24px_64px_-12px_rgb(16_18_35/0.3)] focus:outline-none"
+                  className="pointer-events-auto flex h-fit max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-popover shadow-[var(--shadow-ring),0_24px_64px_-12px_rgb(16_18_35/0.3)] focus:outline-none"
                 >
                   <D.Title className="sr-only">Recherche</D.Title>
                   <D.Description className="sr-only">Rechercher des clients, factures, devis et produits</D.Description>

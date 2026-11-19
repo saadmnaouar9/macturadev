@@ -27,7 +27,7 @@ export function WorkflowStepper({ steps, current, failed }: { steps: { label: st
               transition={{ delay: 0.12 * i, type: "spring", stiffness: 400, damping: 22 }}
               className={cn(
                 "relative z-10 flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ring-4 ring-surface",
-                isFailed ? "bg-rose-500 text-white" : done || i < current ? "bg-brand-700 text-white" : active ? "bg-brand-50 text-brand-700 ring-brand-100" : "bg-subtle text-faint",
+                isFailed ? "bg-rose-500 text-white" : done || i < current ? "bg-brand-500 text-white" : active ? "bg-brand-50 text-brand-700 ring-brand-100" : "bg-subtle text-faint",
               )}
             >
               {isFailed ? <XCircle className="h-4 w-4" /> : done || i < current ? <Check className="h-3.5 w-3.5" /> : i + 1}

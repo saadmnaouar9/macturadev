@@ -1,40 +1,60 @@
 @import "tailwindcss";
 
-/* ───────────────────────── Mactura design tokens ───────────────────────── */
+/* ═════════════════ Mactura — système de design « Midnight » ═════════════════
+   Identité : bleu nuit profond, particules/fibres bleues, verre dépoli, accents bleu · cyan · violet.
+   Les composants utilisent ces jetons : changer une valeur ici redessine toute l'application. */
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans Arabic", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 
-  /* Indigo Mactura — dérivé du logo (#3A3182) */
-  --color-brand-50: #f4f3fc;
-  --color-brand-100: #e8e6f8;
-  --color-brand-200: #d2cef1;
-  --color-brand-300: #b0a9e5;
-  --color-brand-400: #877ed4;
-  --color-brand-500: #6458c2;
-  --color-brand-600: #4f43ad;
-  --color-brand-700: #3a3182;
-  --color-brand-800: #2f286a;
-  --color-brand-900: #241f50;
-  --color-brand-950: #161232;
+  /* Bleu Mactura — 50-200 : teintes translucides (fonds/anneaux) · 300-900 : textes et accents clairs · 500 : plein (boutons) */
+  --color-brand-50: rgb(59 130 246 / 0.12);
+  --color-brand-100: rgb(59 130 246 / 0.18);
+  --color-brand-200: rgb(96 165 250 / 0.30);
+  --color-brand-300: #7fb0ff;
+  --color-brand-400: #4d8dff;
+  --color-brand-500: #2b6bf3;
+  --color-brand-600: #5b9bff;
+  --color-brand-700: #8db8ff;
+  --color-brand-800: #b4d0ff;
+  --color-brand-900: #dbe8ff;
+  --color-brand-950: #0a1a4a;
 
-  /* Orange Mactura — accent (#EE6136) */
-  --color-accent-50: #fef3ee;
-  --color-accent-100: #fde3d7;
-  --color-accent-400: #f3845f;
-  --color-accent-500: #ee6136;
-  --color-accent-600: #d94b21;
+  /* Orange Mactura (logo) */
+  --color-accent-50: rgb(255 122 69 / 0.14);
+  --color-accent-100: rgb(255 122 69 / 0.22);
+  --color-accent-400: #ff9366;
+  --color-accent-500: #ff7a45;
+  --color-accent-600: #ff9a70;
 
-  /* Neutres */
-  --color-ink: #0e1124;
-  --color-ink-soft: #3b3f55;
-  --color-muted: #646a82;
-  --color-faint: #9a9fb3;
-  --color-line: #e7e8ef;
-  --color-line-soft: #f0f1f5;
-  --color-canvas: #f8f8fb;
-  --color-surface: #ffffff;
-  --color-subtle: #f4f5f8;
+  /* Palette d'états — mêmes noms que Tailwind, recalibrée pour le fond sombre */
+  --color-emerald-50: rgb(16 185 129 / 0.13); --color-emerald-100: rgb(16 185 129 / 0.2); --color-emerald-200: rgb(52 211 153 / 0.32);
+  --color-emerald-300: #6ee7b7; --color-emerald-400: #34d399; --color-emerald-500: #10b981; --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7; --color-emerald-800: #a7f3d0; --color-emerald-900: #d1fae5; --color-emerald-950: #032b1e;
+  --color-rose-50: rgb(244 63 94 / 0.14); --color-rose-100: rgb(244 63 94 / 0.2); --color-rose-200: rgb(251 113 133 / 0.34);
+  --color-rose-300: #fda4af; --color-rose-400: #fb7185; --color-rose-500: #f43f5e; --color-rose-600: #fb7185;
+  --color-rose-700: #fda4af; --color-rose-800: #fecdd3; --color-rose-900: #ffe4e6;
+  --color-amber-50: rgb(245 158 11 / 0.14); --color-amber-100: rgb(245 158 11 / 0.2); --color-amber-200: rgb(251 191 36 / 0.34);
+  --color-amber-300: #fcd34d; --color-amber-400: #fbbf24; --color-amber-500: #f59e0b; --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d; --color-amber-800: #fde68a; --color-amber-900: #fef3c7;
+  --color-sky-50: rgb(14 165 233 / 0.14); --color-sky-100: rgb(14 165 233 / 0.2); --color-sky-200: rgb(56 189 248 / 0.34);
+  --color-sky-300: #7dd3fc; --color-sky-400: #38bdf8; --color-sky-500: #0ea5e9; --color-sky-600: #38bdf8;
+  --color-sky-700: #7dd3fc; --color-sky-800: #bae6fd; --color-sky-900: #e0f2fe;
+  --color-violet-50: rgb(139 92 246 / 0.16); --color-violet-100: rgb(139 92 246 / 0.22); --color-violet-200: rgb(167 139 250 / 0.36);
+  --color-violet-300: #c4b5fd; --color-violet-400: #a78bfa; --color-violet-500: #8b5cf6; --color-violet-600: #a78bfa;
+  --color-violet-700: #c4b5fd; --color-violet-800: #ddd6fe; --color-violet-900: #ede9fe;
+
+  /* Encres et surfaces */
+  --color-ink: #e9eefc;
+  --color-ink-soft: #b9c5e4;
+  --color-muted: #8d9bc0;
+  --color-faint: #7d8ab2;
+  --color-line: rgb(148 180 255 / 0.13);
+  --color-line-soft: rgb(148 180 255 / 0.08);
+  --color-canvas: #050b1f;
+  --color-surface: rgb(11 22 50 / 0.72);
+  --color-popover: #0d1838;
+  --color-subtle: rgb(148 180 255 / 0.07);
 
   --radius-xs: 4px;
   --radius-sm: 6px;
@@ -43,12 +63,12 @@
   --radius-xl: 14px;
   --radius-2xl: 18px;
 
-  --shadow-xs: 0 1px 2px rgb(16 18 35 / 0.04);
-  --shadow-sm: 0 1px 2px rgb(16 18 35 / 0.04), 0 1px 3px rgb(16 18 35 / 0.04);
-  --shadow-md: 0 2px 4px -1px rgb(16 18 35 / 0.04), 0 4px 12px -2px rgb(16 18 35 / 0.06);
-  --shadow-lg: 0 8px 16px -4px rgb(16 18 35 / 0.08), 0 16px 40px -8px rgb(16 18 35 / 0.12);
-  --shadow-ring: 0 0 0 1px rgb(16 18 35 / 0.06);
-  --shadow-focus: 0 0 0 3px rgb(79 67 173 / 0.18);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.25);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 14px -2px rgb(0 0 0 / 0.4), 0 0 24px -8px rgb(59 130 246 / 0.25);
+  --shadow-lg: 0 18px 50px -10px rgb(0 0 0 / 0.65), 0 0 60px -20px rgb(59 130 246 / 0.4);
+  --shadow-ring: 0 0 0 1px rgb(148 180 255 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.04);
+  --shadow-focus: 0 0 0 3px rgb(59 130 246 / 0.28), 0 0 22px rgb(59 130 246 / 0.25);
 
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -58,28 +78,47 @@
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
 }
+@keyframes ambient-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; }
+  50% { transform: translate3d(30px, -20px, 0) scale(1.08); opacity: 0.85; }
+}
 
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    color-scheme: dark;
+    background: #040a1c;
   }
   body {
-    background: var(--color-canvas);
+    background: transparent;
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-feature-settings: "cv11", "ss01";
   }
+  /* Toile de fond : fibres bleues de l'écran de connexion, très assombries, + halos d'ambiance */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 55% 40% at 88% -8%, rgb(59 130 246 / 0.2), transparent 62%),
+      radial-gradient(ellipse 45% 38% at 0% 105%, rgb(124 92 255 / 0.16), transparent 62%),
+      linear-gradient(rgb(4 9 26 / 0.74), rgb(4 9 26 / 0.88)),
+      url("/brand/auth-bg-3.jpg") center / cover no-repeat;
+  }
   ::selection {
-    background: var(--color-brand-100);
-    color: var(--color-brand-900);
+    background: rgb(59 130 246 / 0.35);
+    color: #fff;
   }
   * {
     border-color: var(--color-line);
   }
   :focus-visible {
-    outline: 2px solid var(--color-brand-500);
+    outline: 2px solid var(--color-brand-400);
     outline-offset: 2px;
   }
   input:focus-visible, textarea:focus-visible, select:focus-visible {
@@ -87,24 +126,34 @@
   }
   button { cursor: pointer; }
   button:disabled { cursor: not-allowed; }
+  option { background: #0d1838; color: #e9eefc; }
 }
 
 @layer components {
   .tabular { font-variant-numeric: tabular-nums; }
 
   .skeleton {
-    background: linear-gradient(90deg, #eef0f4 0px, #f6f7fa 120px, #eef0f4 240px);
+    background: linear-gradient(90deg, rgb(148 180 255 / 0.06) 0px, rgb(148 180 255 / 0.14) 120px, rgb(148 180 255 / 0.06) 240px);
     background-size: 800px 100%;
     animation: var(--animate-shimmer);
     border-radius: var(--radius-sm);
   }
 
-  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #d7d9e2 transparent; }
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: rgb(148 180 255 / 0.28) transparent; }
 
-  /* Document (aperçu facture / devis) */
+  /* Verre dépoli : surfaces principales (cartes, tableaux) */
+  .glass {
+    background: linear-gradient(180deg, rgb(16 30 66 / 0.62) 0%, rgb(9 18 42 / 0.7) 100%);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  }
+  /* Halo animé discret derrière l'en-tête des pages */
+  .ambient-orb { position: absolute; border-radius: 9999px; filter: blur(80px); pointer-events: none; animation: ambient-drift 16s ease-in-out infinite; }
+
+  /* Document (aperçu facture / devis) : reste une feuille blanche, comme à l'impression */
   .paper {
     background: #fff;
-    box-shadow: 0 0 0 1px rgb(16 18 35 / 0.06), 0 12px 32px -12px rgb(16 18 35 / 0.16);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 24px 60px -16px rgb(0 0 0 / 0.7), 0 0 80px -20px rgb(59 130 246 / 0.35);
   }
 }
 

@@ -114,7 +114,7 @@ export function DatePicker({
                     className={cn(
                       "relative flex h-9 items-center justify-center rounded-md text-[13px] tabular transition-colors",
                       inMonth ? "text-ink" : "text-faint/70",
-                      isSel ? "bg-brand-700 font-semibold text-white shadow-sm" : "hover:bg-subtle",
+                      isSel ? "bg-brand-500 font-semibold text-white shadow-sm" : "hover:bg-subtle",
                       isToday && !isSel && "font-semibold text-brand-700",
                     )}
                   >

@@ -4,7 +4,8 @@ import { can } from "@/lib/permissions";
 import { getEditorData } from "@/lib/editor-data";
 import { addDays, toDateInput, todayUTC } from "@/lib/utils";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
-import { DocumentEditor, blankItem } from "@/components/documents/document-editor";
+import { DocumentEditor } from "@/components/documents/document-editor";
+import { blankItem } from "@/components/documents/editor-model";
 
 export const metadata: Metadata = { title: "Nouvelle facture" };
 

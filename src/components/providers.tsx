@@ -12,6 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ConfirmProvider>
           {children}
           <Toaster
+            theme="dark"
             position="bottom-right"
             gap={10}
             toastOptions={{

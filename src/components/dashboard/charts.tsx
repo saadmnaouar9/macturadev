@@ -8,10 +8,10 @@ import { formatCompactMAD, formatMAD } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 // Palette validée (CVD, contraste) : indigo Mactura + orange Mactura
-const C_PRIMARY = "#4f43ad";
-const C_SECONDARY = "#ee6136";
-const GRID = "#eceef3";
-const AXIS = "#9a9fb3";
+const C_PRIMARY = "#4a8df8";
+const C_SECONDARY = "#e86533";
+const GRID = "rgba(148,180,255,0.1)";
+const AXIS = "#7f8db3";
 
 function ChartTooltip({ active, payload, label, names }: { active?: boolean; payload?: { dataKey: string; value: number; color: string }[]; label?: string; names: Record<string, string> }) {
   if (!active || !payload?.length) return null;
@@ -73,14 +73,14 @@ export function RevenueChart({ data }: { data: { month: string; invoiced: number
             <CartesianGrid vertical={false} stroke={GRID} strokeDasharray="0" />
             <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: AXIS, fontSize: 11 }} dy={8} interval="preserveStartEnd" />
             <YAxis tickLine={false} axisLine={false} tick={{ fill: AXIS, fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
-            <Tooltip content={<ChartTooltip names={{ invoiced: "Facturé", collected: "Encaissé" }} />} cursor={{ stroke: "#c9ccd8", strokeWidth: 1 }} />
+            <Tooltip content={<ChartTooltip names={{ invoiced: "Facturé", collected: "Encaissé" }} />} cursor={{ stroke: "rgba(148,180,255,0.35)", strokeWidth: 1 }} />
             <Area
               type="monotone"
               dataKey="invoiced"
               stroke={C_PRIMARY}
               strokeWidth={2}
               fill="url(#g-inv)"
-              activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: "#0a1430" }}
               isAnimationActive={!reduce}
               animationDuration={1100}
               animationEasing="ease-out"
@@ -91,7 +91,7 @@ export function RevenueChart({ data }: { data: { month: string; invoiced: number
               stroke={C_SECONDARY}
               strokeWidth={2}
               fill="url(#g-col)"
-              activeDot={{ r: 5, strokeWidth: 2, stroke: "#fff" }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: "#0a1430" }}
               isAnimationActive={!reduce}
               animationDuration={1100}
               animationBegin={150}
@@ -122,7 +122,7 @@ export function QuotesChart({ data }: { data: { month: string; sent: number; acc
             <CartesianGrid vertical={false} stroke={GRID} />
             <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: AXIS, fontSize: 11 }} dy={8} />
             <YAxis tickLine={false} axisLine={false} tick={{ fill: AXIS, fontSize: 11 }} tickFormatter={(v) => formatCompactMAD(v)} width={56} />
-            <Tooltip content={<ChartTooltip names={{ sent: "Devis émis", accepted: "Devis acceptés" }} />} cursor={{ fill: "rgb(79 67 173 / 0.05)", radius: 6 }} />
+            <Tooltip content={<ChartTooltip names={{ sent: "Devis émis", accepted: "Devis acceptés" }} />} cursor={{ fill: "rgb(74 141 248 / 0.09)", radius: 6 }} />
             <Bar dataKey="sent" fill={C_PRIMARY} radius={[4, 4, 0, 0]} maxBarSize={28} isAnimationActive={!reduce} animationDuration={900} />
             <Bar dataKey="accepted" fill={C_SECONDARY} radius={[4, 4, 0, 0]} maxBarSize={28} isAnimationActive={!reduce} animationDuration={900} animationBegin={120} />
           </BarChart>

@@ -142,7 +142,7 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
           <Card className="px-4 py-5 sm:px-8">
             <WorkflowStepper steps={steps} current={current} failed={cancelled ? { at: inv.sentAt ? 2 : 1, label: "Annulée" } : undefined} />
           </Card>
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.1, ease }} className="rounded-2xl bg-[#ebecf1] p-3 sm:p-8">
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.1, ease }} className="rounded-2xl bg-black/30 p-3 sm:p-8">
             <DocumentPaper {...paper} />
           </motion.div>
         </div>

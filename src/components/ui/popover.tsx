@@ -28,7 +28,7 @@ export function PopoverContent({
         sideOffset={sideOffset}
         collisionPadding={12}
         onOpenAutoFocus={onOpenAutoFocus}
-        className={cn("pop z-50 rounded-xl bg-surface shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none", className)}
+        className={cn("pop z-50 rounded-xl bg-popover shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none", className)}
       >
         {children}
       </P.Content>

@@ -23,7 +23,7 @@ export default async function Home() {
           <Link href="/login" className="rounded-lg px-3 py-2 text-sm font-medium text-ink-soft hover:bg-subtle hover:text-ink">
             Connexion
           </Link>
-          <Link href="/register" className="rounded-lg bg-brand-700 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-800">
+          <Link href="/register" className="rounded-lg bg-brand-500 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-400">
             Essayer gratuitement
           </Link>
         </nav>
@@ -44,7 +44,7 @@ export default async function Home() {
             Mactura réunit vos clients, devis, factures, produits et paiements dans un espace unique, élégant et rapide.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link href="/register" className="group inline-flex h-11 items-center gap-2 rounded-lg bg-brand-700 px-5 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-brand-800">
+            <Link href="/register" className="group inline-flex h-11 items-center gap-2 rounded-lg bg-brand-500 px-5 text-[15px] font-medium text-white shadow-sm transition-colors hover:bg-brand-400">
               Créer mon espace <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link href="/login" className="inline-flex h-11 items-center rounded-lg px-5 text-[15px] font-medium text-ink shadow-[0_0_0_1px_var(--color-line)] hover:bg-subtle">

@@ -62,13 +62,17 @@ export function AppShell({
 
   return (
     <BreadcrumbProvider>
+      <div aria-hidden className="no-print pointer-events-none fixed inset-0 -z-[1] overflow-hidden">
+        <div className="ambient-orb -right-24 top-10 h-[360px] w-[460px] bg-blue-600/25" />
+        <div className="ambient-orb bottom-0 left-1/4 h-[320px] w-[420px] bg-violet-600/20 [animation-delay:-8s]" />
+      </div>
       <div className="flex min-h-dvh">
         {/* Barre latérale desktop */}
         <motion.aside
           initial={false}
           animate={{ width: collapsed ? 68 : 252 }}
           transition={{ duration: 0.35, ease }}
-          className="sticky top-0 hidden h-dvh shrink-0 overflow-hidden border-r border-black/[0.05] bg-[#f3f3f7] lg:block"
+          className="sticky top-0 hidden h-dvh shrink-0 overflow-hidden border-r border-white/[0.05] bg-[#060d26]/80 backdrop-blur-xl lg:block"
         >
           <SidebarContent user={user} collapsed={collapsed} onToggle={toggle} counts={counts} />
         </motion.aside>
@@ -79,7 +83,7 @@ export function AppShell({
             {mobileOpen && (
               <D.Portal forceMount>
                 <D.Overlay asChild forceMount>
-                  <motion.div className="fixed inset-0 z-50 bg-[#0e1124]/30 backdrop-blur-[2px] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+                  <motion.div className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[2px] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
                 </D.Overlay>
                 <D.Content asChild forceMount>
                   <motion.aside
@@ -87,7 +91,7 @@ export function AppShell({
                     animate={{ x: 0 }}
                     exit={{ x: "-100%", transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } }}
                     transition={{ duration: 0.38, ease }}
-                    className="fixed inset-y-0 left-0 z-50 w-[280px] bg-[#f3f3f7] shadow-2xl focus:outline-none lg:hidden"
+                    className="fixed inset-y-0 left-0 z-50 w-[280px] bg-[#060d26]/80 backdrop-blur-xl shadow-2xl focus:outline-none lg:hidden"
                   >
                     <D.Title className="sr-only">Navigation</D.Title>
                     <D.Description className="sr-only">Menu principal de Mactura</D.Description>

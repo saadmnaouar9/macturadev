@@ -220,7 +220,7 @@ export function ResourceView(p: ResourceViewProps) {
                     const deletable = p.canDelete && !!p.onRemove && (p.canDeleteRow ? p.canDeleteRow(row) : true);
                     const extras = p.rowActions?.(row) ?? [];
                     return (
-                      <TRow key={row.id} index={i} className={editable ? "cursor-pointer hover:bg-[#fafafc]" : undefined}>
+                      <TRow key={row.id} index={i} className={editable ? "cursor-pointer hover:bg-white/[0.04]" : undefined}>
                         {p.columns.map((c, ci) => (
                           <Td
                             key={c.key}

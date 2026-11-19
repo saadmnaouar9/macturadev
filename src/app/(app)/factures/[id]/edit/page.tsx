@@ -7,7 +7,8 @@ import { centsToInput, formatRate } from "@/lib/money";
 import { toDateInput } from "@/lib/utils";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { SetBreadcrumb } from "@/components/layout/breadcrumbs";
-import { DocumentEditor, itemFromDb } from "@/components/documents/document-editor";
+import { DocumentEditor } from "@/components/documents/document-editor";
+import { itemFromDb } from "@/components/documents/editor-model";
 
 export const metadata: Metadata = { title: "Modifier la facture" };
 

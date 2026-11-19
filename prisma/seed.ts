@@ -370,7 +370,7 @@ async function main() {
 
   // ─────────── Achats, trésorerie, CRM étendu, organisation ───────────
   console.log("› Fournisseurs, achats, trésorerie…");
-  await db.company.update({ where: { id: company.id }, data: { openingBank: BigInt(150_000_00), openingCash: BigInt(5_000_00) } });
+  await db.company.update({ where: { id: company.id }, data: { openingBank: BigInt(150_000_00), openingCash: BigInt(80_000_00) } });
   const SUPPLIERS = [
     { name: "Maroc Télécom Entreprises", city: "Rabat", paymentDays: 30, cat: "Télécom" },
     { name: "Dell Maroc Distribution", city: "Casablanca", paymentDays: 45, cat: "Matériel" },
