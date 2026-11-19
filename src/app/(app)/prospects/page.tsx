@@ -31,10 +31,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   const open = groups.filter((x) => x.status !== "WON" && x.status !== "LOST");
   const openValue = open.reduce((s, x) => s + (x._sum.value ?? 0n), 0n);
   const won = count("WON"), lost = count("LOST");
+  const dueCount = await db.prospect.count({ where: { companyId, status: { notIn: ["WON", "LOST"] }, nextActionDate: { lte: new Date() } } });
   return (
     <PageContainer>
       <ProspectsView
         rows={rows.map((r) => ({ ...r, value: Number(r.value), contact: [r.contactName, r.email ?? r.phone].filter(Boolean).join(" · "), nextActionDate: r.nextActionDate?.toISOString() ?? null, createdAt: r.createdAt.toISOString(), updatedAt: undefined }))}
+        stats={{
+          openValue: Number(openValue), openCount: open.reduce((s, x) => s + x._count, 0), wonValue: Number(g("WON")?._sum.value ?? 0n), wonCount: won,
+          conversionBp: won + lost ? Math.round((won / (won + lost)) * 10000) : null, dueCount,
+          pipeline: Object.keys(PROSPECT_STATUS).map((s) => ({ status: s, count: count(s), value: Number(g(s)?._sum.value ?? 0n) })),
+        }}
         total={total} page={page} pageSize={PAGE_SIZE} hasQuery={!!q || !!status}
         canWrite={can(auth.role, "write")} canDelete={can(auth.role, "delete")}
         filters={[{ param: "status", layoutId: "prospect-status", options: [{ value: "", label: "Tous", count: groups.reduce((s, x) => s + x._count, 0) }, ...Object.entries(PROSPECT_STATUS).map(([v, s]) => ({ value: v, label: s.label, count: count(v) }))] }]}
@@ -42,7 +48,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
           { label: "Pipeline ouvert", value: formatMAD(openValue), sub: `${open.reduce((s, x) => s + x._count, 0)} opportunités` },
           { label: "Affaires gagnées", value: formatMAD(g("WON")?._sum.value ?? 0n), sub: `${won} prospect${won > 1 ? "s" : ""}`, tone: "good" },
           { label: "Taux de conversion", value: won + lost ? `${((won / (won + lost)) * 100).toFixed(0)} %` : "—", sub: "gagnés / clôturés" },
-          { label: "À relancer", value: String(await db.prospect.count({ where: { companyId, status: { notIn: ["WON", "LOST"] }, nextActionDate: { lte: new Date() } } })), sub: "relances échues", tone: "warn" },
+          { label: "À relancer", value: String(dueCount), sub: "relances échues", tone: "warn" },
         ]}
       />
     </PageContainer>

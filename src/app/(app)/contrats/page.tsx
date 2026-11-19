@@ -39,6 +39,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
       <ContractsView
         customers={customers.map((x) => ({ value: x.id, label: x.name }))}
         rows={rows.map((r) => ({ id: r.id, reference: r.reference, title: r.title, status: r.status, displayStatus: contractDisplayStatus(r), customerId: r.customerId, subtitle: `${r.reference} · ${r.customer.name}`, amount: Number(r.amount), frequency: r.frequency, frequencyLabel: FREQUENCY_LABELS[r.frequency], autoRenew: r.autoRenew, notes: r.notes, startDate: r.startDate.toISOString(), endDate: r.endDate?.toISOString() ?? null }))}
+        stats={{ activeCount: counts[1] + counts[2], mrr: Math.round(mrr), expiringCount: counts[2], expiredCount: counts[3] }}
         total={total} page={page} pageSize={PAGE_SIZE} hasQuery={!!q || !!status}
         canWrite={can(auth.role, "write")} canDelete={can(auth.role, "delete")}
         filters={[{ param: "status", layoutId: "contract-status", options: [{ value: "", label: "Tous", count: counts[0] }, ...["ACTIVE", "EXPIRING", "EXPIRED", "DRAFT", "TERMINATED"].map((v, i) => ({ value: v, label: CONTRACT_STATUS[v].label, count: counts[i + 1] }))] }]}

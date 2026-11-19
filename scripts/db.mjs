@@ -14,6 +14,7 @@ const pg = new EmbeddedPostgres({
   password: "mactura",
   port,
   persistent: true,
+  initdbFlags: ["--encoding=UTF8", "--locale=C"],
   onLog: () => {},
 });
 

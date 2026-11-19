@@ -37,7 +37,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
       : {}),
   };
 
-  const [rows, total, counts, archivedCount] = await Promise.all([
+  const [rows, total, counts, archivedCount, invoicedAll, outstandingAll] = await Promise.all([
     db.customer.findMany({
       where,
       orderBy: { [sort]: dir },
@@ -48,6 +48,8 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
     db.customer.count({ where }),
     db.customer.groupBy({ by: ["type"], where: { companyId, archived: false }, _count: true }),
     db.customer.count({ where: { companyId, archived: true } }),
+    db.invoice.aggregate({ where: { companyId, customer: { archived: false }, ...issuedWhere }, _sum: { total: true } }),
+    db.invoice.aggregate({ where: { companyId, customer: { archived: false }, ...outstandingWhere }, _sum: { total: true, amountPaid: true } }),
   ]);
 
   const ids = rows.map((r) => r.id);
@@ -92,6 +94,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         pageSize={PAGE_SIZE}
         hasQuery={!!q || !!type}
         archivedView={status === "archived"}
+        totals={{ invoiced: Number(invoicedAll._sum.total ?? 0n), outstanding: Number((outstandingAll._sum.total ?? 0n) - (outstandingAll._sum.amountPaid ?? 0n)) }}
         counts={{ all: companyCount + individualCount, company: companyCount, individual: individualCount, archived: archivedCount }}
         canWrite={can(auth.role, "write")}
         canDelete={can(auth.role, "delete")}

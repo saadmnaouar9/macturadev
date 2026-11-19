@@ -12,6 +12,8 @@ import { deleteSupplier, saveSupplier } from "@/app/(app)/fournisseurs/actions";
 import { deleteProject, saveProject } from "@/app/(app)/projets/actions";
 import { createInvoiceFromContract, deleteContract, saveContract } from "@/app/(app)/contrats/actions";
 import { deleteEmployee, saveEmployee } from "@/app/(app)/employes/actions";
+import { ProspectCard, ProspectStatsPanel, type ProspectStats } from "./prospects-ui";
+import { ContractCard, ContractStatsPanel, type ContractStats } from "./contracts-ui";
 
 type Common = Pick<ResourceViewProps, "rows" | "total" | "page" | "pageSize" | "hasQuery" | "canWrite" | "canDelete" | "filters" | "summary">;
 const opts = (m: Record<string, { label: string }>) => Object.entries(m).map(([value, v]) => ({ value, label: v.label }));
@@ -30,7 +32,7 @@ const PROSPECT_FIELDS: FieldDef[] = [
   { name: "notes", label: "Notes", type: "textarea" },
 ];
 
-export function ProspectsView(p: Common) {
+export function ProspectsView({ stats, ...p }: Common & { stats: ProspectStats }) {
   const router = useRouter();
   const actions = (row: { id: string; convertedCustomerId?: unknown }): RowAction[] =>
     row.convertedCustomerId
@@ -54,6 +56,8 @@ export function ProspectsView(p: Common) {
       title="Prospects"
       description="Suivez vos opportunités commerciales de la première prise de contact à la conversion en client."
       icon={BriefcaseBusiness}
+      summaryNode={<ProspectStatsPanel stats={stats} />}
+      cardView={{ storageKey: "mactura.prospects.view", render: (row, api) => <ProspectCard row={row} api={api} /> }}
       entity="prospect"
       columns={[
         { key: "name", header: "Prospect", kind: "title", subKey: "contact", avatar: true, sort: "name" },
@@ -156,7 +160,7 @@ export function ProjectsView({ customers, ...p }: Common & { customers: { value:
 }
 
 // ─── Contrats ───
-export function ContractsView({ customers, ...p }: Common & { customers: { value: string; label: string }[] }) {
+export function ContractsView({ customers, stats, ...p }: Common & { customers: { value: string; label: string }[]; stats: ContractStats }) {
   const router = useRouter();
   const fields: FieldDef[] = [
     { name: "reference", label: "Référence", type: "text", required: true, placeholder: "CTR-2026-001", mono: true },
@@ -176,6 +180,8 @@ export function ContractsView({ customers, ...p }: Common & { customers: { value
       title="Contrats"
       description="Contrats clients récurrents : échéances, montants et génération de factures."
       icon={FileSignature}
+      summaryNode={<ContractStatsPanel stats={stats} />}
+      cardView={{ storageKey: "mactura.contracts.view", render: (row, api) => <ContractCard row={row} api={api} /> }}
       entity="contrat"
       columns={[
         { key: "title", header: "Contrat", kind: "title", subKey: "subtitle", sort: "title" },

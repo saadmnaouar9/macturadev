@@ -1,14 +1,21 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Archive, ArchiveRestore, Building2, Eye, FileText, MoreHorizontal, Pencil, Receipt, Trash2, UserPlus, UserRound, Users } from "lucide-react";
+import { Archive, ArchiveRestore, Building2, Eye, FileText, Mail, MapPin, MoreHorizontal, Pencil, Phone, Receipt, Trash2, UserPlus, UserRound, Users, Wallet, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DropdownContent, DropdownItem, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useConfirm } from "@/components/ui/confirm";
+import { StatCard } from "@/components/ui/stat-card";
+import { AnimatedNumber } from "@/components/ui/animated-number";
+import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
+import { startNavProgress } from "@/components/layout/top-progress";
 import { FilterTabs, ListState, Pagination, Row, SearchInput, SortHeader, Table, Td, Th, THead } from "@/components/data/list-state";
 import { formatMAD } from "@/lib/money";
 import { cn, formatDate, initials } from "@/lib/utils";
@@ -94,13 +101,101 @@ function RowActions({ row, canWrite, canDelete }: { row: CustomerRow; canWrite: 
   );
 }
 
+const VIEW_KEY = "mactura.clients.view";
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+function CustomerCard({ r, index, canWrite, canDelete }: { r: CustomerRow; index: number; canWrite: boolean; canDelete: boolean }) {
+  const router = useRouter();
+  const contact = r.email ?? null;
+  const phone = r.mobile ?? r.phone ?? null;
+  const open = () => { startNavProgress(); router.push(`/clients/${r.id}`); };
+  const docs = r._count.invoices + r._count.quotes;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18, scale: 0.97 }}
+      animate={{ opacity: r.archived ? 0.6 : 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
+      onMouseMove={(e) => {
+        const b = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
+        e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
+      }}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
+        open();
+      }}
+      className="glass group relative flex cursor-pointer flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60"
+    >
+      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-px opacity-70 bg-gradient-to-r from-transparent to-transparent", r.type === "COMPANY" ? "via-brand-400/70" : "via-accent-400/70")} />
+
+      <div className="relative flex items-start gap-3">
+        <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110"><CustomerAvatar name={r.name} type={r.type} size="lg" /></span>
+        <div className="min-w-0 flex-1">
+          <Link prefetch={false} href={`/clients/${r.id}`} className="block truncate text-[15px] font-semibold text-ink outline-none transition-colors group-hover:text-brand-700 focus-visible:underline">{r.name}</Link>
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
+            <span className="inline-flex items-center gap-1">{r.type === "COMPANY" ? <Building2 className="h-3.5 w-3.5" /> : <UserRound className="h-3.5 w-3.5" />}{r.type === "COMPANY" ? "Entreprise" : "Particulier"}</span>
+            {r.city && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{r.city}</span>}
+          </p>
+        </div>
+        <div data-no-row-click className="-mr-1 -mt-1 shrink-0"><RowActions row={r} canWrite={canWrite} canDelete={canDelete} /></div>
+      </div>
+
+      <div className="relative mt-3 flex min-h-[1.5rem] flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+        {contact && <a href={`mailto:${contact}`} className="inline-flex min-w-0 items-center gap-1.5 transition-colors hover:text-brand-700" title={contact}><Mail className="h-3.5 w-3.5 shrink-0" /><span className="max-w-[180px] truncate">{contact}</span></a>}
+        {phone && <a href={`tel:${phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 whitespace-nowrap transition-colors hover:text-brand-700"><Phone className="h-3.5 w-3.5 shrink-0" />{phone}</a>}
+        {!contact && !phone && <span className="text-faint">Aucun moyen de contact</span>}
+        {r.archived && <Badge dot={false}>Archivé</Badge>}
+      </div>
+
+      <div className="relative mt-4 grid grid-cols-2 gap-2 border-t border-line-soft pt-3">
+        <div className="min-w-0 rounded-lg bg-white/[0.03] px-3 py-2">
+          <p className="text-[11px] text-muted">Facturé</p>
+          <p className="truncate whitespace-nowrap text-[13px] font-semibold tabular text-ink">{formatMAD(r.invoiced)}</p>
+        </div>
+        <div className={cn("min-w-0 rounded-lg px-3 py-2", r.outstanding > 0 ? "bg-amber-50 ring-1 ring-inset ring-amber-200/60" : "bg-white/[0.03]")}>
+          <p className="text-[11px] text-muted">Encours</p>
+          <p className={cn("truncate whitespace-nowrap text-[13px] font-semibold tabular", r.outstanding > 0 ? "text-amber-700" : "text-faint")}>{formatMAD(r.outstanding)}</p>
+        </div>
+      </div>
+
+      <div className="relative mt-3 flex items-center justify-between gap-2 text-[11px] text-faint">
+        <span>{docs > 0 ? `${r._count.quotes} devis · ${r._count.invoices} facture${r._count.invoices > 1 ? "s" : ""}` : "Aucun document"} · depuis le {formatDate(r.createdAt)}</span>
+        {canWrite && !r.archived && (
+          <span data-no-row-click className="flex shrink-0 gap-1">
+            <Link prefetch={false} href={`/devis/new?customer=${r.id}`} title="Nouveau devis" aria-label="Nouveau devis" className="rounded-md p-1.5 text-muted transition-colors hover:bg-subtle hover:text-brand-700"><FileText className="h-4 w-4" /></Link>
+            <Link prefetch={false} href={`/factures/new?customer=${r.id}`} title="Nouvelle facture" aria-label="Nouvelle facture" className="rounded-md p-1.5 text-muted transition-colors hover:bg-subtle hover:text-brand-700"><Receipt className="h-4 w-4" /></Link>
+          </span>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export function CustomersTable({
-  rows, total, page, pageSize, hasQuery, archivedView, counts, canWrite, canDelete,
+  rows, total, page, pageSize, hasQuery, archivedView, counts, totals, canWrite, canDelete,
 }: {
   rows: CustomerRow[]; total: number; page: number; pageSize: number; hasQuery: boolean; archivedView: boolean;
-  counts: { all: number; company: number; individual: number; archived: number }; canWrite: boolean; canDelete: boolean;
+  counts: { all: number; company: number; individual: number; archived: number }; totals: { invoiced: number; outstanding: number }; canWrite: boolean; canDelete: boolean;
 }) {
+  const [view, setView] = useState<ViewMode>("grid");
+  useEffect(() => {
+    try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
+  }, []);
+  const changeView = (m: ViewMode) => {
+    setView(m);
+    try { localStorage.setItem(VIEW_KEY, m); } catch { /* ignoré */ }
+  };
   return (
+    <>
+    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <StatCard index={0} tone="brand" icon={Users} label="Clients actifs" sub={`${counts.archived} archivé${counts.archived > 1 ? "s" : ""}`}><AnimatedNumber value={counts.all} /></StatCard>
+      <StatCard index={1} tone="sky" icon={Building2} label="Entreprises" sub={`${counts.individual} particulier${counts.individual > 1 ? "s" : ""}`}><AnimatedNumber value={counts.company} /></StatCard>
+      <StatCard index={2} tone="emerald" icon={TrendingUp} label="Total facturé" sub="clients actifs"><AnimatedNumber value={totals.invoiced} kind="mad" /></StatCard>
+      <StatCard index={3} tone="amber" icon={Wallet} label="Encours à encaisser" sub="factures non soldées" pulse={totals.outstanding > 0}><AnimatedNumber value={totals.outstanding} kind="mad" /></StatCard>
+    </div>
     <ListState>
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center lg:justify-between">
@@ -117,7 +212,10 @@ export function CustomersTable({
             <div className="hidden h-5 w-px bg-line sm:block" />
             <FilterTabs param="status" layoutId="customer-archived-filter" options={[{ value: "", label: "Actifs" }, { value: "archived", label: "Archivés", count: counts.archived }]} />
           </div>
-          <SearchInput placeholder="Nom, e-mail, ICE, ville…" />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <SearchInput placeholder="Nom, e-mail, ICE, ville…" />
+            <ViewToggle mode={view} onChange={changeView} layoutId="customer-view-toggle" />
+          </div>
         </div>
         {rows.length === 0 ? (
           hasQuery || archivedView ? (
@@ -132,6 +230,11 @@ export function CustomersTable({
           )
         ) : (
           <>
+            {view === "grid" ? (
+              <div className="grid gap-4 p-4 pt-1 sm:grid-cols-2 xl:grid-cols-3">
+                {rows.map((r, i) => <CustomerCard key={r.id} r={r} index={i} canWrite={canWrite} canDelete={canDelete} />)}
+              </div>
+            ) : (
             <Table>
               <THead>
                 <SortHeader field="name">Client</SortHeader>
@@ -174,10 +277,12 @@ export function CustomersTable({
                 ))}
               </tbody>
             </Table>
+            )}
             <Pagination page={page} pageSize={pageSize} total={total} />
           </>
         )}
       </Card>
     </ListState>
+    </>
   );
 }

@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { DropdownContent, DropdownItem, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useConfirm } from "@/components/ui/confirm";
+import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
 import { FilterTabs, ListState, Pagination, Row as TRow, SearchInput, SortHeader, Table, Td, Th, THead } from "./list-state";
 import { CrudDrawer, toFormValues, type FieldDef, type FormValues } from "./crud-form";
 import { formatMAD, formatRate } from "@/lib/money";
@@ -87,6 +88,15 @@ function Cell({ col, row }: { col: Column; row: RowData }) {
   }
 }
 
+/** Outils fournis à une carte (affichage « Cartes » optionnel d'une ressource). */
+export interface CardApi {
+  index: number;
+  editable: boolean;
+  open: () => void;
+  menu: React.ReactNode;
+  extras: RowAction[];
+}
+
 export interface ResourceViewProps {
   title: string;
   description: string;
@@ -115,6 +125,10 @@ export interface ResourceViewProps {
   canEditRow?: (row: RowData) => boolean;
   canDeleteRow?: (row: RowData) => boolean;
   emptyDescription?: string;
+  /** Remplace le bandeau de synthèse par défaut (facultatif). */
+  summaryNode?: React.ReactNode;
+  /** Ajoute un affichage « Cartes » avec bascule Cartes / Tableau (facultatif). Le tableau reste disponible. */
+  cardView?: { storageKey: string; render: (row: RowData, api: CardApi) => React.ReactNode };
 }
 
 /** Liste ressource complète : recherche, filtres, tri, pagination, création/édition en tiroir, suppression confirmée. */
@@ -124,6 +138,16 @@ export function ResourceView(p: ResourceViewProps) {
   const params = useSearchParams();
   const confirm = useConfirm();
   const [drawer, setDrawer] = useState<{ open: boolean; row: RowData | null }>({ open: false, row: null });
+  const [view, setView] = useState<ViewMode>(p.cardView ? "grid" : "table");
+  const storageKey = p.cardView?.storageKey;
+  useEffect(() => {
+    if (!storageKey) return;
+    try { const v = localStorage.getItem(storageKey); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible : mode par défaut */ }
+  }, [storageKey]);
+  const changeView = (m: ViewMode) => {
+    setView(m);
+    if (storageKey) { try { localStorage.setItem(storageKey, m); } catch { /* ignoré */ } }
+  };
   const art = p.feminine ? "Nouvelle" : "Nouveau";
   const plural = p.entityPlural ?? `${p.entity}s`;
 
@@ -152,6 +176,36 @@ export function ResourceView(p: ResourceViewProps) {
     if (res.ok) { toast.success(res.message ?? "Supprimé"); } else toast.error(res.error);
   };
 
+  const rowFlags = (row: RowData) => ({
+    editable: p.canWrite && (p.canEditRow ? p.canEditRow(row) : true),
+    deletable: p.canDelete && !!p.onRemove && (p.canDeleteRow ? p.canDeleteRow(row) : true),
+    extras: p.rowActions?.(row) ?? [],
+  });
+
+  const rowMenu = (row: RowData) => {
+    const { editable, deletable, extras } = rowFlags(row);
+    if (!editable && !deletable && extras.length === 0) return null;
+    return (
+      <DropdownMenu>
+        <DropdownTrigger asChild>
+          <button className="rounded-md p-1.5 text-faint opacity-60 transition-all hover:bg-subtle hover:text-ink group-hover:opacity-100 data-[state=open]:bg-subtle data-[state=open]:opacity-100" aria-label="Actions">
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+        </DropdownTrigger>
+        <DropdownContent className="w-56">
+          {editable && <DropdownItem onSelect={() => setDrawer({ open: true, row })}><Pencil /> Modifier</DropdownItem>}
+          {extras.map((a) => (
+            <span key={a.label}>
+              {a.separatorBefore && <DropdownSeparator />}
+              <DropdownItem href={a.href} onSelect={a.onSelect} danger={a.danger}>{a.icon} {a.label}</DropdownItem>
+            </span>
+          ))}
+          {deletable && (<><DropdownSeparator /><DropdownItem danger onSelect={() => remove(row)}><Trash2 /> Supprimer</DropdownItem></>)}
+        </DropdownContent>
+      </DropdownMenu>
+    );
+  };
+
   const toneCls = { default: "text-ink", good: "text-emerald-700", warn: "text-amber-700", bad: "text-rose-600" };
 
   return (
@@ -166,7 +220,8 @@ export function ResourceView(p: ResourceViewProps) {
           </>
         }
       />
-      {p.summary && (
+      {p.summaryNode}
+      {!p.summaryNode && p.summary && (
         <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {p.summary.map((s) => (
             <Card key={s.label} className="px-4 py-3.5">
@@ -188,7 +243,10 @@ export function ResourceView(p: ResourceViewProps) {
                 </div>
               ))}
             </div>
-            <SearchInput placeholder={p.searchPlaceholder ?? "Rechercher…"} />
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <SearchInput placeholder={p.searchPlaceholder ?? "Rechercher…"} />
+              {p.cardView && <ViewToggle mode={view} onChange={changeView} layoutId="resource-view-toggle" />}
+            </div>
           </div>
           {p.rows.length === 0 ? (
             p.hasQuery ? (
@@ -203,6 +261,18 @@ export function ResourceView(p: ResourceViewProps) {
             )
           ) : (
             <>
+              {p.cardView && view === "grid" ? (
+                <div className="grid gap-4 p-4 pt-1 sm:grid-cols-2 xl:grid-cols-3">
+                  {p.rows.map((row, i) => {
+                    const { editable, extras } = rowFlags(row);
+                    return (
+                      <div key={row.id} className="contents">
+                        {p.cardView!.render(row, { index: i, editable, open: () => setDrawer({ open: true, row }), menu: rowMenu(row), extras })}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
               <Table>
                 <THead>
                   {p.columns.map((c) =>
@@ -216,9 +286,7 @@ export function ResourceView(p: ResourceViewProps) {
                 </THead>
                 <tbody>
                   {p.rows.map((row, i) => {
-                    const editable = p.canWrite && (p.canEditRow ? p.canEditRow(row) : true);
-                    const deletable = p.canDelete && !!p.onRemove && (p.canDeleteRow ? p.canDeleteRow(row) : true);
-                    const extras = p.rowActions?.(row) ?? [];
+                    const { editable } = rowFlags(row);
                     return (
                       <TRow key={row.id} index={i} className={editable ? "cursor-pointer hover:bg-subtle" : undefined}>
                         {p.columns.map((c, ci) => (
@@ -235,31 +303,14 @@ export function ResourceView(p: ResourceViewProps) {
                           </Td>
                         ))}
                         <Td>
-                          {(editable || deletable || extras.length > 0) && (
-                            <DropdownMenu>
-                              <DropdownTrigger asChild>
-                                <button className="rounded-md p-1.5 text-faint opacity-60 transition-all hover:bg-subtle hover:text-ink group-hover:opacity-100 data-[state=open]:bg-subtle data-[state=open]:opacity-100" aria-label="Actions">
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </button>
-                              </DropdownTrigger>
-                              <DropdownContent className="w-56">
-                                {editable && <DropdownItem onSelect={() => setDrawer({ open: true, row })}><Pencil /> Modifier</DropdownItem>}
-                                {extras.map((a) => (
-                                  <span key={a.label}>
-                                    {a.separatorBefore && <DropdownSeparator />}
-                                    <DropdownItem href={a.href} onSelect={a.onSelect} danger={a.danger}>{a.icon} {a.label}</DropdownItem>
-                                  </span>
-                                ))}
-                                {deletable && (<><DropdownSeparator /><DropdownItem danger onSelect={() => remove(row)}><Trash2 /> Supprimer</DropdownItem></>)}
-                              </DropdownContent>
-                            </DropdownMenu>
-                          )}
+                          {rowMenu(row)}
                         </Td>
                       </TRow>
                     );
                   })}
                 </tbody>
               </Table>
+              )}
               {p.footer}
               <Pagination page={p.page} pageSize={p.pageSize} total={p.total} />
             </>
