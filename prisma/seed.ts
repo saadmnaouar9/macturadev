@@ -5,9 +5,10 @@ import { PrismaClient, type Customer, type Product, type InvoiceStatus, type Pay
 import bcrypt from "bcryptjs";
 import { computeTotals, type LineInput } from "../src/lib/calc";
 
-const db = new PrismaClient();
+let db!: PrismaClient;
 
-let seed = 20261118;
+const SEED_START = 20261118;
+let seed = SEED_START;
 function rand() {
   seed = (seed + 0x6d2b79f5) | 0;
   let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
@@ -91,8 +92,12 @@ function genIce() {
   return s;
 }
 
-async function main() {
-  console.log("› Nettoyage du compte de démonstration…");
+/** Remplit la base avec le jeu de données de démonstration (utilisé par le CLI et par le Mode Démo en ligne). */
+export async function seedDemo(client: PrismaClient, opts: { quiet?: boolean } = {}) {
+  db = client;
+  seed = SEED_START;
+  const log = opts.quiet ? () => {} : console.log;
+  log("› Nettoyage du compte de démonstration…");
   const existing = await db.user.findUnique({ where: { email: "demo@mactura.ma" }, include: { memberships: true } });
   if (existing) {
     for (const m of existing.memberships) await db.company.delete({ where: { id: m.companyId } }).catch(() => {});
@@ -145,7 +150,7 @@ async function main() {
     },
   });
 
-  console.log("› Catalogue…");
+  log("› Catalogue…");
   const cats = new Map<string, string>();
   for (const c of CATEGORIES) {
     const cat = await db.category.create({ data: { ...c, companyId: company.id } });
@@ -171,7 +176,7 @@ async function main() {
     );
   }
 
-  console.log("› Clients…");
+  log("› Clients…");
   const customers: Customer[] = [];
   for (const [i, c] of CUSTOMERS.entries()) {
     const isCompany = c.type === "COMPANY";
@@ -235,7 +240,7 @@ async function main() {
     };
   }
 
-  console.log("› Devis et factures sur 12 mois…");
+  log("› Devis et factures sur 12 mois…");
   const activities: { type: string; entityType: string; entityId: string; message: string; amount?: bigint; createdAt: Date }[] = [];
 
   // Les documents sont créés par ordre chronologique pour une numérotation continue
@@ -369,7 +374,7 @@ async function main() {
   await db.activity.createMany({ data: activities.map((a) => ({ ...a, companyId: company.id, userId: user.id })) });
 
   // ─────────── Achats, trésorerie, CRM étendu, organisation ───────────
-  console.log("› Fournisseurs, achats, trésorerie…");
+  log("› Fournisseurs, achats, trésorerie…");
   await db.company.update({ where: { id: company.id }, data: { openingBank: BigInt(150_000_00), openingCash: BigInt(80_000_00) } });
   const SUPPLIERS = [
     { name: "Maroc Télécom Entreprises", city: "Rabat", paymentDays: 30, cat: "Télécom" },
@@ -442,7 +447,7 @@ async function main() {
   entries.push({ account: "BANK", direction: "IN", amount: 80_000_00, date: addDays(today, -200), label: "Apport en compte courant d'associé", category: "Apport" });
   await db.cashEntry.createMany({ data: entries.filter((e) => e.date <= today).map((e) => ({ ...e, amount: BigInt(e.amount), companyId: company.id, createdById: user.id })) });
 
-  console.log("› Prospects, projets, tâches, contrats, employés…");
+  log("› Prospects, projets, tâches, contrats, employés…");
   const PROSPECTS = [
     { name: "Hôtel Atlas Palace", contactName: "Rachid Berrada", status: "PROPOSAL", value: 85_000, source: "Recommandation", next: 3 },
     { name: "Groupe Scolaire Les Lauriers", contactName: "Samira Lahlou", status: "QUALIFIED", value: 42_000, source: "Site web", next: 6 },
@@ -504,13 +509,16 @@ async function main() {
   await db.activity.createMany({ data: act2.map((a) => ({ ...a, companyId: company.id, userId: user.id })) });
 
   const [ci, cq, cp] = await Promise.all([db.invoice.count({ where: { companyId: company.id } }), db.quote.count({ where: { companyId: company.id } }), db.payment.count({ where: { companyId: company.id } })]);
-  console.log(`✓ ${customers.length} clients, ${products.length} produits, ${cq} devis, ${ci} factures, ${cp} paiements`);
-  console.log("✓ Connexion : demo@mactura.ma / Demo1234");
+  log(`✓ ${customers.length} clients, ${products.length} produits, ${cq} devis, ${ci} factures, ${cp} paiements`);
+  log("✓ Connexion : demo@mactura.ma / Demo1234");
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => db.$disconnect());
+if (process.argv[1] && /seed\.(ts|js)$/.test(process.argv[1])) {
+  const client = new PrismaClient();
+  seedDemo(client)
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(() => client.$disconnect());
+}

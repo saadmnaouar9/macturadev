@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@react-pdf/renderer", "bcryptjs"],
+  serverExternalPackages: ["@react-pdf/renderer", "bcryptjs", "@electric-sql/pglite"],
+  // Mode Démo : les fichiers WebAssembly/données de PGlite doivent être embarqués dans les fonctions Vercel
+  outputFileTracingIncludes: { "/**": ["./node_modules/@electric-sql/pglite/dist/**"] },
   poweredByHeader: false,
   experimental: {
     serverActions: { bodySizeLimit: "2mb" },

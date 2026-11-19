@@ -2,10 +2,11 @@ import "server-only";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import bcrypt from "bcryptjs";
 import type { Role } from "@prisma/client";
 import { db } from "./db";
+import { isDemoMode } from "./demo/mode";
 import { can, type Permission } from "./permissions";
 
 export const SESSION_COOKIE = "mactura_session";
@@ -23,14 +24,44 @@ export async function verifyPassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
 }
 
+/**
+ * Mode Démo : la session est un jeton signé (HMAC) qui ne dépend d'aucune table, car chaque instance serveur
+ * possède sa propre base embarquée. Le jeton ne contient que l'e-mail et l'expiration.
+ */
+function demoSign(payload: string) {
+  return createHmac("sha256", process.env.SESSION_SECRET ?? "mactura-demo-session").update(payload).digest("base64url");
+}
+function demoToken(email: string, expiresAt: Date) {
+  const payload = Buffer.from(JSON.stringify({ e: email, x: expiresAt.getTime() })).toString("base64url");
+  return `${payload}.${demoSign(payload)}`;
+}
+function demoEmailFromToken(token: string): string | null {
+  const [payload, sig] = token.split(".");
+  if (!payload || !sig) return null;
+  const expected = Buffer.from(demoSign(payload));
+  const given = Buffer.from(sig);
+  if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null;
+  try {
+    const { e, x } = JSON.parse(Buffer.from(payload, "base64url").toString()) as { e: string; x: number };
+    return typeof e === "string" && x > Date.now() ? e : null;
+  } catch {
+    return null;
+  }
+}
+
 /** remember = true : session de 30 jours ; sinon session de 12 h, cookie supprimé à la fermeture du navigateur. */
 export async function createSession(userId: string, companyId: string, remember = true) {
-  const token = randomBytes(32).toString("base64url");
+  let token = randomBytes(32).toString("base64url");
   const expiresAt = new Date(Date.now() + (remember ? SESSION_DAYS * 86400_000 : 12 * 3600_000));
-  const h = await headers();
-  await db.session.create({
-    data: { tokenHash: hashToken(token), userId, companyId, expiresAt, userAgent: h.get("user-agent")?.slice(0, 255) },
-  });
+  if (isDemoMode()) {
+    const u = await db.user.findUnique({ where: { id: userId }, select: { email: true } });
+    token = demoToken(u?.email ?? "", expiresAt);
+  } else {
+    const h = await headers();
+    await db.session.create({
+      data: { tokenHash: hashToken(token), userId, companyId, expiresAt, userAgent: h.get("user-agent")?.slice(0, 255) },
+    });
+  }
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, {
     httpOnly: true,
@@ -44,7 +75,7 @@ export async function createSession(userId: string, companyId: string, remember 
 export async function destroySession() {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
-  if (token) await db.session.deleteMany({ where: { tokenHash: hashToken(token) } });
+  if (token && !isDemoMode()) await db.session.deleteMany({ where: { tokenHash: hashToken(token) } });
   jar.delete(SESSION_COOKIE);
 }
 
@@ -62,6 +93,17 @@ export const getAuth = cache(async (): Promise<AuthContext | null> => {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
   if (!token) return null;
+  if (isDemoMode()) {
+    const email = demoEmailFromToken(token);
+    if (!email) return null;
+    const m = await db.membership.findFirst({
+      where: { user: { email } },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, role: true, notificationsSeenAt: true, user: { select: { id: true, email: true, name: true } }, company: { select: { id: true, name: true } } },
+    });
+    if (!m) return null;
+    return { sessionId: "demo", user: m.user, company: m.company, role: m.role, membershipId: m.id, notificationsSeenAt: m.notificationsSeenAt };
+  }
   const session = await db.session.findUnique({ where: { tokenHash: hashToken(token) }, select: { id: true, userId: true, companyId: true, expiresAt: true } });
   if (!session || session.expiresAt < new Date()) return null;
   // Appartenance + utilisateur + entreprise en une seule requête imbriquée (au lieu de trois requêtes séparées)
