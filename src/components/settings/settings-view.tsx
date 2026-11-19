@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { Building2, Check, FileCog, KeyRound, Landmark, Percent, Plus, Star, Trash2, UserPlus, UserRound, Users } from "lucide-react";
+import { Building2, Check, Crown, Eye, FileCog, KeyRound, Landmark, Pencil, Percent, Plus, ShieldCheck, Star, Trash2, UserPlus, UserRound, Users } from "lucide-react";
 import type { Role } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -225,64 +225,116 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
   const { values, set, setValues, errors, pending, submit } = useForm({ name: "", email: "", role: "MEMBER", password: "" });
+  const ROLE_UI: Record<Role, { icon: typeof Crown; bubble: string; chip: string; avatar: string }> = {
+    OWNER: { icon: Crown, bubble: "bg-amber-500/12 text-amber-600", chip: "bg-amber-500/12 text-amber-700", avatar: "from-amber-500 to-orange-400" },
+    ADMIN: { icon: ShieldCheck, bubble: "bg-violet-500/12 text-violet-600", chip: "bg-violet-500/12 text-violet-700", avatar: "from-violet-500 to-fuchsia-400" },
+    MEMBER: { icon: Pencil, bubble: "bg-emerald-500/12 text-emerald-600", chip: "bg-emerald-500/12 text-emerald-700", avatar: "from-emerald-500 to-teal-400" },
+    VIEWER: { icon: Eye, bubble: "bg-sky-500/12 text-sky-600", chip: "bg-sky-500/12 text-sky-700", avatar: "from-sky-500 to-cyan-400" },
+  };
+  const count = (r: Role) => members.filter((m) => m.role === r).length;
+  const roleCards: { role: Role; title: string; desc: string }[] = [
+    { role: "ADMIN", title: "Administrateur", desc: "Tout, y compris les paramètres" },
+    { role: "MEMBER", title: "Membre", desc: "Créer et modifier" },
+    { role: "VIEWER", title: "Lecture seule", desc: "Consulter uniquement" },
+  ];
+  const openAdd = () => { setValues({ name: "", email: "", role: "MEMBER", password: "" }); setOpen(true); };
   return (
     <>
-      <Section
-        title="Équipe"
-        description="Chaque membre accède uniquement aux données de cette entreprise, selon son rôle."
-      >
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-muted">
-            <span><b className="font-medium text-ink-soft">Administrateur</b> : tout, y compris paramètres</span>
-            <span><b className="font-medium text-ink-soft">Membre</b> : créer et modifier</span>
-            <span><b className="font-medium text-ink-soft">Lecture seule</b> : consulter</span>
+      <div className="space-y-4">
+        {/* En-tête : résumé de l'équipe */}
+        <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+          <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-28 right-10 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+          <div className="relative flex flex-col gap-5 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_8px_20px_-6px_rgb(59_110_245/0.6)]"><Users className="h-6 w-6" /></span>
+              <div>
+                <h2 className="text-lg font-semibold tracking-tight text-ink">Équipe</h2>
+                <p className="mt-0.5 text-[13px] text-muted">Chaque membre accède uniquement aux données de cette entreprise, selon son rôle.</p>
+              </div>
+            </div>
+            {canManage && <Button onClick={openAdd}><UserPlus className="h-4 w-4" /> Ajouter un membre</Button>}
           </div>
-          {canManage && <Button size="sm" onClick={() => { setValues({ name: "", email: "", role: "MEMBER", password: "" }); setOpen(true); }}><UserPlus className="h-4 w-4" /> Ajouter un membre</Button>}
-        </div>
-        <ul className="divide-y divide-line-soft rounded-xl ring-1 ring-line-soft">
-          {members.map((m) => (
-            <li key={m.id} className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center">
-              <span className="flex flex-1 items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-50 text-xs font-semibold text-accent-600 ring-1 ring-inset ring-accent-100">{initials(m.user.name)}</span>
+          <div className="relative flex flex-wrap items-center gap-2 border-t border-line-soft bg-canvas/40 px-5 py-3 sm:px-6">
+            <span className="mr-1 text-2xl font-semibold tabular text-ink">{members.length}</span>
+            <span className="mr-3 text-[13px] text-muted">membre{members.length > 1 ? "s" : ""}</span>
+            {(["OWNER", "ADMIN", "MEMBER", "VIEWER"] as Role[]).filter((r) => count(r) > 0).map((r) => {
+              const R = ROLE_UI[r];
+              return <span key={r} className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold", R.chip)}><R.icon className="h-3 w-3" />{count(r)} {ROLE_LABELS[r]}</span>;
+            })}
+          </div>
+        </motion.section>
+
+        {/* Rôles et droits */}
+        <div className="grid gap-3 sm:grid-cols-3">
+          {roleCards.map((r, i) => {
+            const R = ROLE_UI[r.role];
+            return (
+              <motion.div key={r.role} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease }} whileHover={{ y: -2 }} className="flex items-center gap-3 rounded-2xl border border-line-soft bg-surface p-3.5 shadow-[var(--shadow-xs)]">
+                <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl", R.bubble)}><R.icon className="h-5 w-5" /></span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium text-ink">{m.user.name} {m.isMe && <span className="text-xs font-normal text-muted">(vous)</span>}</span>
-                  <span className="block truncate text-xs text-muted">{m.user.email}</span>
+                  <span className="block text-[13px] font-semibold text-ink">{r.title}</span>
+                  <span className="block text-xs text-muted">{r.desc}</span>
                 </span>
-              </span>
-              {canManage && m.role !== "OWNER" && !m.isMe ? (
-                <span className="flex items-center gap-2">
-                  <Select
-                    aria-label={`Rôle de ${m.user.name}`}
-                    value={m.role}
-                    onChange={async (e) => {
-                      const res = await updateMemberRole(m.id, e.target.value);
-                      if (res.ok) { toast.success(res.message); } else toast.error(res.error);
-                    }}
-                    className="h-8 w-40 text-[13px]"
-                  >
-                    <option value="ADMIN">{ROLE_LABELS.ADMIN}</option>
-                    <option value="MEMBER">{ROLE_LABELS.MEMBER}</option>
-                    <option value="VIEWER">{ROLE_LABELS.VIEWER}</option>
-                  </Select>
-                  <button
-                    onClick={async () => {
-                      if (!(await confirm({ title: `Retirer ${m.user.name} ?`, description: "Cette personne perdra immédiatement l'accès à l'espace.", confirmLabel: "Retirer", danger: true }))) return;
-                      const res = await removeMember(m.id);
-                      if (res.ok) { toast.success(res.message); } else toast.error(res.error);
-                    }}
-                    className="rounded-md p-1.5 text-faint hover:bg-rose-50 hover:text-rose-600"
-                    aria-label={`Retirer ${m.user.name}`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </span>
-              ) : (
-                <Badge tone={m.role === "OWNER" ? "brand" : "neutral"} dot={false}>{ROLE_LABELS[m.role]}</Badge>
-              )}
-            </li>
-          ))}
-        </ul>
-      </Section>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Membres */}
+        <motion.ul initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }} className="grid gap-3 sm:grid-cols-2">
+          {members.map((m) => {
+            const R = ROLE_UI[m.role];
+            const editable = canManage && m.role !== "OWNER" && !m.isMe;
+            return (
+              <motion.li key={m.id} variants={{ hidden: { opacity: 0, y: 14, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease } } }} whileHover={{ y: -3 }} className="group flex flex-col gap-4 rounded-3xl border border-line-soft bg-surface p-4 shadow-[var(--shadow-xs)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)]">
+                <div className="flex items-center gap-3.5">
+                  <span className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-sm font-semibold text-white shadow-[0_6px_16px_-6px_rgb(0_0_0/0.35)]", R.avatar)}>{initials(m.user.name)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center gap-2">
+                      <span className="truncate text-sm font-semibold text-ink">{m.user.name}</span>
+                      {m.isMe && <span className="shrink-0 rounded-full bg-brand-500/12 px-2 py-0.5 text-[10.5px] font-semibold text-brand-700">Vous</span>}
+                    </span>
+                    <span className="block truncate text-xs text-muted">{m.user.email}</span>
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2 border-t border-line-soft pt-3">
+                  {editable ? (
+                    <>
+                      <Select
+                        aria-label={`Rôle de ${m.user.name}`}
+                        value={m.role}
+                        onChange={async (e) => {
+                          const res = await updateMemberRole(m.id, e.target.value);
+                          if (res.ok) { toast.success(res.message); } else toast.error(res.error);
+                        }}
+                        className="h-9 min-w-0 flex-1 rounded-xl text-[13px]"
+                      >
+                        <option value="ADMIN">{ROLE_LABELS.ADMIN}</option>
+                        <option value="MEMBER">{ROLE_LABELS.MEMBER}</option>
+                        <option value="VIEWER">{ROLE_LABELS.VIEWER}</option>
+                      </Select>
+                      <button
+                        onClick={async () => {
+                          if (!(await confirm({ title: `Retirer ${m.user.name} ?`, description: "Cette personne perdra immédiatement l'accès à l'espace.", confirmLabel: "Retirer", danger: true }))) return;
+                          const res = await removeMember(m.id);
+                          if (res.ok) { toast.success(res.message); } else toast.error(res.error);
+                        }}
+                        className="rounded-xl p-2 text-faint transition-colors hover:bg-rose-500/10 hover:text-rose-600"
+                        aria-label={`Retirer ${m.user.name}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold", R.chip)}><R.icon className="h-3.5 w-3.5" />{ROLE_LABELS[m.role]}</span>
+                  )}
+                </div>
+              </motion.li>
+            );
+          })}
+        </motion.ul>
+      </div>
       <Dialog
         open={open}
         onOpenChange={setOpen}
