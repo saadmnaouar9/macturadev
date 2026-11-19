@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
-import { AlertTriangle, ArrowUpRight, CalendarCheck2, CalendarClock, CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, ListTodo } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, CalendarCheck2, CalendarClock, CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, ListTodo, SlidersHorizontal } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { cn } from "@/lib/utils";
 
@@ -17,15 +17,15 @@ export interface CalEvent {
   late?: boolean;
 }
 
-/** text : couleur du libellé · dot : pastille · bar : barre de part (filtres) */
-const KINDS: Record<CalEvent["kind"], { label: string; text: string; dot: string; bar: string }> = {
-  invoice: { label: "Échéances clients", text: "text-emerald-700", dot: "bg-emerald-500", bar: "from-emerald-500 to-teal-400" },
-  purchase: { label: "À payer (fournisseurs)", text: "text-accent-600", dot: "bg-orange-500", bar: "from-orange-500 to-amber-400" },
-  quote: { label: "Expirations de devis", text: "text-amber-700", dot: "bg-amber-500", bar: "from-amber-500 to-yellow-400" },
-  task: { label: "Tâches", text: "text-brand-700", dot: "bg-blue-500", bar: "from-blue-500 to-sky-400" },
-  contract: { label: "Fins de contrat", text: "text-violet-700", dot: "bg-violet-500", bar: "from-violet-500 to-fuchsia-400" },
-  project: { label: "Fins de projet", text: "text-sky-700", dot: "bg-sky-500", bar: "from-sky-500 to-cyan-400" },
-  prospect: { label: "Relances prospects", text: "text-rose-700", dot: "bg-rose-500", bar: "from-rose-500 to-pink-400" },
+/** text : couleur du libellé · dot : pastille · chip : fond/bordure de la pastille de filtre active */
+const KINDS: Record<CalEvent["kind"], { label: string; text: string; dot: string; chip: string }> = {
+  invoice: { label: "Échéances clients", text: "text-emerald-700", dot: "bg-emerald-500", chip: "border-emerald-500/35 bg-emerald-500/10" },
+  purchase: { label: "À payer (fournisseurs)", text: "text-accent-600", dot: "bg-orange-500", chip: "border-orange-500/35 bg-orange-500/10" },
+  quote: { label: "Expirations de devis", text: "text-amber-700", dot: "bg-amber-500", chip: "border-amber-500/35 bg-amber-500/10" },
+  task: { label: "Tâches", text: "text-brand-700", dot: "bg-blue-500", chip: "border-blue-500/35 bg-blue-500/10" },
+  contract: { label: "Fins de contrat", text: "text-violet-700", dot: "bg-violet-500", chip: "border-violet-500/35 bg-violet-500/10" },
+  project: { label: "Fins de projet", text: "text-sky-700", dot: "bg-sky-500", chip: "border-sky-500/35 bg-sky-500/10" },
+  prospect: { label: "Relances prospects", text: "text-rose-700", dot: "bg-rose-500", chip: "border-rose-500/35 bg-rose-500/10" },
 };
 const WEEK = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const monthFmt = new Intl.DateTimeFormat("fr-FR", { month: "long", timeZone: "UTC" });
@@ -62,7 +62,7 @@ const itemVariants: Variants = { hidden: { opacity: 0, y: 10 }, show: { opacity:
 
 function MiniStat({ icon: Icon, label, value, tone }: { icon: typeof CalendarDays; label: string; value: number; tone: string }) {
   return (
-    <div className="flex items-center gap-3 px-4 first:pl-0 last:pr-0">
+    <div className="flex min-w-0 flex-col items-start gap-2 px-3 first:pl-0 last:pr-0 sm:flex-row sm:items-center sm:gap-3 sm:px-4">
       <span className={cn("flex h-10 w-10 items-center justify-center rounded-2xl", tone)}><Icon className="h-5 w-5" /></span>
       <div>
         <AnimatePresence mode="popLayout" initial={false}>
@@ -116,7 +116,6 @@ export function CalendarView({ month, events, today }: { month: string; events: 
   const todayCount = byDay.get(today)?.length ?? 0;
   const selEvents = byDay.get(selected) ?? [];
   const selDate = new Date(`${selected}T00:00:00Z`);
-  const total = Math.max(1, events.length);
 
   // Prochaines échéances : retards d'abord, puis à venir (toutes périodes chargées)
   const upcoming = useMemo(() => {
@@ -146,6 +145,35 @@ export function CalendarView({ month, events, today }: { month: string; events: 
     <>
       <PageHeader title="Calendrier" description="Échéances, relances et rendez-vous de tous vos modules, au même endroit." />
 
+      {/* Filtre par type : barre compacte, sur une seule ligne, juste sous le titre */}
+      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} aria-label="Filtrer par type" className="mb-4 flex items-center gap-3 rounded-2xl border border-line bg-surface/80 p-1.5 pl-3.5 shadow-[var(--shadow-sm)] backdrop-blur-sm">
+        <span className="flex shrink-0 items-center gap-2 border-r border-line-soft pr-3 text-[13px] font-semibold text-ink">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_4px_12px_-3px_rgb(59_110_245/0.6)]"><SlidersHorizontal className="h-3.5 w-3.5" /></span>
+          <span className="hidden sm:inline">Filtrer</span>
+        </span>
+        <ul className="scrollbar-thin flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5">
+          {(Object.keys(KINDS) as CalEvent["kind"][]).map((k) => {
+            const n = events.filter((e) => e.kind === k).length;
+            const off = hidden.has(k);
+            return (
+              <li key={k} className="shrink-0">
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setHidden((s) => { const x = new Set(s); if (off) x.delete(k); else x.add(k); return x; })}
+                  aria-pressed={!off}
+                  className={cn("flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-2.5 py-1.5 text-[12.5px] font-medium transition-all duration-200", off ? "border-transparent bg-transparent text-faint hover:bg-subtle" : cn(KINDS[k].chip, "text-ink hover:-translate-y-px hover:shadow-[var(--shadow-sm)]"))}
+                >
+                  <span className={cn("h-2 w-2 rounded-full transition-all", KINDS[k].dot, off && "scale-75 opacity-30")} />
+                  <span className={cn(off && "line-through")}>{KINDS[k].label}</span>
+                  <span className={cn("text-[11px] font-semibold tabular", off ? "text-faint" : "text-muted")}>{n}</span>
+                </motion.button>
+              </li>
+            );
+          })}
+        </ul>
+      </motion.section>
+
       {/* Bandeau : mois, vue, navigation, chiffres clés */}
       <motion.section initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="relative mb-4 overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
         <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
@@ -173,7 +201,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
               ))}
             </div>
           </div>
-          <div className="flex items-center divide-x divide-line-soft">
+          <div className="grid w-full grid-cols-3 divide-x divide-line-soft xl:flex xl:w-auto xl:items-center">
             <MiniStat icon={CalendarDays} label={`Événements en ${monthFmt.format(first)}`} value={inThisMonth.length} tone="bg-brand-500/12 text-brand-600" />
             <MiniStat icon={AlertTriangle} label="En retard" value={lateCount} tone="bg-rose-500/12 text-rose-600" />
             <MiniStat icon={CalendarCheck2} label="Aujourd'hui" value={todayCount} tone="bg-emerald-500/12 text-emerald-600" />
@@ -315,35 +343,6 @@ export function CalendarView({ month, events, today }: { month: string; events: 
                 {upcoming.map((e) => <motion.li key={e.id} variants={itemVariants}><EventRow e={e} today={today} compact /></motion.li>)}
               </motion.ul>
             )}
-          </section>
-
-          {/* Filtres avec part de chaque type */}
-          <section className="rounded-3xl border border-line-soft bg-surface p-5 shadow-[var(--shadow-sm)]">
-            <p className="text-sm font-semibold text-ink">Filtrer par type</p>
-            <ul className="mt-3 space-y-1">
-              {(Object.keys(KINDS) as CalEvent["kind"][]).map((k) => {
-                const n = events.filter((e) => e.kind === k).length;
-                const off = hidden.has(k);
-                return (
-                  <li key={k}>
-                    <button
-                      onClick={() => setHidden((s) => { const x = new Set(s); if (off) x.delete(k); else x.add(k); return x; })}
-                      aria-pressed={!off}
-                      className="group w-full rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-subtle"
-                    >
-                      <span className="flex items-center gap-2.5 text-[13px]">
-                        <span className={cn("h-2.5 w-2.5 rounded-full transition-opacity", KINDS[k].dot, off && "opacity-25")} />
-                        <span className={cn("flex-1 transition-colors", off ? "text-faint line-through" : "text-ink-soft")}>{KINDS[k].label}</span>
-                        <span className="text-xs tabular text-faint">{n}</span>
-                      </span>
-                      <span className="mt-1.5 block h-1 overflow-hidden rounded-full bg-subtle">
-                        <motion.span className={cn("block h-full rounded-full bg-gradient-to-r", KINDS[k].bar)} initial={{ width: 0 }} animate={{ width: off ? 0 : `${(n / total) * 100}%` }} transition={{ duration: 0.6, ease }} />
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
           </section>
         </aside>
       </div>
