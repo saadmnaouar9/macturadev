@@ -23,7 +23,7 @@ export function RegisterForm() {
 
   return (
     <AuthCard wide>
-      <AuthTitle title={<>Créez votre espace <span aria-hidden>✨</span></>} subtitle="Quelques informations pour configurer Mactura pour votre entreprise marocaine." />
+      <AuthTitle title={"Créez votre espace"} subtitle="Quelques informations pour configurer Mactura pour votre entreprise marocaine." />
       <form
         noValidate
         className="mt-7 space-y-3.5"

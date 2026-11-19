@@ -16,7 +16,7 @@ export function LoginForm({ next }: { next?: string }) {
 
   return (
     <AuthCard>
-      <AuthTitle title={<>Bienvenue sur Mactura <span aria-hidden>✨</span></>} subtitle="Vos identifiants servent uniquement à vous authentifier. Toutes les données restent dans votre base." />
+      <AuthTitle title={"Bienvenue sur Mactura"} subtitle="Vos identifiants servent uniquement à vous authentifier. Toutes les données restent dans votre base." />
       <form
         noValidate
         className="mt-7 space-y-3.5"
