@@ -185,7 +185,7 @@
 @keyframes space-shine { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(260%) skewX(-18deg); } }
 
 .space-logo { animation: space-float 6s ease-in-out infinite; }
-.space-card { background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 55%, rgba(255, 255, 255, 0.01) 100%); box-shadow: 0 0 0 1px rgba(125, 170, 255, 0.25), 0 30px 90px -20px rgba(40, 90, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); }
+.space-card { background: linear-gradient(180deg, rgb(20 36 78 / 0.5) 0%, rgb(9 18 44 / 0.42) 60%, rgb(6 12 32 / 0.4) 100%); box-shadow: 0 0 0 1px rgba(125, 170, 255, 0.28), 0 30px 90px -20px rgba(40, 90, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1); backdrop-filter: blur(26px) saturate(1.35); -webkit-backdrop-filter: blur(26px) saturate(1.35); }
 .space-input:-webkit-autofill, .space-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #150f2e inset; -webkit-text-fill-color: #fff; caret-color: #fff; }
 .space-btn-shine { position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent); transform: translateX(-120%) skewX(-18deg); }
 .space-btn:hover .space-btn-shine { animation: space-shine 0.9s ease; }

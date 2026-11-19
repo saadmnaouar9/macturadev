@@ -21,8 +21,9 @@ export function AuthCard({ children, wide, className }: { children: React.ReactN
         <GlassLogo />
       </motion.div>
       <motion.div
-        initial={{ opacity: 0, y: 28, scale: 0.97, filter: "blur(8px)" }}
-        animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+        // Pas de CSS « filter » sur cet élément : il désactive le backdrop-filter (le flou de verre) de la carte
+        initial={{ opacity: 0, y: 28, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         className={cn("space-card w-full rounded-[28px] px-6 pb-7 pt-14 text-white sm:px-8", className)}
       >
