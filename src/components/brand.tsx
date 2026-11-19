@@ -1,9 +1,14 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-/** Logo officiel (PNG fourni) */
+/** Logo officiel. Deux variantes : texte blanc (thème sombre) et texte bleu nuit (thème clair) — l'une ou l'autre est affichée selon <html data-theme>. */
 export function Logo({ className, priority }: { className?: string; priority?: boolean }) {
-  return <Image src="/brand/mactura-logo-light.png" alt="Mactura" width={2138} height={282} priority={priority} className={cn("h-6 w-auto", className)} />;
+  return (
+    <>
+      <Image src="/brand/mactura-logo-light.png" alt="Mactura" width={2138} height={282} priority={priority} className={cn("logo-on-dark h-6 w-auto", className)} />
+      <Image src="/brand/mactura-logo-on-light.webp" alt="Mactura" width={1280} height={168} priority={priority} className={cn("logo-on-light hidden h-6 w-auto", className)} />
+    </>
+  );
 }
 
 /** Icône officielle « a. » — barre latérale repliée, favicon, écrans d'authentification */

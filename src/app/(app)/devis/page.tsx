@@ -39,6 +39,13 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
     ...STATUSES.map((s) => db.quote.count({ where: { companyId, ...search, AND: [quoteStatusWhere(s)] } })),
   ]);
 
+  const [sentAgg, acceptedAgg, rejectedCount, allCount] = await Promise.all([
+    db.quote.aggregate({ where: { companyId, AND: [quoteStatusWhere("SENT")] }, _sum: { total: true }, _count: true }),
+    db.quote.aggregate({ where: { companyId, AND: [quoteStatusWhere("ACCEPTED")] }, _sum: { total: true }, _count: true }),
+    db.quote.count({ where: { companyId, AND: [quoteStatusWhere("REJECTED")] } }),
+    db.quote.count({ where: { companyId } }),
+  ]);
+
   return (
     <PageContainer>
       <PageHeader
@@ -51,6 +58,10 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           id: r.id, number: r.number, status: quoteDisplayStatus(r), rawStatus: r.status, issueDate: r.issueDate.toISOString(), expiryDate: r.expiryDate.toISOString(),
           total: Number(r.total), reference: r.reference, customer: r.customer, invoice: r.invoice,
         }))}
+        stats={{
+          all: allCount, sentCount: sentAgg._count, sentValue: Number(sentAgg._sum.total ?? 0n), acceptedCount: acceptedAgg._count, acceptedValue: Number(acceptedAgg._sum.total ?? 0n),
+          acceptanceBp: acceptedAgg._count + rejectedCount ? Math.round((acceptedAgg._count / (acceptedAgg._count + rejectedCount)) * 10000) : null,
+        }}
         total={total}
         sum={Number(sum._sum.total ?? 0n)}
         page={page}

@@ -4,12 +4,14 @@ import { MotionConfig } from "framer-motion";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "./ui/tooltip";
 import { ConfirmProvider } from "./ui/confirm";
+import { ThemeSync } from "./layout/theme";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <MotionConfig reducedMotion="user">
       <TooltipProvider>
         <ConfirmProvider>
+          <ThemeSync />
           {children}
           <Toaster
             theme="dark"

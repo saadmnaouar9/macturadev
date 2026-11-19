@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownContent, DropdownItem, DropdownLabel, DropdownMenu, DropdownTrigger } from "@/components/ui/dropdown";
 import { Breadcrumbs } from "./breadcrumbs";
 import { Notifications, type NotificationItem } from "./notifications";
+import { ThemeToggle } from "./theme";
 
 export function Topbar({
   onOpenMenu,
@@ -38,6 +39,7 @@ export function Topbar({
         <Search className="h-[18px] w-[18px]" />
       </button>
 
+      <ThemeToggle />
       <Notifications items={notifications} />
 
       {canWrite && (

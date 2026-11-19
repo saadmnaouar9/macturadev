@@ -74,7 +74,7 @@ export function AppShell({
           initial={false}
           animate={{ width: collapsed ? 68 : 252 }}
           transition={{ duration: 0.35, ease }}
-          className="sticky top-0 hidden h-dvh shrink-0 overflow-hidden border-r border-white/[0.05] bg-[#060d26]/80 backdrop-blur-xl lg:block"
+          className="sticky top-0 hidden h-dvh shrink-0 overflow-hidden border-r border-white/[0.05] bg-canvas/80 backdrop-blur-xl lg:block"
         >
           <SidebarContent user={user} collapsed={collapsed} onToggle={toggle} counts={counts} />
         </motion.aside>
@@ -93,7 +93,7 @@ export function AppShell({
                     animate={{ x: 0 }}
                     exit={{ x: "-100%", transition: { duration: 0.22, ease: [0.4, 0, 1, 1] } }}
                     transition={{ duration: 0.38, ease }}
-                    className="fixed inset-y-0 left-0 z-50 w-[280px] bg-[#060d26]/80 backdrop-blur-xl shadow-2xl focus:outline-none lg:hidden"
+                    className="fixed inset-y-0 left-0 z-50 w-[280px] bg-canvas/80 backdrop-blur-xl shadow-2xl focus:outline-none lg:hidden"
                   >
                     <D.Title className="sr-only">Navigation</D.Title>
                     <D.Description className="sr-only">Menu principal de Mactura</D.Description>

@@ -1,18 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Ban, CircleDollarSign, Copy, Download, Eye, FilePlus2, MoreHorizontal, Pencil, Receipt, Send, Trash2 } from "lucide-react";
+import { AlertTriangle, Ban, CalendarClock, CircleDollarSign, Copy, Download, Eye, FilePlus2, MoreHorizontal, Pencil, Receipt, Send, Trash2, TrendingUp, Wallet } from "lucide-react";
 import type { InvoiceStatus, PaymentStatus } from "@prisma/client";
 import type { InvoiceDisplayStatus } from "@/lib/status";
 import { Card } from "@/components/ui/card";
 import { InvoiceStatusBadge } from "@/components/ui/badge";
-import { LIFECYCLE } from "@/lib/status";
+import { INVOICE_STATUS, LIFECYCLE } from "@/lib/status";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { DropdownContent, DropdownItem, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useConfirm } from "@/components/ui/confirm";
+import { StatCard } from "@/components/ui/stat-card";
+import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
+import { startNavProgress } from "@/components/layout/top-progress";
 import { FilterTabs, ListState, Pagination, Row, SearchInput, SortHeader, Table, Td, Th, THead } from "@/components/data/list-state";
 import { useServerAction } from "@/hooks/use-action";
 import { formatMAD } from "@/lib/money";
@@ -77,27 +82,109 @@ function InvoiceRowActions({ inv, canWrite, canDelete }: { inv: InvoiceRow; canW
   );
 }
 
+const VIEW_KEY = "mactura.invoices.view";
+const EASE = [0.16, 1, 0.3, 1] as const;
+const LINE: Record<string, string> = {
+  neutral: "bg-faint", info: "bg-sky-500", success: "bg-emerald-500", warning: "bg-amber-500", danger: "bg-rose-500", brand: "bg-brand-500", violet: "bg-violet-500",
+};
+
+function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; index: number; canWrite: boolean; canDelete: boolean }) {
+  const router = useRouter();
+  const tone = INVOICE_STATUS[inv.status]?.tone ?? "neutral";
+  const active = inv.lifecycle === "ISSUED" || inv.lifecycle === "SENT";
+  const balance = inv.total - inv.amountPaid;
+  const pct = inv.total > 0 ? Math.min(100, (inv.amountPaid / inv.total) * 100) : 0;
+  const overdue = inv.status === "OVERDUE";
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 18, scale: 0.97 }}
+      animate={{ opacity: inv.lifecycle === "CANCELLED" ? 0.6 : 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
+      onMouseMove={(e) => {
+        const b = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
+        e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
+      }}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
+        startNavProgress();
+        router.push(`/factures/${inv.id}`);
+      }}
+      className="glass group relative flex cursor-pointer flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60"
+    >
+      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-0.5 opacity-80", LINE[tone])} />
+
+      <div className="relative flex items-start gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-inset ring-violet-100 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+          <Receipt className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <Link prefetch={false} href={`/factures/${inv.id}`} className={cn("block truncate font-mono text-[15px] font-semibold outline-none transition-colors group-hover:text-brand-700 focus-visible:underline", inv.number ? "text-ink" : "italic text-muted")}>{inv.number ?? "Brouillon"}</Link>
+          <Link prefetch={false} href={`/clients/${inv.customer.id}`} className="mt-0.5 block truncate text-xs text-muted transition-colors hover:text-brand-700">{inv.customer.name}</Link>
+        </div>
+        <div data-no-row-click className="-mr-1 -mt-1 shrink-0"><InvoiceRowActions inv={inv} canWrite={canWrite} canDelete={canDelete} /></div>
+      </div>
+
+      <div className="relative mt-3 flex min-h-[1.5rem] flex-wrap items-center gap-1.5">
+        <InvoiceStatusBadge status={inv.status} />
+        {active && <span className="rounded-md bg-subtle px-2 py-0.5 text-xs text-muted">{LIFECYCLE[inv.lifecycle].label}</span>}
+        {(inv.quoteNumber || inv.reference) && <span className="max-w-[150px] truncate rounded-md bg-subtle px-2 py-0.5 text-xs text-muted">{inv.quoteNumber ? `Devis ${inv.quoteNumber}` : inv.reference}</span>}
+      </div>
+
+      <div className="relative mt-4 border-t border-line-soft pt-3">
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] text-muted">Montant TTC</p>
+            <p className="whitespace-nowrap text-lg font-semibold tabular tracking-tight text-ink">{formatMAD(inv.total)}</p>
+          </div>
+          <div className="text-right text-xs">
+            <p className="whitespace-nowrap text-muted">Émise le {formatDate(inv.issueDate)}</p>
+            <p className={cn("mt-0.5 inline-flex items-center gap-1.5 whitespace-nowrap", overdue ? "font-medium text-rose-600" : "text-muted")}>
+              {overdue ? <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400/70" /><span className="relative h-2 w-2 rounded-full bg-rose-500" /></span> : <CalendarClock className="h-3.5 w-3.5" />}
+              {overdue ? "En retard · " : "Échéance "}{formatDate(inv.dueDate)}
+            </p>
+          </div>
+        </div>
+        {inv.lifecycle !== "CANCELLED" && inv.lifecycle !== "DRAFT" && (
+          <div className="mt-3">
+            <span className="block h-1.5 overflow-hidden rounded-full bg-subtle">
+              <motion.span className={cn("block h-full rounded-full", inv.paymentStatus === "PAID" ? "bg-emerald-500" : "bg-violet-500")} initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.25 + Math.min(index, 14) * 0.03, ease: EASE }} />
+            </span>
+            <p className="mt-1.5 flex justify-between gap-2 text-[11px] tabular">
+              <span className="text-muted">Encaissé {formatMAD(inv.amountPaid)}</span>
+              <span className={balance > 0 ? "font-medium text-amber-700" : "text-emerald-700"}>{balance > 0 ? `Reste ${formatMAD(balance)}` : "Soldée"}</span>
+            </p>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export function InvoicesTable({
   rows, summary, total, page, pageSize, hasQuery, counts, canWrite, canDelete,
 }: {
   rows: InvoiceRow[]; summary: { invoiced: number; paid: number; balance: number }; total: number; page: number; pageSize: number; hasQuery: boolean;
   counts: Record<string, number>; canWrite: boolean; canDelete: boolean;
 }) {
+  const [view, setView] = useState<ViewMode>("grid");
+  useEffect(() => {
+    try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
+  }, []);
+  const changeView = (m: ViewMode) => {
+    setView(m);
+    try { localStorage.setItem(VIEW_KEY, m); } catch { /* ignoré */ }
+  };
   return (
     <ListState>
-      <div className="mb-4 grid grid-cols-3 gap-3">
-        {[
-          { label: "Facturé (sélection)", value: summary.invoiced, cls: "text-ink" },
-          { label: "Encaissé", value: summary.paid, cls: "text-emerald-700" },
-          { label: "Reste à encaisser", value: summary.balance, cls: summary.balance > 0 ? "text-amber-700" : "text-ink" },
-        ].map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, duration: 0.4 }}>
-            <Card className="px-4 py-3.5">
-              <p className="text-xs text-muted">{s.label}</p>
-              <p className={cn("mt-1 truncate text-[15px] font-semibold tracking-tight sm:text-lg", s.cls)}><AnimatedNumber value={s.value} kind="mad" duration={0.7} /></p>
-            </Card>
-          </motion.div>
-        ))}
+      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard index={0} tone="brand" icon={TrendingUp} label="Facturé" sub="sélection en cours"><AnimatedNumber value={summary.invoiced} kind="mad" duration={0.7} /></StatCard>
+        <StatCard index={1} tone="emerald" icon={CircleDollarSign} label="Encaissé" sub="paiements reçus"><AnimatedNumber value={summary.paid} kind="mad" duration={0.7} /></StatCard>
+        <StatCard index={2} tone="amber" icon={Wallet} label="Reste à encaisser" sub="factures non soldées" pulse={summary.balance > 0}><AnimatedNumber value={summary.balance} kind="mad" duration={0.7} /></StatCard>
+        <StatCard index={3} tone="rose" icon={AlertTriangle} label="En retard" sub="échéance dépassée"><AnimatedNumber value={counts.OVERDUE ?? 0} /></StatCard>
       </div>
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-3 p-4 xl:flex-row xl:items-center xl:justify-between">
@@ -116,7 +203,10 @@ export function InvoicesTable({
               { value: "CANCELLED", label: "Annulées", count: counts.CANCELLED },
             ]}
           />
-          <SearchInput placeholder="Numéro, client, référence…" />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <SearchInput placeholder="Numéro, client, référence…" />
+            <ViewToggle mode={view} onChange={changeView} layoutId="invoice-view-toggle" />
+          </div>
         </div>
         {rows.length === 0 ? (
           hasQuery ? (
@@ -126,6 +216,11 @@ export function InvoicesTable({
           )
         ) : (
           <>
+            {view === "grid" ? (
+              <div className="grid gap-4 p-4 pt-1 sm:grid-cols-2 xl:grid-cols-3">
+                {rows.map((inv, i) => <InvoiceCard key={inv.id} inv={inv} index={i} canWrite={canWrite} canDelete={canDelete} />)}
+              </div>
+            ) : (
             <Table>
               <THead>
                 <SortHeader field="number">Numéro</SortHeader>
@@ -173,6 +268,7 @@ export function InvoicesTable({
                 })}
               </tbody>
             </Table>
+            )}
             <Pagination page={page} pageSize={pageSize} total={total} />
           </>
         )}
