@@ -382,3 +382,43 @@ html[data-theme="light"] ::selection { background: rgb(43 107 243 / 0.22); color
 /* Le mode clair n'affecte jamais la barre latérale ni les pages d'authentification */
 [data-theme="dark"] .glass { background: linear-gradient(180deg, rgb(16 30 66 / 0.62) 0%, rgb(9 18 42 / 0.7) 100%); }
 html[data-theme="light"] .paper { box-shadow: 0 0 0 1px rgb(24 44 110 / 0.14), 0 18px 44px -18px rgb(16 28 70 / 0.3); }
+
+/* ───────────── Barre latérale : suit le thème (sombre par défaut, claire en mode clair) ───────────── */
+:root { --sidebar-bg: #060d26; }
+html[data-theme="light"] { --sidebar-bg: #ffffff; }
+html[data-theme="light"] [data-sidebar] { border-color: rgb(24 44 110 / 0.12); box-shadow: 1px 0 0 rgb(24 44 110 / 0.04); }
+/* Teintes blanches translucides (survols, carte entreprise, séparateurs) → teintes bleu nuit sur fond clair */
+html[data-theme="light"] [data-sidebar] [class*=" bg-white/["], html[data-theme="light"] [data-sidebar] [class^="bg-white/["] { background-color: rgb(24 44 110 / 0.035); }
+html[data-theme="light"] [data-sidebar] [class*="hover:bg-white/["]:hover,
+html[data-theme="light"] [data-sidebar] [class*="data-[state=open]:bg-white/["][data-state="open"] { background-color: rgb(24 44 110 / 0.07); }
+html[data-theme="light"] [data-sidebar] .group:hover > span[class*="bg-white/["] { background-color: rgb(24 44 110 / 0.06); }
+html[data-theme="light"] [data-sidebar] [class*="border-white/["] { border-color: rgb(24 44 110 / 0.1); }
+html[data-theme="light"] [data-sidebar] [class*="ring-white/["] { --tw-ring-color: rgb(24 44 110 / 0.1); }
+/* Élément actif : pastille bleu clair sans halo lumineux */
+html[data-theme="light"] [data-sidebar] .nav-active-pill {
+  background: linear-gradient(90deg, rgb(43 107 243 / 0.14), rgb(115 87 245 / 0.07));
+  box-shadow: inset 0 0 0 1px rgb(43 107 243 / 0.28);
+}
+
+/* ───────────── Pages d'authentification en mode clair (bouton en haut à droite) ───────────── */
+html[data-theme="light"] [data-auth] :is(h1, p, span, label, a, div, button, input).text-white { color: #0e1730; }
+html[data-theme="light"] [data-auth] [class*="text-white/"] { color: #55638b; }
+html[data-theme="light"] [data-auth] [class*="hover:text-white"]:hover { color: #0e1730; }
+html[data-theme="light"] [data-auth] .text-violet-300 { color: #4f43ad; }
+html[data-theme="light"] [data-auth] [class*="hover:text-violet-200"]:hover { color: #342a8c; }
+html[data-theme="light"] [data-auth] .text-rose-300 { color: #be123c; }
+html[data-theme="light"] [data-auth] .text-emerald-300 { color: #047857; }
+html[data-theme="light"] [data-auth] .space-btn, html[data-theme="light"] [data-auth] .space-btn * { color: #fff; }
+html[data-theme="light"] [data-auth] .space-card {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.86) 0%, rgb(247 250 255 / 0.8) 100%);
+  box-shadow: 0 0 0 1px rgb(24 44 110 / 0.12), 0 30px 80px -26px rgb(30 60 160 / 0.32), inset 0 1px 0 rgb(255 255 255 / 0.9);
+}
+html[data-theme="light"] [data-auth] .space-input { background: #fff; color: #0e1730; }
+html[data-theme="light"] [data-auth] .space-input:not(:hover):not(:focus) { border-color: rgb(24 44 110 / 0.18); }
+html[data-theme="light"] [data-auth] .space-input:hover:not(:focus) { border-color: rgb(24 44 110 / 0.34); }
+html[data-theme="light"] [data-auth] .space-input::placeholder { color: #6b7799; }
+html[data-theme="light"] [data-auth] .space-input:-webkit-autofill, html[data-theme="light"] [data-auth] .space-input:-webkit-autofill:focus { -webkit-box-shadow: 0 0 0 1000px #fff inset; -webkit-text-fill-color: #0e1730; caret-color: #0e1730; }
+html[data-theme="light"] [data-auth] [class*=" bg-white/"], html[data-theme="light"] [data-auth] [class^="bg-white/"] { background-color: rgb(24 44 110 / 0.045); }
+html[data-theme="light"] [data-auth] [class*="border-white/"]:not(.space-input) { border-color: rgb(24 44 110 / 0.14); }
+html[data-theme="light"] [data-auth] [role="checkbox"] > span:first-child:not(.bg-violet-500) { background: #fff; border-color: rgb(24 44 110 / 0.3); }
+html[data-theme="light"] [data-auth] .space-input + span, html[data-theme="light"] [data-auth] .group > span.pointer-events-none { color: #6b7799; }

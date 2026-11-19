@@ -15,6 +15,13 @@ export function Logo({ className, priority, adaptive }: { className?: string; pr
 }
 
 /** Icône officielle « a. » — barre latérale repliée, favicon, écrans d'authentification */
-export function LogoMark({ className }: { className?: string }) {
-  return <Image src="/brand/a-mark.png" alt="Mactura" width={768} height={768} className={cn("h-8 w-8 object-contain", className)} />;
+export function LogoMark({ className, adaptive }: { className?: string; adaptive?: boolean }) {
+  // adaptive : version blanche en thème sombre, version bleu nuit en thème clair (barre latérale)
+  if (!adaptive) return <Image src="/brand/a-mark.png" alt="Mactura" width={768} height={768} className={cn("h-8 w-8 object-contain", className)} />;
+  return (
+    <>
+      <Image src="/brand/a-mark-light.png" alt="Mactura" width={768} height={768} className={cn("h-8 w-8 object-contain [[data-theme=light]_&]:hidden", className)} />
+      <Image src="/brand/a-mark.png" alt="Mactura" width={768} height={768} className={cn("hidden h-8 w-8 object-contain [[data-theme=light]_&]:block", className)} />
+    </>
+  );
 }

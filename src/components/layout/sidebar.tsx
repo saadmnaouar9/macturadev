@@ -33,7 +33,7 @@ function NavLink({ item, collapsed, active, count, onNavigate, layoutId }: { ite
       {active && (
         <motion.span
           layoutId={layoutId}
-          className="absolute inset-0 rounded-lg bg-gradient-to-r from-brand-500/25 to-[#7357f5]/10 shadow-[inset_0_0_0_1px_rgb(120_170_255/0.28),0_0_26px_-8px_rgb(59_130_246/0.7)]"
+          className="nav-active-pill absolute inset-0 rounded-lg bg-gradient-to-r from-brand-500/25 to-[#7357f5]/10 shadow-[inset_0_0_0_1px_rgb(120_170_255/0.28),0_0_26px_-8px_rgb(59_130_246/0.7)]"
           transition={{ type: "spring", stiffness: 520, damping: 40 }}
         />
       )}
@@ -155,11 +155,11 @@ export function SidebarContent({
           <AnimatePresence mode="wait" initial={false}>
             {collapsed ? (
               <motion.span key="mark" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
-                <LogoMark />
+                <LogoMark adaptive />
               </motion.span>
             ) : (
               <motion.span key="logo" initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25, ease }}>
-                <Logo className="h-[22px]" />
+                <Logo adaptive className="h-[22px]" />
               </motion.span>
             )}
           </AnimatePresence>
