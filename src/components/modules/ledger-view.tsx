@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import dynamic from "next/dynamic";
-import { ArrowDownLeft, ArrowUpRight, Banknote, Landmark, Pencil, Plus, Scale, Settings2, Trash2, Wallet } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Banknote, Landmark, Pencil, Plus, Scale, Settings2, Trash2, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -97,6 +97,11 @@ export function LedgerView(p: {
     if (res.ok) { toast.success(res.message); setOpeningOpen(false); } else toast.error(res.error);
   };
 
+  // Caisse : résumé du mois (utilisé par la carte principale)
+  const net = p.month.inflow - p.month.outflow;
+  const flowTotal = p.month.inflow + p.month.outflow;
+  const inPct = flowTotal ? (p.month.inflow / flowTotal) * 100 : 50;
+
   const cards = isCash
     ? [{ label: "Solde de la caisse", value: p.balances.cash, icon: Banknote, tone: "bg-emerald-50 text-emerald-700 ring-emerald-100", big: true }]
     : [
@@ -118,7 +123,56 @@ export function LedgerView(p: {
         }
       />
 
-      <div className={cn("mb-4 grid gap-3", isCash ? "sm:grid-cols-3" : "sm:grid-cols-3")}>
+      {isCash ? (
+      <motion.section initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="relative mb-4 overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+        <div aria-hidden className="pointer-events-none absolute -left-24 -top-28 h-72 w-72 rounded-full bg-emerald-500/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-32 right-1/4 h-64 w-64 rounded-full bg-teal-400/10 blur-3xl" />
+        <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center">
+          {/* Solde de la caisse */}
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 text-white shadow-[0_8px_20px_-6px_rgb(16_185_129/0.6)]"><Banknote className="h-5 w-5" /></span>
+              <div>
+                <p className="text-[13px] font-medium text-muted">Solde de la caisse</p>
+                <p className="text-xs text-faint">Espèces disponibles aujourd&apos;hui</p>
+              </div>
+            </div>
+            <p className={cn("mt-4 text-4xl font-semibold leading-none tracking-[-0.03em] sm:text-5xl", p.balances.cash < 0 ? "text-rose-600" : "text-ink")}><AnimatedNumber value={p.balances.cash} kind="mad" /></p>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold", net >= 0 ? "bg-emerald-500/12 text-emerald-700" : "bg-rose-500/12 text-rose-600")}>
+                {net >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                {net >= 0 ? "+" : "−"}{formatMAD(Math.abs(net))} ce mois
+              </span>
+              <span className="rounded-full bg-subtle px-2.5 py-1 font-medium text-muted">Solde d&apos;ouverture : {formatMAD(p.balances.openingCash)}</span>
+            </div>
+          </div>
+
+          {/* Flux du mois */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="rounded-2xl border border-line-soft bg-canvas/50 p-4">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-600"><ArrowDownLeft className="h-4 w-4" /></span>
+                <p className="mt-3 text-xs font-medium text-muted">Entrées du mois</p>
+                <p className="mt-1 text-lg font-semibold tabular text-emerald-700">+{formatMAD(p.month.inflow)}</p>
+              </motion.div>
+              <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="rounded-2xl border border-line-soft bg-canvas/50 p-4">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-500/12 text-accent-600"><ArrowUpRight className="h-4 w-4" /></span>
+                <p className="mt-3 text-xs font-medium text-muted">Sorties du mois</p>
+                <p className="mt-1 text-lg font-semibold tabular text-ink">−{formatMAD(p.month.outflow)}</p>
+              </motion.div>
+            </div>
+            <div>
+              <div className="flex h-2.5 overflow-hidden rounded-full bg-subtle" role="img" aria-label="Répartition entrées / sorties du mois">
+                <motion.div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400" initial={{ width: 0 }} animate={{ width: `${inPct}%` }} transition={{ duration: 0.9, delay: 0.2, ease }} />
+                <motion.div className="h-full bg-gradient-to-r from-orange-500 to-amber-400" initial={{ width: 0 }} animate={{ width: `${100 - inPct}%` }} transition={{ duration: 0.9, delay: 0.3, ease }} />
+              </div>
+              <div className="mt-1.5 flex justify-between text-[11px] font-medium text-faint"><span>{flowTotal ? Math.round(inPct) : 0} % entrées</span><span>{flowTotal ? Math.round(100 - inPct) : 0} % sorties</span></div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+      ) : (
+      <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {cards.map((c, i) => (
           <motion.div key={c.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, duration: 0.45, ease }} className={cn(c.big && !isCash && "sm:col-span-1")}>
             <Card className="p-5">
@@ -130,13 +184,8 @@ export function LedgerView(p: {
             </Card>
           </motion.div>
         ))}
-        {isCash && (
-          <>
-            <Card className="p-5"><p className="text-[13px] font-medium text-muted">Entrées du mois</p><p className="mt-3 text-xl font-semibold tabular text-emerald-700">+{formatMAD(p.month.inflow)}</p></Card>
-            <Card className="p-5"><p className="text-[13px] font-medium text-muted">Sorties du mois</p><p className="mt-3 text-xl font-semibold tabular text-ink">−{formatMAD(p.month.outflow)}</p></Card>
-          </>
-        )}
       </div>
+      )}
 
       {!isCash && p.cashflow && (
         <div className="mb-4 grid gap-4 xl:grid-cols-3">
@@ -169,8 +218,8 @@ export function LedgerView(p: {
       )}
 
       <ListState>
-        <Card className="overflow-hidden">
-          <div className="flex flex-col gap-3 p-4 xl:flex-row xl:items-center xl:justify-between">
+        <Card className={cn("overflow-hidden", isCash && "rounded-3xl")}>
+          <div className={cn("flex flex-col gap-3 p-4 xl:flex-row xl:items-center xl:justify-between", isCash && "border-b border-line-soft bg-canvas/40")}>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <FilterTabs param="flow" layoutId="ledger-flow" options={[{ value: "", label: "Tous les mouvements" }, { value: "in", label: "Entrées" }, { value: "out", label: "Sorties" }]} />
               {!isCash && (<><div className="hidden h-5 w-px bg-line sm:block" /><FilterTabs param="account" layoutId="ledger-account" options={[{ value: "", label: "Tous comptes" }, { value: "BANK", label: "Banque" }, { value: "CASH", label: "Caisse" }]} /></>)}
@@ -197,13 +246,22 @@ export function LedgerView(p: {
                     <Row key={r.id} index={i}>
                       <Td className="whitespace-nowrap text-[13px] text-ink-soft">{formatDate(r.date)}</Td>
                       <Td>
-                        <span className="text-[13px] font-medium text-ink">{r.href ? <Link prefetch={false} href={r.href} className="hover:text-brand-700">{r.label}</Link> : r.label}</span>
-                        {(r.detail || r.reference) && <span className="block max-w-[300px] truncate text-xs text-muted">{[r.detail, r.reference].filter(Boolean).join(" · ")}</span>}
+                        <div className="flex items-center gap-3">
+                          {isCash && (
+                            <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-xl", r.direction === "IN" ? "bg-emerald-500/12 text-emerald-600" : "bg-orange-500/12 text-accent-600")} aria-hidden>
+                              {r.direction === "IN" ? <ArrowDownLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                            </span>
+                          )}
+                          <div className="min-w-0">
+                            <span className="text-[13px] font-medium text-ink">{r.href ? <Link prefetch={false} href={r.href} className="hover:text-brand-700">{r.label}</Link> : r.label}</span>
+                            {(r.detail || r.reference) && <span className="block max-w-[300px] truncate text-xs text-muted">{[r.detail, r.reference].filter(Boolean).join(" · ")}</span>}
+                          </div>
+                        </div>
                       </Td>
                       {!isCash && <Td className="hidden md:table-cell"><Badge tone={r.account === "CASH" ? "success" : "info"} dot={false}>{r.account === "CASH" ? "Caisse" : "Banque"}</Badge></Td>}
                       <Td className="hidden text-[13px] text-ink-soft lg:table-cell">{r.category ?? "—"}</Td>
-                      <Td align="right" className="text-[13px] font-semibold tabular text-emerald-700">{r.direction === "IN" ? `+${formatMAD(r.amount)}` : ""}</Td>
-                      <Td align="right" className="text-[13px] font-semibold tabular text-ink">{r.direction === "OUT" ? `−${formatMAD(r.amount)}` : ""}</Td>
+                      <Td align="right" className="whitespace-nowrap text-[13px] font-semibold tabular text-emerald-700">{r.direction === "IN" ? (isCash ? <span className="inline-block rounded-lg bg-emerald-500/10 px-2 py-1">{`+${formatMAD(r.amount)}`}</span> : `+${formatMAD(r.amount)}`) : ""}</Td>
+                      <Td align="right" className="whitespace-nowrap text-[13px] font-semibold tabular text-ink">{r.direction === "OUT" ? (isCash ? <span className="inline-block rounded-lg bg-orange-500/10 px-2 py-1">{`−${formatMAD(r.amount)}`}</span> : `−${formatMAD(r.amount)}`) : ""}</Td>
                       <Td align="right" className={cn("hidden text-[13px] tabular md:table-cell", r.balanceAfter < 0 ? "text-rose-600" : "text-muted")}>{formatMAD(r.balanceAfter)}</Td>
                       <Td>
                         {r.entryId && p.canWrite && (
