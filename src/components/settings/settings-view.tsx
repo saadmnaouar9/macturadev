@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { Building2, Check, Crown, Eye, FileCog, KeyRound, Landmark, Pencil, Percent, Plus, ShieldCheck, Star, Trash2, UserPlus, UserRound, Users } from "lucide-react";
+import { Building2, Check, Crown, Eye, EyeOff, FileCog, KeyRound, Landmark, Pencil, Percent, Plus, ShieldCheck, Star, Trash2, UserPlus, UserRound, Users } from "lucide-react";
 import type { Role } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -361,28 +361,114 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
   );
 }
 
-function ProfileTab({ profile }: { profile: Props["profile"] }) {
-  const router = useRouter();
+/** Carte de formulaire du profil : en-tête avec icône, contenu, pied d'actions */
+function ProfileCard({ icon: Icon, title, description, tone, footer, children, delay = 0 }: { icon: typeof UserRound; title: string; description?: string; tone: string; footer: React.ReactNode; children: React.ReactNode; delay?: number }) {
+  return (
+    <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay, ease }} className="overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+      <div className="flex items-center gap-3.5 px-5 pb-1 pt-5 sm:px-6">
+        <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl", tone)}><Icon className="h-5 w-5" /></span>
+        <div>
+          <h3 className="text-[15px] font-semibold tracking-tight text-ink">{title}</h3>
+          {description && <p className="text-[13px] text-muted">{description}</p>}
+        </div>
+      </div>
+      <div className="px-5 py-5 sm:px-6">{children}</div>
+      <div className="flex items-center justify-end gap-3 border-t border-line-soft bg-canvas/40 px-5 py-3 sm:px-6">{footer}</div>
+    </motion.section>
+  );
+}
+
+/** Force indicative du mot de passe (affichage uniquement : les règles réelles restent celles du serveur) */
+function strengthOf(pw: string) {
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw) || pw.length >= 12) score++;
+  return score;
+}
+const STRENGTH = [
+  { label: "Trop court", bar: "bg-rose-500", text: "text-rose-600" },
+  { label: "Faible", bar: "bg-rose-500", text: "text-rose-600" },
+  { label: "Moyen", bar: "bg-amber-500", text: "text-amber-600" },
+  { label: "Bon", bar: "bg-emerald-500", text: "text-emerald-600" },
+  { label: "Excellent", bar: "bg-emerald-500", text: "text-emerald-600" },
+];
+
+function ProfileTab({ profile, role }: { profile: Props["profile"]; role?: Role }) {
   const prof = useForm(profile);
   const pw = useForm({ current: "", next: "", confirm: "" });
+  const [show, setShow] = useState(false);
+  const pwType = show ? "text" : "password";
+  const strength = strengthOf(pw.values.next);
+  const S = STRENGTH[pw.values.next ? strength : 0];
+  const matches = pw.values.confirm.length > 0 && pw.values.confirm === pw.values.next;
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
+      {/* Identité */}
+      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+        <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-28 right-10 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
+          <motion.span whileHover={{ rotate: -4, scale: 1.05 }} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-violet-500 text-xl font-semibold text-white shadow-[0_10px_24px_-8px_rgb(59_110_245/0.65)]">{initials(profile.name)}</motion.span>
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate text-lg font-semibold tracking-tight text-ink">{profile.name}</h2>
+            <p className="truncate text-[13px] text-muted">{profile.email}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {role && <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/12 px-3 py-1.5 text-xs font-semibold text-brand-700"><ShieldCheck className="h-3.5 w-3.5" />{ROLE_LABELS[role]}</span>}
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/12 px-3 py-1.5 text-xs font-semibold text-emerald-700"><Check className="h-3.5 w-3.5" />Compte sécurisé</span>
+          </div>
+        </div>
+      </motion.section>
+
       <form onSubmit={(e) => { e.preventDefault(); prof.submit(() => updateProfile(prof.values)); }} noValidate>
-        <Section title="Mon profil" footer={<Button type="submit" loading={prof.pending}>Enregistrer</Button>}>
+        <ProfileCard icon={UserRound} title="Mon profil" description="Vos informations personnelles et votre e-mail de connexion." tone="bg-brand-500/12 text-brand-600" delay={0.08} footer={<Button type="submit" loading={prof.pending}>Enregistrer</Button>}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Nom complet" error={prof.errors.name}>{(p) => <Input {...p} value={prof.values.name} onChange={(e) => prof.set("name", e.target.value)} />}</Field>
             <Field label="E-mail de connexion" error={prof.errors.email}>{(p) => <Input {...p} type="email" value={prof.values.email} onChange={(e) => prof.set("email", e.target.value)} />}</Field>
           </div>
-        </Section>
+        </ProfileCard>
       </form>
+
       <form onSubmit={(e) => { e.preventDefault(); pw.submit(() => changePassword(pw.values), { onSuccess: () => pw.setValues({ current: "", next: "", confirm: "" }) }); }} noValidate>
-        <Section title="Mot de passe" description="Le changement déconnecte vos autres appareils." footer={<Button type="submit" loading={pw.pending}><KeyRound className="h-4 w-4" /> Modifier le mot de passe</Button>}>
+        <ProfileCard
+          icon={KeyRound}
+          title="Mot de passe"
+          description="Le changement déconnecte vos autres appareils."
+          tone="bg-violet-500/12 text-violet-600"
+          delay={0.16}
+          footer={
+            <>
+              <button type="button" onClick={() => setShow((v) => !v)} className="mr-auto inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted transition-colors hover:bg-subtle hover:text-ink" aria-pressed={show}>
+                {show ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />} {show ? "Masquer" : "Afficher"} les mots de passe
+              </button>
+              <Button type="submit" loading={pw.pending}><KeyRound className="h-4 w-4" /> Modifier le mot de passe</Button>
+            </>
+          }
+        >
           <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Mot de passe actuel" error={pw.errors.current}>{(p) => <Input {...p} type="password" autoComplete="current-password" value={pw.values.current} onChange={(e) => pw.set("current", e.target.value)} />}</Field>
-            <Field label="Nouveau mot de passe" error={pw.errors.next}>{(p) => <Input {...p} type="password" autoComplete="new-password" value={pw.values.next} onChange={(e) => pw.set("next", e.target.value)} />}</Field>
-            <Field label="Confirmation" error={pw.errors.confirm}>{(p) => <Input {...p} type="password" autoComplete="new-password" value={pw.values.confirm} onChange={(e) => pw.set("confirm", e.target.value)} />}</Field>
+            <Field label="Mot de passe actuel" error={pw.errors.current}>{(p) => <Input {...p} type={pwType} autoComplete="current-password" value={pw.values.current} onChange={(e) => pw.set("current", e.target.value)} />}</Field>
+            <Field label="Nouveau mot de passe" error={pw.errors.next}>{(p) => <Input {...p} type={pwType} autoComplete="new-password" value={pw.values.next} onChange={(e) => pw.set("next", e.target.value)} />}</Field>
+            <Field label="Confirmation" error={pw.errors.confirm}>{(p) => <Input {...p} type={pwType} autoComplete="new-password" value={pw.values.confirm} onChange={(e) => pw.set("confirm", e.target.value)} />}</Field>
           </div>
-        </Section>
+          <div className="mt-4 rounded-2xl bg-canvas/50 p-3.5 ring-1 ring-inset ring-line-soft">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-1 gap-1.5" role="img" aria-label={`Force du mot de passe : ${S.label}`}>
+                {[1, 2, 3, 4].map((n) => (
+                  <span key={n} className="h-1.5 flex-1 overflow-hidden rounded-full bg-subtle">
+                    <motion.span className={cn("block h-full rounded-full", S.bar)} initial={false} animate={{ width: pw.values.next && strength >= n ? "100%" : "0%" }} transition={{ duration: 0.3, ease }} />
+                  </span>
+                ))}
+              </div>
+              <span className={cn("w-20 text-right text-xs font-semibold", pw.values.next ? S.text : "text-faint")}>{pw.values.next ? S.label : "—"}</span>
+            </div>
+            <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+              <span>8 caractères minimum, avec lettres et chiffres.</span>
+              {matches && <span className="inline-flex items-center gap-1 font-medium text-emerald-600"><Check className="h-3 w-3" /> Les mots de passe correspondent</span>}
+            </p>
+          </div>
+        </ProfileCard>
       </form>
     </div>
   );
@@ -421,7 +507,7 @@ export function SettingsView(props: Props) {
           {tab === "documents" && <DocumentsTab initial={props.documents} taxRates={props.taxRates} canEdit={props.perms.settings} />}
           {tab === "tva" && <TaxTab taxRates={props.taxRates} canEdit={props.perms.settings} />}
           {tab === "equipe" && <TeamTab members={props.members} canManage={props.perms.members} />}
-          {tab === "profil" && <ProfileTab profile={props.profile} />}
+          {tab === "profil" && <ProfileTab profile={props.profile} role={props.members.find((m) => m.isMe)?.role} />}
         </motion.div>
       </AnimatePresence>
     </div>
