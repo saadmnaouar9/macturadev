@@ -106,13 +106,15 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
     if (!m) return;
     markers.current.forEach((mk) => mk.remove());
     markers.current.clear();
+    // Beaucoup de villes : repères plus petits pour limiter les chevauchements
+    const size = groups.length > 10 ? 30 : 42;
     groups.forEach((g) => {
       const icon = L.divIcon({
         className: "sup-pin",
-        html: `<span class="sup-pin-bubble${g.due > 0 ? " is-due" : ""}">${g.items.length}</span>`,
-        iconSize: [42, 42],
-        iconAnchor: [21, 21],
-        popupAnchor: [0, -20],
+        html: `<span class="sup-pin-bubble${g.due > 0 ? " is-due" : ""}" style="width:${size}px;height:${size}px;font-size:${size < 36 ? 12 : 14}px">${g.items.length}</span>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
+        popupAnchor: [0, -size / 2 + 2],
       });
       const mk = L.marker([g.lat, g.lng], { icon, title: `${g.city} : ${g.items.length} fournisseur(s)` }).addTo(m);
       mk.bindPopup(() => popupContent(g), { maxWidth: 280, closeButton: false });
@@ -122,7 +124,7 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
     });
     if (groups.length) {
       const b = L.latLngBounds(groups.map((g) => [g.lat, g.lng] as [number, number]));
-      m.fitBounds(b, { padding: [60, 60], maxZoom: 7, animate: false });
+      m.fitBounds(b, { padding: [40, 40], maxZoom: 7, animate: false });
     } else {
       m.setView([31.8, -7.1], 5);
     }
@@ -138,14 +140,14 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
 
   return (
     <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_270px]">
-      <div className="relative isolate h-[380px] lg:h-[430px]">
+      <div className="relative isolate h-[400px] lg:h-[460px]">
         <div ref={el} className="sup-map absolute inset-0" role="application" aria-label="Carte des fournisseurs" />
         <div className="pointer-events-none absolute left-3 top-3 z-[500] flex gap-2">
           <span className="sup-legend"><span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-brand-500 to-violet-500" /> À jour</span>
           <span className="sup-legend"><span className="h-2.5 w-2.5 rounded-full bg-gradient-to-br from-orange-500 to-rose-500" /> Solde à payer</span>
         </div>
       </div>
-      <div className="flex max-h-[430px] flex-col border-t border-line-soft lg:border-l lg:border-t-0">
+      <div className="flex max-h-[460px] flex-col border-t border-line-soft lg:border-l lg:border-t-0">
         <p className="px-4 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-faint">Villes ({groups.length})</p>
         <ul className="scrollbar-thin flex-1 space-y-1 overflow-y-auto px-2 pb-3">
           {groups.length === 0 && <li className="px-3 py-6 text-center text-[13px] text-faint">Aucune ville renseignée sur vos fournisseurs.</li>}

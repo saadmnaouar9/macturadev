@@ -429,6 +429,49 @@ export async function seedDemo(client: PrismaClient, opts: { quiet?: boolean } =
     }
   }
 
+  // Fournisseurs supplémentaires, répartis dans tout le Maroc (carte des fournisseurs).
+  // Valeurs déterministes (sans tirage aléatoire) : elles ne modifient pas le reste du jeu de données.
+  const EXTRA_SUPPLIERS = [
+    { name: "Atlas Packaging Industries", city: "Tanger", paymentDays: 30, cat: "Fournitures", amount: 14_800 },
+    { name: "Souss Informatique Services", city: "Agadir", paymentDays: 30, cat: "Services" },
+    { name: "Fès Mobilier Professionnel", city: "Fès", paymentDays: 45, cat: "Matériel", amount: 36_500 },
+    { name: "Marrakech Print & Signalétique", city: "Marrakech", paymentDays: 30, cat: "Marketing" },
+    { name: "Oriental Logistique Express", city: "Oujda", paymentDays: 30, cat: "Déplacements", amount: 9_200 },
+    { name: "Kénitra Énergie Solaire", city: "Kénitra", paymentDays: 60, cat: "Énergie" },
+    { name: "Meknès Formation & Conseil", city: "Meknès", paymentDays: 30, cat: "Services", amount: 18_000 },
+    { name: "Tétouan Textile Pro", city: "Tétouan", paymentDays: 45, cat: "Fournitures" },
+    { name: "Safi Maintenance Industrielle", city: "Safi", paymentDays: 30, cat: "Services" },
+    { name: "El Jadida Sécurité Services", city: "El Jadida", paymentDays: 30, cat: "Services", amount: 7_400 },
+    { name: "Laâyoune Télécom Sahara", city: "Laâyoune", paymentDays: 30, cat: "Télécom" },
+    { name: "Béni Mellal Agro Équipements", city: "Béni Mellal", paymentDays: 45, cat: "Matériel", amount: 52_000 },
+    { name: "Nador Import-Export", city: "Nador", paymentDays: 30, cat: "Déplacements" },
+    { name: "Essaouira Artisanat Déco", city: "Essaouira", paymentDays: 15, cat: "Marketing" },
+    { name: "Dakhla Maritime Services", city: "Dakhla", paymentDays: 30, cat: "Déplacements" },
+  ];
+  for (let i = 0; i < EXTRA_SUPPLIERS.length; i++) {
+    const sp = EXTRA_SUPPLIERS[i];
+    const slug = sp.name.split(" ")[0].toLowerCase().normalize("NFD").replace(/[^a-z]/g, "");
+    const sup = await db.supplier.create({
+      data: {
+        companyId: company.id, name: sp.name, city: sp.city, paymentDays: sp.paymentDays,
+        ice: `00${String(1_840_000_000_000 + i * 7_919_317).padStart(13, "0")}`, taxId: String(31_200_000 + i * 48_113), rc: String(100_000 + i * 7_351),
+        email: `compta@${slug}.ma`, phone: `05 ${20 + (i % 5)} ${String(10 + i * 3).padStart(2, "0")} ${String(40 + i * 2).padStart(2, "0")} ${String(11 + i * 5).padStart(2, "0")}`,
+        createdAt: addDays(today, -300 + i * 7),
+      },
+    });
+    if ("amount" in sp && sp.amount) {
+      // Une facture d'achat récente, non réglée (affichée en orange sur la carte)
+      const t = computeTotals([{ quantity: 1000, unitPrice: sp.amount * 100, discount: 0, taxRate: 2000 }]);
+      const date = addDays(today, -(12 + i * 2));
+      await db.purchase.create({
+        data: {
+          companyId: company.id, supplierId: sup.id, reference: `FA-26${String(8100 + i * 13)}`, issueDate: date, dueDate: addDays(date, sp.paymentDays), category: sp.cat,
+          subtotal: BigInt(t.subtotal), taxRate: 2000, taxTotal: BigInt(t.taxTotal), total: BigInt(t.total), amountPaid: 0n, paymentStatus: "UNPAID", cancelledAt: null, createdAt: date,
+        },
+      });
+    }
+  }
+
   // Opérations de trésorerie : loyer et frais récurrents, apport, caisse
   const entries: { account: "CASH" | "BANK"; direction: "IN" | "OUT"; amount: number; date: Date; label: string; category: string }[] = [];
   for (let m = 11; m >= 0; m--) {

@@ -14,7 +14,7 @@ import type { MapPoint } from "./suppliers-map";
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 // Leaflet n'est chargé qu'après l'affichage de la page, et uniquement côté navigateur
-const SuppliersMap = dynamic(() => import("./suppliers-map"), { ssr: false, loading: () => <Skeleton className="h-[380px] w-full rounded-none lg:h-[430px]" /> });
+const SuppliersMap = dynamic(() => import("./suppliers-map"), { ssr: false, loading: () => <Skeleton className="h-[400px] w-full rounded-none lg:h-[460px]" /> });
 
 export interface SupplierStats {
   count: number;
