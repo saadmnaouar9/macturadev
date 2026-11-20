@@ -83,26 +83,16 @@ function KpiFeatured({
   href?: string;
 }) {
   const inner = (
-    <motion.div variants={item} whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 400, damping: 30 }} className="h-full">
-      <div className="group relative h-full overflow-hidden rounded-3xl border border-line-soft bg-surface p-5 shadow-[var(--shadow-sm)] transition-shadow duration-300 hover:shadow-[var(--shadow-lg)]">
-        <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1 bg-gradient-to-r", accent)} />
-        <span aria-hidden className={cn("pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-gradient-to-br opacity-[0.12] blur-2xl transition-opacity duration-300 group-hover:opacity-25", accent)} />
-        <div className="relative flex items-start justify-between gap-2">
-          <p className="text-[13px] font-medium text-muted">{label}</p>
-          <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110", tone)}>
-            <Icon className="h-5 w-5" />
-          </span>
-        </div>
-        <p className="relative mt-4 text-[28px] font-semibold leading-none tracking-[-0.03em] text-ink sm:text-[30px]">
-          <AnimatedNumber value={value} kind={kind} />
-        </p>
-        <div className="relative mt-3 flex min-h-5 items-center gap-2 text-xs text-muted">{footer}</div>
-        {href && <ArrowUpRight className="absolute bottom-4 right-4 h-4 w-4 text-faint opacity-0 transition-all duration-200 group-hover:opacity-100" />}
-      </div>
-    </motion.div>
+    <div className="group h-full">
+      <p className="text-sm text-muted">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight tabular text-ink">
+        <AnimatedNumber value={value} kind={kind} />
+      </p>
+      <div className="mt-1.5 flex min-h-5 items-center gap-2 text-xs text-muted">{footer}</div>
+    </div>
   );
   return href ? (
-    <Link prefetch={false} href={href} className="block rounded-3xl focus-visible:outline-offset-4">
+    <Link prefetch={false} href={href} className="block rounded-md focus-visible:outline-offset-4 hover:[&_p:nth-child(2)]:underline">
       {inner}
     </Link>
   ) : (
@@ -129,21 +119,14 @@ function KpiTile({
   href?: string;
 }) {
   const inner = (
-    <motion.div variants={item} whileHover={{ y: -3 }} transition={{ type: "spring", stiffness: 400, damping: 30 }} className="h-full">
-      <div className="group flex h-full items-start gap-3 rounded-2xl border border-line-soft bg-surface p-4 shadow-[var(--shadow-xs)] transition-all duration-200 hover:border-line hover:shadow-[var(--shadow-md)]">
-        <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110", tone)}>
-          <Icon className="h-[18px] w-[18px]" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-medium text-muted">{label}</p>
-          <p className="mt-1 whitespace-nowrap text-lg font-semibold leading-tight tracking-[-0.02em] text-ink"><AnimatedNumber value={value} kind={kind} /></p>
-          <div className="mt-1.5 flex min-h-4 items-center gap-1.5 text-[11.5px] leading-snug text-muted">{footer}</div>
-        </div>
-      </div>
-    </motion.div>
+    <div className="h-full">
+      <p className="truncate text-[13px] text-muted">{label}</p>
+      <p className="mt-0.5 whitespace-nowrap text-base font-semibold tracking-tight tabular text-ink"><AnimatedNumber value={value} kind={kind} /></p>
+      <div className="mt-1 flex min-h-4 items-center gap-1.5 text-xs leading-snug text-muted">{footer}</div>
+    </div>
   );
   return href ? (
-    <Link prefetch={false} href={href} className="block rounded-2xl focus-visible:outline-offset-4">
+    <Link prefetch={false} href={href} className="block rounded-md focus-visible:outline-offset-4 hover:[&_p:nth-child(2)]:underline">
       {inner}
     </Link>
   ) : (
@@ -180,49 +163,44 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
   return (
     <div>
-      <motion.section initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="relative mb-6 overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
-        <div aria-hidden className="pointer-events-none absolute -left-24 -top-28 h-72 w-72 rounded-full bg-brand-500/15 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-32 right-10 h-64 w-64 rounded-full bg-violet-500/12 blur-3xl" />
-        <div className="relative flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-600">Tableau de bord</p>
-            <h1 className="mt-1.5 text-3xl font-semibold tracking-[-0.03em] text-ink">
-              {greeting}, {firstName}
-            </h1>
-            <p className="mt-1.5 text-sm text-muted">Voici la situation de votre activité sur les {PERIOD_LABEL[data.period].replace("depuis", "mois écoulés depuis")}.</p>
-          </div>
-          <div className="flex flex-col gap-3 lg:items-end">
-            <div className="flex items-center gap-3">
-              {pending && <Loader2 className="h-4 w-4 animate-spin text-faint" />}
-              <SegmentedControl<Period>
-                layoutId="period"
-                value={data.period}
-                onChange={(p) => start(() => router.replace(`${pathname}?period=${p}`, { scroll: false }))}
-                options={[
-                  { value: "30d", label: "30 jours" },
-                  { value: "ytd", label: "Cette année" },
-                  { value: "12m", label: "12 mois" },
-                ]}
-              />
-            </div>
-            {canWrite && (
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { href: "/factures/new", label: "Nouvelle facture", icon: Receipt },
-                  { href: "/devis/new", label: "Nouveau devis", icon: FileText },
-                  { href: "/clients/new", label: "Nouveau client", icon: UserPlus },
-                  { href: "/produits?new=1", label: "Nouveau produit", icon: PackagePlus },
-                ].map((a) => (
-                  <Link prefetch={false} key={a.href} href={a.href} aria-label={a.label} className="group inline-flex items-center gap-1.5 rounded-xl border border-line-soft bg-canvas/60 px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-all hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-brand-500/10 hover:text-brand-700">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-md bg-brand-500/12 text-brand-600 transition-colors group-hover:bg-brand-500 group-hover:text-white"><a.icon className="h-3 w-3" /></span>
-                    <span>{a.label}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+      <header className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-ink">
+            {greeting}, {firstName}
+          </h1>
+          <p className="mt-1 text-sm text-muted">Voici la situation de votre activité sur les {PERIOD_LABEL[data.period].replace("depuis", "mois écoulés depuis")}.</p>
         </div>
-      </motion.section>
+        <div className="flex flex-col gap-3 lg:items-end">
+          <div className="flex items-center gap-3">
+            {pending && <Loader2 className="h-4 w-4 animate-spin text-faint" />}
+            <SegmentedControl<Period>
+              layoutId="period"
+              value={data.period}
+              onChange={(p) => start(() => router.replace(`${pathname}?period=${p}`, { scroll: false }))}
+              options={[
+                { value: "30d", label: "30 jours" },
+                { value: "ytd", label: "Cette année" },
+                { value: "12m", label: "12 mois" },
+              ]}
+            />
+          </div>
+          {canWrite && (
+            <div className="flex flex-wrap gap-2">
+              {[
+                { href: "/factures/new", label: "Nouvelle facture", icon: Receipt },
+                { href: "/devis/new", label: "Nouveau devis", icon: FileText },
+                { href: "/clients/new", label: "Nouveau client", icon: UserPlus },
+                { href: "/produits?new=1", label: "Nouveau produit", icon: PackagePlus },
+              ].map((a) => (
+                <Link prefetch={false} key={a.href} href={a.href} aria-label={a.label} className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:bg-subtle hover:text-ink">
+                  <a.icon className="h-3.5 w-3.5 text-muted" />
+                  <span>{a.label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
 
       {isEmpty && canWrite && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="mb-6">
@@ -248,22 +226,22 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
         </motion.div>
       )}
 
-      <motion.div key={data.period} variants={container} initial="hidden" animate="show" className={cn("space-y-3 transition-opacity", pending && "opacity-60")}>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <motion.div key={data.period} variants={container} initial="hidden" animate="show" className={cn("overflow-hidden rounded-xl border border-line-soft bg-surface transition-opacity", pending && "opacity-60")}>
+        <div className="grid gap-x-8 gap-y-5 p-5 sm:grid-cols-2 xl:grid-cols-4">
           <KpiFeatured
             label="Chiffre d'affaires encaissé"
             value={kpis.collected.value}
             icon={Wallet}
-            accent="from-brand-500 to-violet-500"
-            tone="bg-brand-500/12 text-brand-600"
+            accent="bg-brand-500"
+            tone="text-muted"
             footer={<><Change value={kpis.collected.change} /> {kpis.collected.change !== null && <span>vs période précédente</span>}</>}
           />
           <KpiFeatured
             label="Total facturé (TTC)"
             value={kpis.invoiced.value}
             icon={Receipt}
-            accent="from-sky-500 to-cyan-400"
-            tone="bg-sky-500/12 text-sky-600"
+            accent="bg-sky-500"
+            tone="text-muted"
             href="/factures"
             footer={<><Change value={kpis.invoiced.change} /> <span>{kpis.invoiced.count} factures émises</span></>}
           />
@@ -271,8 +249,8 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             label="Trésorerie"
             value={data.extra.treasury}
             icon={Landmark}
-            accent="from-emerald-500 to-teal-400"
-            tone="bg-emerald-500/12 text-emerald-600"
+            accent="bg-emerald-500"
+            tone="text-muted"
             href="/tresorerie"
             footer={<span>Banque <span className="font-medium text-ink-soft">{formatMAD(data.extra.bank)}</span> · Caisse <span className="font-medium text-ink-soft">{formatMAD(data.extra.cash)}</span></span>}
           />
@@ -280,8 +258,8 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             label="Paiements en retard"
             value={kpis.overdue.value}
             icon={AlertTriangle}
-            accent="from-rose-500 to-orange-400"
-            tone="bg-rose-500/12 text-rose-600"
+            accent="bg-rose-500"
+            tone="text-muted"
             href="/factures?status=OVERDUE"
             footer={
               kpis.overdue.count > 0 ? (
@@ -292,12 +270,12 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             }
           />
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="grid gap-x-8 gap-y-5 border-t border-line-soft p-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <KpiTile
             label="Factures payées"
             value={kpis.paid.value}
             icon={CheckCircle2}
-            tone="bg-emerald-500/12 text-emerald-600"
+            tone="text-muted"
             href="/factures?status=PAID"
             footer={<span><span className="font-medium text-ink-soft">{kpis.paid.count}</span> factures soldées sur la période</span>}
           />
@@ -305,7 +283,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             label="Factures impayées"
             value={kpis.unpaid.value}
             icon={Hourglass}
-            tone="bg-amber-500/12 text-amber-600"
+            tone="text-muted"
             href="/factures?status=OUTSTANDING"
             footer={<span><span className="font-medium text-ink-soft">{kpis.unpaid.count}</span> factures en attente de règlement</span>}
           />
@@ -314,7 +292,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             value={kpis.customers.value}
             kind="int"
             icon={Users}
-            tone="bg-orange-500/12 text-accent-600"
+            tone="text-muted"
             href="/clients"
             footer={<span><span className="font-medium text-ink-soft">+{kpis.customers.newCount}</span> nouveaux sur la période</span>}
           />
@@ -322,7 +300,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             label="Dettes fournisseurs"
             value={data.extra.payable}
             icon={ShoppingCart}
-            tone="bg-orange-500/12 text-accent-600"
+            tone="text-muted"
             href="/achats"
             footer={data.extra.payableOverdue > 0 ? <span className="text-rose-700"><span className="font-semibold">{data.extra.payableOverdue}</span> factures échues à régler</span> : <span>{data.extra.payableCount} factures en attente</span>}
           />
@@ -331,7 +309,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             value={data.extra.openTasks}
             kind="int"
             icon={ListChecks}
-            tone="bg-violet-500/12 text-violet-600"
+            tone="text-muted"
             href="/taches"
             footer={data.extra.lateTasks > 0 ? <span className="text-rose-700"><span className="font-semibold">{data.extra.lateTasks}</span> en retard</span> : <span className="text-emerald-700">Aucun retard</span>}
           />
@@ -340,7 +318,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.06, ease }} className="xl:col-span-2">
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Évolution du chiffre d'affaires" description="Montants facturés et encaissés (TTC) sur les 12 derniers mois" />
             <div className="px-2 pb-4 pt-2 sm:px-4">
               <RevenueChart data={data.revenueSeries} />
@@ -348,7 +326,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.08, ease }}>
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Répartition des factures" description={`Montants TTC — ${PERIOD_LABEL[data.period]}`} />
             <StatusDonut data={data.statusBreakdown} />
           </Card>
@@ -357,7 +335,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.09, ease }} className="xl:col-span-2">
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Performance commerciale" description="Devis émis et acceptés par mois (montants TTC)" />
             <div className="px-2 pb-4 pt-2 sm:px-4">
               <QuotesChart data={data.quoteSeries} />
@@ -365,7 +343,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
           </Card>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.11, ease }}>
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Indicateurs clés" description={PERIOD_LABEL[data.period]} />
             <div className="grid grid-cols-2 gap-3 p-5">
               {[
@@ -374,9 +352,8 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                 { label: "Délai moyen de paiement", icon: Timer, value: data.indicators.avgDelay, kind: "days" as const, hint: "émission → règlement" },
                 { label: "Facture moyenne", icon: Receipt, value: data.indicators.avgInvoice, kind: "mad" as const, hint: "montant TTC" },
               ].map((k) => (
-                <div key={k.label} className="rounded-2xl bg-canvas/60 p-4 ring-1 ring-inset ring-line-soft transition-all duration-200 hover:-translate-y-0.5 hover:bg-canvas hover:shadow-[var(--shadow-sm)]">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><k.icon className="h-4 w-4" /></span>
-                  <p className="mt-2.5 text-[17px] font-semibold tracking-tight text-ink">
+                <div key={k.label} className="min-w-0">
+                  <p className="text-[17px] font-semibold tracking-tight tabular text-ink">
                     {k.value === null ? (
                       <span className="text-faint">—</span>
                     ) : k.kind === "days" ? (
@@ -396,7 +373,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.12, ease }}>
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Transactions récentes" description="Derniers paiements reçus" action={<Link prefetch={false} href="/factures?status=PAID" className="text-[13px] font-medium text-brand-700 hover:underline">Tout voir</Link>} />
             {data.recentPayments.length === 0 ? (
               <EmptyState icon={CircleDollarSign} title="Aucun paiement" description="Les règlements enregistrés sur vos factures apparaîtront ici." />
@@ -405,7 +382,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                 {data.recentPayments.map((p, i) => (
                   <motion.li key={p.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 + i * 0.04, duration: 0.35, ease }}>
                     <Link prefetch={false} href={`/factures/${p.invoiceId}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-canvas">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-100">{initials(p.customerName)}</span>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700">{initials(p.customerName)}</span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13px] font-medium text-ink">{p.customerName}</span>
                         <span className="block truncate text-xs text-muted">{p.invoiceNumber} · {PAYMENT_METHODS[p.method]}</span>
@@ -423,7 +400,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.14, ease }}>
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Meilleurs clients" description={`Chiffre facturé — ${PERIOD_LABEL[data.period]}`} />
             {data.topCustomers.length === 0 ? (
               <EmptyState icon={Users} title="Pas encore de données" description="Vos principaux clients s'afficheront dès les premières factures émises." />
@@ -435,12 +412,12 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                     <li key={c.id}>
                       <Link prefetch={false} href={`/clients/${c.id}`} className="group block">
                         <div className="flex items-baseline justify-between gap-3">
-                          <span className="flex min-w-0 items-center gap-2.5"><span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold", i === 0 ? "bg-amber-500/15 text-amber-700" : "bg-subtle text-muted")}>{i + 1}</span><span className="truncate text-[13px] font-medium text-ink group-hover:text-brand-700">{c.name}</span></span>
+                          <span className="flex min-w-0 items-center gap-2.5"><span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold", i === 0 ? "text-muted" : "bg-subtle text-muted")}>{i + 1}</span><span className="truncate text-[13px] font-medium text-ink group-hover:text-brand-700">{c.name}</span></span>
                           <span className="shrink-0 text-[13px] font-semibold tabular text-ink">{formatMAD(c.amount)}</span>
                         </div>
                         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-subtle">
                           <motion.div
-                            className="h-full rounded-full bg-gradient-to-r from-brand-500 to-violet-500"
+                            className="h-full rounded-full bg-brand-500"
                             initial={{ width: 0 }}
                             animate={{ width: `${(c.amount / max) * 100}%` }}
                             transition={{ duration: 0.9, delay: 0.5 + i * 0.08, ease }}
@@ -457,7 +434,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.16, ease }} className="lg:col-span-2 xl:col-span-1">
-          <Card className="h-full rounded-3xl">
+          <Card className="h-full rounded-xl">
             <CardHeader title="Activité récente" description="Les derniers événements de votre espace" />
             {data.activities.length === 0 ? (
               <EmptyState icon={Clock} title="Aucune activité" description="Vos actions apparaîtront ici." />

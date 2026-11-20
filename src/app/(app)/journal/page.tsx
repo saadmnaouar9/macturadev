@@ -80,7 +80,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                         <Td className="hidden md:table-cell">
                           {a.user ? (
                             <span className="inline-flex items-center gap-2 text-[13px] text-ink-soft">
-                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-50 text-[10px] font-semibold text-accent-600 ring-1 ring-inset ring-accent-100">{initials(a.user.name)}</span>
+                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-50 text-[10px] font-semibold text-accent-600">{initials(a.user.name)}</span>
                               {a.user.name}
                             </span>
                           ) : <span className="text-faint">Système</span>}

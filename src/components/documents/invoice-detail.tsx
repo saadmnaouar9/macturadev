@@ -142,7 +142,7 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
           <Card className="px-4 py-5 sm:px-8">
             <WorkflowStepper steps={steps} current={current} failed={cancelled ? { at: inv.sentAt ? 2 : 1, label: "Annulée" } : undefined} />
           </Card>
-          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.1, ease }} className="rounded-2xl bg-stage p-3 sm:p-8">
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.1, ease }} className="rounded-lg bg-stage p-3 sm:p-8">
             <DocumentPaper {...paper} />
           </motion.div>
         </div>
@@ -165,7 +165,7 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
                 </div>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-subtle" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Pourcentage réglé">
-                <motion.div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1, ease }} />
+                <motion.div className="h-full rounded-full bg-emerald-500" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 1, ease }} />
               </div>
               <p className="mt-1.5 text-right text-[11px] tabular text-faint">{pct.toFixed(0)} % réglé sur {formatMAD(inv.total)}</p>
               {draft && <p className="mt-3 rounded-md bg-subtle px-3 py-2 text-xs text-muted">Émettez la facture pour pouvoir enregistrer des paiements.</p>}
@@ -173,7 +173,7 @@ export function InvoiceDetail({ invoice: inv, paper, activities, canWrite, canDe
             </div>
             {inv.payments.length > 0 && (
               <div className="border-t border-line-soft">
-                <p className="px-5 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.07em] text-faint">
+                <p className="px-5 pb-1 pt-3 text-[11px] font-semibold text-faint">
                   Historique des paiements · {activePayments.length} actif{activePayments.length > 1 ? "s" : ""}{inv.payments.length > activePayments.length ? ` · ${inv.payments.length - activePayments.length} annulé${inv.payments.length - activePayments.length > 1 ? "s" : ""}` : ""}
                 </p>
                 <ul className="divide-y divide-line-soft">

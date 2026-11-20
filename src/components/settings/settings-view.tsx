@@ -188,11 +188,9 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
   return (
     <div className="space-y-4">
       {/* En-tête */}
-      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
-        <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-28 right-10 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
         <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_8px_20px_-6px_rgb(59_110_245/0.6)]"><Percent className="h-6 w-6" /></span>
+          <Percent className="h-6 w-6 text-muted" />
           <div className="min-w-0 flex-1">
             <h2 className="text-lg font-semibold tracking-tight text-ink">Taux de TVA</h2>
             <p className="mt-0.5 text-[13px] text-muted">Configurez les taux applicables à votre activité (taux marocains standards : 20 %, 14 %, 10 %, 7 %, exonéré). Les documents existants conservent leur taux.</p>
@@ -209,8 +207,8 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
       <ul className="grid gap-3 sm:grid-cols-2">
         <AnimatePresence initial={false}>
           {taxRates.map((t, i) => (
-            <motion.li key={t.id} layout initial={{ opacity: 0, y: 14, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.35, delay: Math.min(i * 0.05, 0.3), ease }} whileHover={{ y: -3 }} className={cn("group flex items-center gap-4 rounded-3xl border bg-surface p-4 shadow-[var(--shadow-xs)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)]", t.isDefault ? "border-brand-500/40 ring-1 ring-brand-500/20" : "border-line-soft")}>
-              <span className={cn("flex h-14 w-[76px] shrink-0 items-center justify-center rounded-2xl text-lg font-semibold tabular tracking-tight", t.isDefault ? "bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_8px_18px_-6px_rgb(59_110_245/0.6)]" : "bg-brand-500/10 text-brand-700")}>{formatRate(t.rate)} %</span>
+            <motion.li key={t.id} layout initial={{ opacity: 0, y: 14, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.35, delay: Math.min(i * 0.05, 0.3), ease }} className={cn("group flex items-center gap-4 rounded-xl border bg-surface p-4 shadow-[var(--shadow-xs)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)]", t.isDefault ? "border-brand-500/40 ring-1 ring-brand-500/20" : "border-line-soft")}>
+              <span className={cn("flex h-14 w-[76px] shrink-0 items-center justify-center rounded-lg text-lg font-semibold tabular tracking-tight", t.isDefault ? "bg-brand-500 text-white" : "text-muted")}>{formatRate(t.rate)} %</span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold text-ink">{t.name}</span>
                 <span className="block text-xs text-muted">{t.isDefault ? "Appliqué par défaut aux nouveaux documents" : "Disponible dans les documents"}</span>
@@ -235,8 +233,8 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
 
       {/* Ajout d'un taux */}
       {canEdit && (
-        <motion.form initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25, ease }} onSubmit={(e) => { e.preventDefault(); add(); }} className="rounded-3xl border border-dashed border-line bg-canvas/40 p-4 sm:p-5">
-          <p className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-ink"><span className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-500/12 text-brand-600"><Plus className="h-3.5 w-3.5" /></span> Ajouter un taux</p>
+        <motion.form initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25, ease }} onSubmit={(e) => { e.preventDefault(); add(); }} className="rounded-xl border border-dashed border-line bg-canvas/40 p-4 sm:p-5">
+          <p className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-ink"><span className="flex h-6 w-6 items-center justify-center rounded-lg text-brand-600"><Plus className="h-3.5 w-3.5" /></span> Ajouter un taux</p>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Libellé (ex. TVA réduite)" aria-label="Libellé du taux" />
             <div className="sm:w-36"><Input value={rate} onChange={(e) => setRate(e.target.value)} inputMode="decimal" placeholder="Taux" trailing="%" aria-label="Taux en pourcentage" /></div>
@@ -254,10 +252,10 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
   const [open, setOpen] = useState(false);
   const { values, set, setValues, errors, pending, submit } = useForm({ name: "", email: "", role: "MEMBER", password: "" });
   const ROLE_UI: Record<Role, { icon: typeof Crown; bubble: string; chip: string; avatar: string }> = {
-    OWNER: { icon: Crown, bubble: "bg-amber-500/12 text-amber-600", chip: "bg-amber-500/12 text-amber-700", avatar: "from-amber-500 to-orange-400" },
-    ADMIN: { icon: ShieldCheck, bubble: "bg-violet-500/12 text-violet-600", chip: "bg-violet-500/12 text-violet-700", avatar: "from-violet-500 to-fuchsia-400" },
-    MEMBER: { icon: Pencil, bubble: "bg-emerald-500/12 text-emerald-600", chip: "bg-emerald-500/12 text-emerald-700", avatar: "from-emerald-500 to-teal-400" },
-    VIEWER: { icon: Eye, bubble: "bg-sky-500/12 text-sky-600", chip: "bg-sky-500/12 text-sky-700", avatar: "from-sky-500 to-cyan-400" },
+    OWNER: { icon: Crown, bubble: "text-muted", chip: "text-muted", avatar: "bg-amber-500" },
+    ADMIN: { icon: ShieldCheck, bubble: "text-muted", chip: "text-muted", avatar: "bg-violet-500" },
+    MEMBER: { icon: Pencil, bubble: "text-muted", chip: "text-muted", avatar: "bg-emerald-500" },
+    VIEWER: { icon: Eye, bubble: "text-muted", chip: "text-muted", avatar: "bg-sky-500" },
   };
   const count = (r: Role) => members.filter((m) => m.role === r).length;
   const roleCards: { role: Role; title: string; desc: string }[] = [
@@ -270,12 +268,10 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
     <>
       <div className="space-y-4">
         {/* En-tête : résumé de l'équipe */}
-        <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
-          <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
-          <div aria-hidden className="pointer-events-none absolute -bottom-28 right-10 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+        <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
           <div className="relative flex flex-col gap-5 p-5 sm:p-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_8px_20px_-6px_rgb(59_110_245/0.6)]"><Users className="h-6 w-6" /></span>
+              <Users className="h-6 w-6 text-muted" />
               <div>
                 <h2 className="text-lg font-semibold tracking-tight text-ink">Équipe</h2>
                 <p className="mt-0.5 text-[13px] text-muted">Chaque membre accède uniquement aux données de cette entreprise, selon son rôle.</p>
@@ -298,7 +294,7 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
           {roleCards.map((r, i) => {
             const R = ROLE_UI[r.role];
             return (
-              <motion.div key={r.role} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease }} whileHover={{ y: -2 }} className="flex items-center gap-3 rounded-2xl border border-line-soft bg-surface p-3.5 shadow-[var(--shadow-xs)]">
+              <motion.div key={r.role} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease }} className="flex items-center gap-3 rounded-lg border border-line-soft bg-surface p-3.5 shadow-[var(--shadow-xs)]">
                 <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl", R.bubble)}><R.icon className="h-5 w-5" /></span>
                 <span className="min-w-0">
                   <span className="block text-[13px] font-semibold text-ink">{r.title}</span>
@@ -315,9 +311,9 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
             const R = ROLE_UI[m.role];
             const editable = canManage && m.role !== "OWNER" && !m.isMe;
             return (
-              <motion.li key={m.id} variants={{ hidden: { opacity: 0, y: 14, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease } } }} whileHover={{ y: -3 }} className="group flex flex-col gap-4 rounded-3xl border border-line-soft bg-surface p-4 shadow-[var(--shadow-xs)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)]">
+              <motion.li key={m.id} variants={{ hidden: { opacity: 0, y: 14, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease } } }} className="group flex flex-col gap-4 rounded-xl border border-line-soft bg-surface p-4 shadow-[var(--shadow-xs)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)]">
                 <div className="flex items-center gap-3.5">
-                  <span className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-sm font-semibold text-white shadow-[0_6px_16px_-6px_rgb(0_0_0/0.35)]", R.avatar)}>{initials(m.user.name)}</span>
+                  <span className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-sm font-semibold text-white", R.avatar)}>{initials(m.user.name)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-2">
                       <span className="truncate text-sm font-semibold text-ink">{m.user.name}</span>
@@ -392,9 +388,9 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
 /** Carte de formulaire du profil : en-tête avec icône, contenu, pied d'actions */
 function ProfileCard({ icon: Icon, title, description, tone, footer, children, delay = 0 }: { icon: typeof UserRound; title: string; description?: string; tone: string; footer: React.ReactNode; children: React.ReactNode; delay?: number }) {
   return (
-    <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay, ease }} className="overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+    <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay, ease }} className="overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
       <div className="flex items-center gap-3.5 px-5 pb-1 pt-5 sm:px-6">
-        <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl", tone)}><Icon className="h-5 w-5" /></span>
+        <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", tone)}><Icon className="h-5 w-5" /></span>
         <div>
           <h3 className="text-[15px] font-semibold tracking-tight text-ink">{title}</h3>
           {description && <p className="text-[13px] text-muted">{description}</p>}
@@ -434,11 +430,9 @@ function ProfileTab({ profile, role }: { profile: Props["profile"]; role?: Role 
   return (
     <div className="space-y-4">
       {/* Identité */}
-      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
-        <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-28 right-10 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
         <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
-          <motion.span whileHover={{ rotate: -4, scale: 1.05 }} className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-violet-500 text-xl font-semibold text-white shadow-[0_10px_24px_-8px_rgb(59_110_245/0.65)]">{initials(profile.name)}</motion.span>
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-xl font-semibold text-white">{initials(profile.name)}</span>
           <div className="min-w-0 flex-1">
             <h2 className="truncate text-lg font-semibold tracking-tight text-ink">{profile.name}</h2>
             <p className="truncate text-[13px] text-muted">{profile.email}</p>
@@ -451,7 +445,7 @@ function ProfileTab({ profile, role }: { profile: Props["profile"]; role?: Role 
       </motion.section>
 
       <form onSubmit={(e) => { e.preventDefault(); prof.submit(() => updateProfile(prof.values)); }} noValidate>
-        <ProfileCard icon={UserRound} title="Mon profil" description="Vos informations personnelles et votre e-mail de connexion." tone="bg-brand-500/12 text-brand-600" delay={0.08} footer={<Button type="submit" loading={prof.pending}>Enregistrer</Button>}>
+        <ProfileCard icon={UserRound} title="Mon profil" description="Vos informations personnelles et votre e-mail de connexion." tone="text-muted" delay={0.08} footer={<Button type="submit" loading={prof.pending}>Enregistrer</Button>}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Nom complet" error={prof.errors.name}>{(p) => <Input {...p} value={prof.values.name} onChange={(e) => prof.set("name", e.target.value)} />}</Field>
             <Field label="E-mail de connexion" error={prof.errors.email}>{(p) => <Input {...p} type="email" value={prof.values.email} onChange={(e) => prof.set("email", e.target.value)} />}</Field>
@@ -464,7 +458,7 @@ function ProfileTab({ profile, role }: { profile: Props["profile"]; role?: Role 
           icon={KeyRound}
           title="Mot de passe"
           description="Le changement déconnecte vos autres appareils."
-          tone="bg-violet-500/12 text-violet-600"
+          tone="text-muted"
           delay={0.16}
           footer={
             <>
@@ -480,7 +474,7 @@ function ProfileTab({ profile, role }: { profile: Props["profile"]; role?: Role 
             <Field label="Nouveau mot de passe" error={pw.errors.next}>{(p) => <Input {...p} type={pwType} autoComplete="new-password" value={pw.values.next} onChange={(e) => pw.set("next", e.target.value)} />}</Field>
             <Field label="Confirmation" error={pw.errors.confirm}>{(p) => <Input {...p} type={pwType} autoComplete="new-password" value={pw.values.confirm} onChange={(e) => pw.set("confirm", e.target.value)} />}</Field>
           </div>
-          <div className="mt-4 rounded-2xl bg-canvas/50 p-3.5 ring-1 ring-inset ring-line-soft">
+          <div className="mt-4">
             <div className="flex items-center gap-3">
               <div className="flex flex-1 gap-1.5" role="img" aria-label={`Force du mot de passe : ${S.label}`}>
                 {[1, 2, 3, 4].map((n) => (

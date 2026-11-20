@@ -74,9 +74,9 @@ export function DatePicker({
           <span className="truncate">{selected ? formatDate(selected, "long") : placeholder}</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[308px] overflow-hidden rounded-2xl p-0" align="start">
+      <PopoverContent className="w-[308px] overflow-hidden rounded-lg p-0" align="start">
         {/* En-tête : mois courant sur fond dégradé, navigation animée */}
-        <div className="flex items-center justify-between bg-gradient-to-br from-brand-500/15 via-violet-500/10 to-transparent px-3 py-3">
+        <div className="flex items-center justify-between  px-3 py-3">
           <button type="button" onClick={() => shift(-1)} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois précédent">
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -92,7 +92,7 @@ export function DatePicker({
           </button>
         </div>
         <div className="px-3 pb-3 pt-2">
-          <div className="grid grid-cols-7 gap-1 pb-1.5 text-center text-[10.5px] font-semibold uppercase tracking-[0.06em] text-faint">
+          <div className="grid grid-cols-7 gap-1 pb-1.5 text-center text-[10.5px] font-semibold text-faint">
             {WEEKDAYS.map((d) => (
               <div key={d} className="py-1">{d}</div>
             ))}
@@ -127,7 +127,7 @@ export function DatePicker({
                         "relative flex h-9 items-center justify-center rounded-xl text-[13px] tabular transition-all duration-150",
                         inMonth ? "text-ink" : "text-faint/60",
                         isSel
-                          ? "bg-gradient-to-br from-brand-500 to-violet-500 font-semibold text-white shadow-[0_6px_16px_-6px_rgb(59_110_245/0.7)]"
+                          ? "bg-brand-500 font-semibold text-white"
                           : "hover:scale-110 hover:bg-brand-500/10 hover:text-brand-700",
                         isToday && !isSel && "font-semibold text-brand-700 ring-1 ring-inset ring-brand-500/50",
                       )}

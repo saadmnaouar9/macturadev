@@ -12,7 +12,7 @@ export function EmptyState({ icon: Icon, title, description, action }: { icon: L
       className="flex flex-col items-center justify-center px-6 py-16 text-center"
     >
       <div className="relative mb-5">
-        <div className="absolute inset-0 -m-3 rounded-2xl bg-brand-50 blur-md" />
+        <div className="absolute inset-0 -m-3 rounded-lg bg-brand-50 blur-md" />
         <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-surface shadow-[var(--shadow-ring),var(--shadow-md)]">
           <Icon className="h-5 w-5 text-brand-600" />
         </div>

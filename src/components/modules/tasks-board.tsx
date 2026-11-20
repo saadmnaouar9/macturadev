@@ -116,7 +116,7 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
         {COLUMNS.map((col, ci) => {
           const items = tasks.filter((t) => t.status === col.status);
           return (
-            <motion.section key={col.status} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: ci * 0.06, ease }} className="flex min-h-[200px] flex-col rounded-2xl bg-subtle p-2.5" aria-label={TASK_STATUS[col.status].label}>
+            <motion.section key={col.status} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: ci * 0.06, ease }} className="flex min-h-[200px] flex-col rounded-lg bg-subtle p-2.5" aria-label={TASK_STATUS[col.status].label}>
               <header className="flex items-center gap-2 px-2 pb-2.5 pt-1.5">
                 <span className={cn("h-2 w-2 rounded-full", col.accent)} />
                 <h2 className="text-[13px] font-semibold text-ink">{TASK_STATUS[col.status].label}</h2>
@@ -152,7 +152,7 @@ export function TasksBoard({ tasks, projects, members, canWrite, canDelete, coun
                             {canWrite && prev && <button onClick={() => move(t, prev)} className="rounded p-1 text-faint opacity-0 hover:bg-subtle hover:text-ink focus:opacity-100 group-hover:opacity-100" aria-label={`Déplacer vers ${TASK_STATUS[prev].label}`}><ArrowLeft className="h-3.5 w-3.5" /></button>}
                             {canWrite && next && <button onClick={() => move(t, next)} className="rounded p-1 text-faint opacity-0 hover:bg-subtle hover:text-ink focus:opacity-100 group-hover:opacity-100" aria-label={`Déplacer vers ${TASK_STATUS[next].label}`}><ArrowRight className="h-3.5 w-3.5" /></button>}
                             {canDelete && <button onClick={() => remove(t)} className="rounded p-1 text-faint opacity-0 hover:bg-rose-50 hover:text-rose-600 focus:opacity-100 group-hover:opacity-100" aria-label="Supprimer la tâche"><Trash2 className="h-3.5 w-3.5" /></button>}
-                            {t.assigneeName && <span title={t.assigneeName} className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-50 text-[10px] font-semibold text-accent-600 ring-1 ring-inset ring-accent-100">{initials(t.assigneeName)}</span>}
+                            {t.assigneeName && <span title={t.assigneeName} className="ml-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-50 text-[10px] font-semibold text-accent-600">{initials(t.assigneeName)}</span>}
                           </span>
                         </div>
                       </motion.li>

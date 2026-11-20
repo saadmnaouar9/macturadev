@@ -33,7 +33,7 @@ function NavLink({ item, collapsed, active, count, onNavigate, layoutId }: { ite
       {active && (
         <motion.span
           layoutId={layoutId}
-          className="nav-active-pill absolute inset-0 rounded-lg bg-gradient-to-r from-brand-500/25 to-[#7357f5]/10 shadow-[inset_0_0_0_1px_rgb(120_170_255/0.28),0_0_26px_-8px_rgb(59_130_246/0.7)]"
+          className="nav-active-pill absolute inset-0 rounded-lg bg-brand-500/25"
           transition={{ type: "spring", stiffness: 520, damping: 40 }}
         />
       )}
@@ -173,7 +173,7 @@ export function SidebarContent({
 
       <div className={cn("px-3 pb-3 pt-1", collapsed && "px-2")}>
         <div className={cn("flex items-center gap-2.5 rounded-lg bg-white/[0.03] px-2.5 py-2 ring-1 ring-inset ring-white/[0.04]", collapsed && "justify-center px-0")}>
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-brand-600 to-brand-800 text-[11px] font-bold text-white shadow-sm">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-brand-600 text-[11px] font-bold text-white shadow-sm">
             {initials(user.companyName)}
           </div>
           {!collapsed && (
@@ -205,7 +205,7 @@ export function SidebarContent({
         <DropdownMenu>
           <DropdownTrigger asChild>
             <button className={cn("flex w-full items-center gap-2.5 rounded-lg p-1.5 text-left transition-colors hover:bg-white/[0.04] data-[state=open]:bg-white/[0.04]", collapsed && "justify-center")}>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-50 text-xs font-semibold text-accent-600 ring-1 ring-inset ring-accent-100">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-50 text-xs font-semibold text-accent-600">
                 {initials(user.name)}
               </span>
               {!collapsed && (

@@ -8,7 +8,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   useEffect(() => console.error(error), [error]);
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-100"><AlertTriangle className="h-5 w-5" /></span>
+      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 text-rose-600"><AlertTriangle className="h-5 w-5" /></span>
       <h1 className="mt-5 text-lg font-semibold text-ink">Une erreur est survenue</h1>
       <p className="mt-1 max-w-sm text-sm text-muted">Vos données sont intactes. Réessayez ; si le problème persiste, rechargez la page.</p>
       {error.digest && <p className="mt-2 font-mono text-xs text-faint">Réf. {error.digest}</p>}

@@ -63,7 +63,7 @@ const itemVariants: Variants = { hidden: { opacity: 0, y: 10 }, show: { opacity:
 function MiniStat({ icon: Icon, label, value, tone }: { icon: typeof CalendarDays; label: string; value: number; tone: string }) {
   return (
     <div className="flex min-w-0 flex-col items-start gap-2 px-3 first:pl-0 last:pr-0 sm:flex-row sm:items-center sm:gap-3 sm:px-4">
-      <span className={cn("flex h-10 w-10 items-center justify-center rounded-2xl", tone)}><Icon className="h-5 w-5" /></span>
+      <span className={cn("flex h-10 w-10 items-center justify-center rounded-lg", tone)}><Icon className="h-5 w-5" /></span>
       <div>
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.p key={value} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.25 }} className="text-2xl font-semibold leading-none tabular text-ink">{value}</motion.p>
@@ -76,7 +76,7 @@ function MiniStat({ icon: Icon, label, value, tone }: { icon: typeof CalendarDay
 
 function EventRow({ e, today, compact }: { e: CalEvent; today: string; compact?: boolean }) {
   return (
-    <Link prefetch={false} href={e.href} className="group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition-colors hover:bg-subtle">
+    <Link prefetch={false} href={e.href} className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-subtle">
       <span className="mt-1.5 flex shrink-0 flex-col items-center"><span className={cn("h-2.5 w-2.5 rounded-full ring-4 ring-subtle", KINDS[e.kind].dot)} /></span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[13px] font-medium text-ink">{e.title}</span>
@@ -86,8 +86,8 @@ function EventRow({ e, today, compact }: { e: CalEvent; today: string; compact?:
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-1">
-        <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", e.late ? "bg-rose-500/15 text-rose-600" : "bg-subtle text-muted")}>{relLabel(e.date, today, e.late)}</span>
-        <ArrowUpRight className="h-3.5 w-3.5 text-faint opacity-0 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+        <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", e.late ? "text-muted" : "bg-subtle text-muted")}>{relLabel(e.date, today, e.late)}</span>
+        <ArrowUpRight className="h-3.5 w-3.5 text-faint opacity-0 transition-all group-hover:translate-x-0.5 group- group-hover:opacity-100" />
       </span>
     </Link>
   );
@@ -146,9 +146,9 @@ export function CalendarView({ month, events, today }: { month: string; events: 
       <PageHeader title="Calendrier" description="Échéances, relances et rendez-vous de tous vos modules, au même endroit." />
 
       {/* Filtre par type : barre compacte, sur une seule ligne, juste sous le titre */}
-      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} aria-label="Filtrer par type" className="mb-4 flex items-center gap-3 rounded-2xl border border-line bg-surface/80 p-1.5 pl-3.5 shadow-[var(--shadow-sm)] backdrop-blur-sm">
+      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} aria-label="Filtrer par type" className="mb-4 flex items-center gap-3 rounded-lg border border-line bg-surface/80 p-1.5 pl-3.5 shadow-[var(--shadow-sm)] backdrop-blur-sm">
         <span className="flex shrink-0 items-center gap-2 border-r border-line-soft pr-3 text-[13px] font-semibold text-ink">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_4px_12px_-3px_rgb(59_110_245/0.6)]"><SlidersHorizontal className="h-3.5 w-3.5" /></span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-500 text-white"><SlidersHorizontal className="h-3.5 w-3.5" /></span>
           <span className="hidden sm:inline">Filtrer</span>
         </span>
         <ul className="scrollbar-thin flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-0.5">
@@ -162,7 +162,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setHidden((s) => { const x = new Set(s); if (off) x.delete(k); else x.add(k); return x; })}
                   aria-pressed={!off}
-                  className={cn("flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-2.5 py-1.5 text-[12.5px] font-medium transition-all duration-200", off ? "border-transparent bg-transparent text-faint hover:bg-subtle" : cn(KINDS[k].chip, "text-ink hover:-translate-y-px hover:shadow-[var(--shadow-sm)]"))}
+                  className={cn("flex items-center gap-1.5 whitespace-nowrap rounded-xl border px-2.5 py-1.5 text-[12.5px] font-medium transition-all duration-200", off ? "border-transparent bg-transparent text-faint hover:bg-subtle" : cn(KINDS[k].chip, "text-ink hover:shadow-[var(--shadow-sm)]"))}
                 >
                   <span className={cn("h-2 w-2 rounded-full transition-all", KINDS[k].dot, off && "scale-75 opacity-30")} />
                   <span className={cn(off && "line-through")}>{KINDS[k].label}</span>
@@ -175,12 +175,10 @@ export function CalendarView({ month, events, today }: { month: string; events: 
       </motion.section>
 
       {/* Bandeau : mois, vue, navigation, chiffres clés */}
-      <motion.section initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="relative mb-4 overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
-        <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -right-16 -bottom-24 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+      <motion.section initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="relative mb-4 overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
         <div className="relative flex flex-col gap-5 p-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-0.5 rounded-2xl bg-subtle p-1">
+            <div className="flex items-center gap-0.5 rounded-lg bg-subtle p-1">
               <Link prefetch={false} href={`/calendrier?m=${shift(month, -1)}`} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois précédent"><ChevronLeft className="h-4 w-4" /></Link>
               <Link prefetch={false} href={`/calendrier?m=${today.slice(0, 7)}`} className="rounded-xl px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-all hover:bg-surface hover:shadow-[var(--shadow-xs)]">Aujourd&apos;hui</Link>
               <Link prefetch={false} href={`/calendrier?m=${shift(month, 1)}`} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois suivant"><ChevronRight className="h-4 w-4" /></Link>
@@ -192,7 +190,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
                 </motion.h2>
               </AnimatePresence>
             </div>
-            <div role="tablist" aria-label="Affichage" className="relative flex rounded-2xl bg-subtle p-1">
+            <div role="tablist" aria-label="Affichage" className="relative flex rounded-lg bg-subtle p-1">
               {([["month", "Mois", LayoutGrid], ["agenda", "Agenda", ListTodo]] as const).map(([k, label, Icon]) => (
                 <button key={k} role="tab" aria-selected={mode === k} onClick={() => setMode(k)} className={cn("relative flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-[13px] font-medium transition-colors", mode === k ? "text-ink" : "text-muted hover:text-ink")}>
                   {mode === k && <motion.span layoutId="cal-mode" className="absolute inset-0 rounded-xl bg-surface shadow-[var(--shadow-sm)] ring-1 ring-line-soft" transition={{ type: "spring", stiffness: 480, damping: 36 }} />}
@@ -202,19 +200,19 @@ export function CalendarView({ month, events, today }: { month: string; events: 
             </div>
           </div>
           <div className="grid w-full grid-cols-3 divide-x divide-line-soft xl:flex xl:w-auto xl:items-center">
-            <MiniStat icon={CalendarDays} label={`Événements en ${monthFmt.format(first)}`} value={inThisMonth.length} tone="bg-brand-500/12 text-brand-600" />
-            <MiniStat icon={AlertTriangle} label="En retard" value={lateCount} tone="bg-rose-500/12 text-rose-600" />
-            <MiniStat icon={CalendarCheck2} label="Aujourd'hui" value={todayCount} tone="bg-emerald-500/12 text-emerald-600" />
+            <MiniStat icon={CalendarDays} label={`Événements en ${monthFmt.format(first)}`} value={inThisMonth.length} tone="text-muted" />
+            <MiniStat icon={AlertTriangle} label="En retard" value={lateCount} tone="text-muted" />
+            <MiniStat icon={CalendarCheck2} label="Aujourd'hui" value={todayCount} tone="text-muted" />
           </div>
         </div>
       </motion.section>
 
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+        <section className="overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
           <AnimatePresence mode="wait" initial={false}>
             {mode === "month" ? (
               <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-                <div className="grid grid-cols-7 border-b border-line-soft bg-canvas/50 text-center text-[11px] font-semibold uppercase tracking-[0.1em] text-faint">
+                <div className="grid grid-cols-7 border-b border-line-soft bg-canvas/50 text-center text-[11px] font-semibold text-faint">
                   {WEEK.map((d) => <div key={d} className="py-3">{d}</div>)}
                 </div>
                 <AnimatePresence mode="wait" custom={dir} initial={false}>
@@ -243,10 +241,10 @@ export function CalendarView({ month, events, today }: { month: string; events: 
                         >
                           {isSel && <motion.span layoutId="cal-sel" className="pointer-events-none absolute inset-0 z-10 ring-2 ring-inset ring-brand-500" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                           <span className="flex items-center justify-between">
-                            <span className={cn("relative flex h-7 min-w-7 items-center justify-center rounded-lg px-1 text-[13px] font-medium tabular", isToday ? "bg-gradient-to-br from-brand-500 to-violet-500 font-semibold text-white shadow-[0_6px_14px_-4px_rgb(59_110_245/0.6)]" : "text-ink-soft")}>
+                            <span className={cn("relative flex h-7 min-w-7 items-center justify-center rounded-lg px-1 text-[13px] font-medium tabular", isToday ? "bg-brand-500 font-semibold text-white" : "text-ink-soft")}>
                               {d.getUTCDate()}
                             </span>
-                            {evs.some((e) => e.late) && <span className="h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_0_3px_rgb(244_63_94/0.2)]" aria-hidden />}
+                            {evs.some((e) => e.late) && <span className="h-2 w-2 rounded-full bg-rose-500" aria-hidden />}
                           </span>
                           <span className="hidden flex-col gap-1 sm:flex">
                             {evs.slice(0, 3).map((e) => (
@@ -278,7 +276,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
                     {groups.map((g) => (
                       <div key={g.key}>
                         <div className="mb-2 flex items-center gap-3">
-                          <h3 className={cn("text-[11px] font-semibold uppercase tracking-[0.1em]", g.tone)}>{g.title}</h3>
+                          <h3 className={cn("text-[11px] font-semibold", g.tone)}>{g.title}</h3>
                           <span className="rounded-full bg-subtle px-2 py-0.5 text-[11px] font-semibold tabular text-muted">{g.items.length}</span>
                           <span className="h-px flex-1 bg-line-soft" />
                         </div>
@@ -301,12 +299,12 @@ export function CalendarView({ month, events, today }: { month: string; events: 
 
         <aside className="space-y-4">
           {/* Jour sélectionné : chronologie */}
-          <section className="overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
-            <div className="flex items-center gap-4 border-b border-line-soft bg-gradient-to-br from-brand-500/12 via-violet-500/8 to-transparent px-5 py-4">
+          <section className="overflow-hidden rounded-xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+            <div className="flex items-center gap-4 border-b border-line-soft  px-5 py-4">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div key={selected} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex items-center gap-4">
-                  <span className="flex h-14 w-14 flex-col items-center justify-center rounded-2xl bg-surface shadow-[var(--shadow-sm)] ring-1 ring-line-soft">
-                    <span className="text-[10px] font-semibold uppercase leading-none text-brand-600">{weekdayFmt.format(selDate).slice(0, 3)}</span>
+                  <span className="flex h-14 w-14 flex-col items-center justify-center rounded-lg bg-surface shadow-[var(--shadow-sm)] ring-1 ring-line-soft">
+                    <span className="text-[10px] font-semibold leading-none text-brand-600">{weekdayFmt.format(selDate).slice(0, 3)}</span>
                     <span className="mt-0.5 text-2xl font-semibold leading-none tabular text-ink">{selDate.getUTCDate()}</span>
                   </span>
                   <span>
@@ -331,7 +329,7 @@ export function CalendarView({ month, events, today }: { month: string; events: 
           </section>
 
           {/* Prochaines échéances */}
-          <section className="rounded-3xl border border-line-soft bg-surface p-2 shadow-[var(--shadow-sm)]">
+          <section className="rounded-xl border border-line-soft bg-surface p-2 shadow-[var(--shadow-sm)]">
             <div className="flex items-center gap-2 px-3 pb-1 pt-3">
               <CalendarClock className="h-4 w-4 text-brand-600" />
               <p className="text-sm font-semibold text-ink">Prochaines échéances</p>

@@ -15,7 +15,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { DropdownContent, DropdownItem, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useConfirm } from "@/components/ui/confirm";
-import { StatCard } from "@/components/ui/stat-card";
+import { StatCard, STAT_STRIP } from "@/components/ui/stat-card";
 import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
 import { startNavProgress } from "@/components/layout/top-progress";
 import { FilterTabs, ListState, Pagination, Row, SearchInput, SortHeader, Table, Td, Th, THead } from "@/components/data/list-state";
@@ -100,7 +100,6 @@ function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; ind
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: inv.lifecycle === "CANCELLED" ? 0.6 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const b = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
@@ -115,10 +114,9 @@ function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; ind
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-0.5 opacity-80", LINE[tone])} />
 
       <div className="relative flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-inset ring-violet-100 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ">
           <Receipt className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -143,7 +141,7 @@ function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; ind
           <div className="text-right text-xs">
             <p className="whitespace-nowrap text-muted">Émise le {formatDate(inv.issueDate)}</p>
             <p className={cn("mt-0.5 inline-flex items-center gap-1.5 whitespace-nowrap", overdue ? "font-medium text-rose-600" : "text-muted")}>
-              {overdue ? <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400/70" /><span className="relative h-2 w-2 rounded-full bg-rose-500" /></span> : <CalendarClock className="h-3.5 w-3.5" />}
+              {overdue ? <span className="relative flex h-2 w-2"><span className="relative h-2 w-2 rounded-full bg-rose-500" /></span> : <CalendarClock className="h-3.5 w-3.5" />}
               {overdue ? "En retard · " : "Échéance "}{formatDate(inv.dueDate)}
             </p>
           </div>
@@ -170,7 +168,7 @@ export function InvoicesTable({
   rows: InvoiceRow[]; summary: { invoiced: number; paid: number; balance: number }; total: number; page: number; pageSize: number; hasQuery: boolean;
   counts: Record<string, number>; canWrite: boolean; canDelete: boolean;
 }) {
-  const [view, setView] = useState<ViewMode>("grid");
+  const [view, setView] = useState<ViewMode>("table");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);
@@ -180,7 +178,7 @@ export function InvoicesTable({
   };
   return (
     <ListState>
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className={`${STAT_STRIP} lg:grid-cols-4`}>
         <StatCard index={0} tone="brand" icon={TrendingUp} label="Facturé" sub="sélection en cours"><AnimatedNumber value={summary.invoiced} kind="mad" duration={0.7} /></StatCard>
         <StatCard index={1} tone="emerald" icon={CircleDollarSign} label="Encaissé" sub="paiements reçus"><AnimatedNumber value={summary.paid} kind="mad" duration={0.7} /></StatCard>
         <StatCard index={2} tone="amber" icon={Wallet} label="Reste à encaisser" sub="factures non soldées" pulse={summary.balance > 0}><AnimatedNumber value={summary.balance} kind="mad" duration={0.7} /></StatCard>

@@ -36,7 +36,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
               <D.Content asChild forceMount>
                 <motion.div
                   className={cn(
-                    "pointer-events-auto relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-popover shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none sm:max-w-lg sm:rounded-2xl",
+                    "pointer-events-auto relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-popover shadow-[var(--shadow-ring),var(--shadow-lg)] focus:outline-none sm:max-w-lg sm:rounded-lg",
                     className,
                   )}
                   initial={{ opacity: 0, y: 24, scale: 0.97 }}

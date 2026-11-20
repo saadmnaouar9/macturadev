@@ -57,7 +57,7 @@ export function RegisterForm() {
         </div>
         <div className="flex items-center gap-3 pt-1.5">
           <span className="h-px flex-1 bg-white/10" />
-          <span className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em] text-white/40"><Building2 className="h-3.5 w-3.5" /> Entreprise</span>
+          <span className="flex items-center gap-1.5 text-[11px] font-medium text-white/40"><Building2 className="h-3.5 w-3.5" /> Entreprise</span>
           <span className="h-px flex-1 bg-white/10" />
         </div>
         <DarkInput label="Raison sociale" autoComplete="organization" icon={<Building2 className="h-4 w-4" />} value={values.companyName} onChange={(e) => set("companyName", e.target.value)} error={errors.companyName} />

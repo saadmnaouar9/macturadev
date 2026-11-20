@@ -38,27 +38,12 @@ const STAT_TONES = {
   amber: { tile: "bg-amber-50 text-amber-700 ring-amber-200/80", glow: "bg-amber-500/25" },
 } as const;
 
-function StatCard({ label, value, icon: Icon, tone, index }: { label: string; value: number; icon: LucideIcon; tone: keyof typeof STAT_TONES; index: number }) {
-  const t = STAT_TONES[tone];
+function StatCard({ label, value }: { label: string; value: number; icon?: LucideIcon; tone?: keyof typeof STAT_TONES; index?: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.06, ease: EASE }}
-      whileHover={{ y: -3, transition: { duration: 0.2 } }}
-      className="glass group relative overflow-hidden rounded-xl p-4 shadow-[var(--shadow-ring),var(--shadow-md)]"
-    >
-      <span aria-hidden className={cn("pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full opacity-60 blur-2xl transition-opacity duration-500 group-hover:opacity-100", t.glow)} />
-      <div className="relative flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[12px] font-medium uppercase tracking-wide text-muted">{label}</p>
-          <p className="mt-1.5 text-2xl font-semibold tracking-tight text-ink"><AnimatedNumber value={value} /></p>
-        </div>
-        <span className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110", t.tile)}>
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-    </motion.div>
+    <div className="min-w-0">
+      <p className="text-[13px] text-muted">{label}</p>
+      <p className="mt-1 text-xl font-semibold tracking-tight tabular text-ink"><AnimatedNumber value={value} /></p>
+    </div>
   );
 }
 
@@ -70,7 +55,6 @@ function ProductCard({ p, index, canWrite, onOpen, menu }: { p: ProductRow; inde
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: p.active ? 1 : 0.6, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -84,10 +68,9 @@ function ProductCard({ p, index, canWrite, onOpen, menu }: { p: ProductRow; inde
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-px opacity-70", isService ? "bg-gradient-to-r from-transparent via-violet-400/70 to-transparent" : "bg-gradient-to-r from-transparent via-sky-400/70 to-transparent")} />
 
       <div className="relative flex items-start gap-3">
-        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110", isService ? "bg-violet-50 text-violet-600 ring-violet-100" : "bg-sky-50 text-sky-600 ring-sky-100")}>
+        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", isService ? "bg-violet-50 text-violet-600 ring-violet-100" : "bg-sky-50 text-sky-600 ring-sky-100")}>
           {isService ? <Wrench className="h-5 w-5" /> : <Box className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
@@ -149,7 +132,7 @@ export function ProductsView({
   const confirm = useConfirm();
   const [drawer, setDrawer] = useState<{ open: boolean; product: (ProductValue & { id?: string }) | null }>({ open: false, product: null });
   const [catOpen, setCatOpen] = useState(false);
-  const [view, setView] = useState<ViewMode>("grid");
+  const [view, setView] = useState<ViewMode>("table");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible : mode par défaut */ }
   }, []);
@@ -221,7 +204,7 @@ export function ProductsView({
           )
         }
       />
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-2 gap-x-8 gap-y-5 rounded-xl border border-line-soft bg-surface px-5 py-4 lg:grid-cols-4">
         <StatCard index={0} label="Articles" value={counts.PRODUCT + counts.SERVICE} icon={Boxes} tone="brand" />
         <StatCard index={1} label="Produits" value={counts.PRODUCT} icon={Box} tone="sky" />
         <StatCard index={2} label="Services" value={counts.SERVICE} icon={Wrench} tone="violet" />

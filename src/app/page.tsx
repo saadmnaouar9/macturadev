@@ -30,7 +30,6 @@ export default async function Home() {
       </header>
 
       <section className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(ellipse_at_top,rgb(79_67_173/0.10),transparent_65%)]" />
         <div className="relative mx-auto max-w-4xl px-6 pb-20 pt-20 text-center sm:pt-28">
           <span className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1 text-xs font-medium text-ink-soft shadow-[var(--shadow-ring)]">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> Conçu pour les entreprises marocaines · MAD · TVA · ICE
@@ -55,7 +54,7 @@ export default async function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="grid gap-px overflow-hidden rounded-2xl bg-line shadow-[var(--shadow-ring)] sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-px overflow-hidden rounded-lg bg-line shadow-[var(--shadow-ring)] sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
             <div key={f.title} className="bg-surface p-7">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700">

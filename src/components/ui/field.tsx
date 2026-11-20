@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const inputBase =
-  "w-full rounded-lg border border-line bg-field px-3 text-sm text-ink placeholder:text-faint shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] duration-150 hover:border-line-strong focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:shadow-[0_0_0_3px_rgb(244_63_94/0.15)]";
+  "w-full rounded-lg border border-line bg-field px-3 text-sm text-ink placeholder:text-faint shadow-[var(--shadow-xs)] transition-[border-color,box-shadow] duration-150 hover:border-line-strong focus:border-brand-400 focus:shadow-[var(--shadow-focus)] focus:outline-none disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted aria-[invalid=true]:border-rose-400 aria-[invalid=true]:";
 
 export function Label({ children, htmlFor, required, className }: { children: React.ReactNode; htmlFor?: string; required?: boolean; className?: string }) {
   return (
@@ -131,7 +131,7 @@ export function SegmentedControl<T extends string>({
             {active && (
               <motion.span
                 layoutId={layoutId}
-                className="absolute inset-0 rounded-md bg-brand-500/25 shadow-[0_0_0_1px_rgb(96_165_250/0.4),0_0_16px_-4px_rgb(59_130_246/0.6)]"
+                className="absolute inset-0 rounded-md bg-brand-500/25"
                 transition={{ type: "spring", stiffness: 500, damping: 38 }}
               />
             )}

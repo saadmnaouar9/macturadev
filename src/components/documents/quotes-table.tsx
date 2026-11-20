@@ -13,7 +13,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DropdownContent, DropdownItem, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useConfirm } from "@/components/ui/confirm";
-import { StatCard } from "@/components/ui/stat-card";
+import { StatCard, STAT_STRIP } from "@/components/ui/stat-card";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
 import { startNavProgress } from "@/components/layout/top-progress";
@@ -114,7 +114,6 @@ function QuoteCard({ q, index, canWrite, canDelete }: { q: QuoteRow; index: numb
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const b = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
@@ -129,10 +128,9 @@ function QuoteCard({ q, index, canWrite, canDelete }: { q: QuoteRow; index: numb
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-0.5 opacity-80", LINE[tone])} />
 
       <div className="relative flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-100 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700 ">
           <FileText className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -156,7 +154,7 @@ function QuoteCard({ q, index, canWrite, canDelete }: { q: QuoteRow; index: numb
         <div className="text-right text-xs">
           <p className="whitespace-nowrap text-muted">Émis le {formatDate(q.issueDate)}</p>
           <p className={cn("mt-0.5 inline-flex items-center gap-1.5 whitespace-nowrap", expired ? "font-medium text-rose-600" : soon ? "font-medium text-amber-700" : "text-muted")}>
-            {(soon || expired) && <span className="relative flex h-2 w-2"><span className={cn("absolute inline-flex h-full w-full animate-ping rounded-full", expired ? "bg-rose-400/70" : "bg-amber-400/70")} /><span className={cn("relative h-2 w-2 rounded-full", expired ? "bg-rose-500" : "bg-amber-500")} /></span>}
+            {(soon || expired) && <span className="relative flex h-2 w-2"><span className={cn("relative h-2 w-2 rounded-full", expired ? "bg-rose-500" : "bg-amber-500")} /></span>}
             {!soon && !expired && <CalendarClock className="h-3.5 w-3.5" />}
             {expired ? `Expiré le ${formatDate(q.expiryDate)}` : soon ? (days === 0 ? "Expire aujourd'hui" : `Expire dans ${days} j`) : `Valide jusqu'au ${formatDate(q.expiryDate)}`}
           </p>
@@ -171,7 +169,7 @@ export function QuotesTable({
 }: {
   rows: QuoteRow[]; total: number; sum: number; page: number; pageSize: number; hasQuery: boolean; counts: Record<string, number>; stats: QuoteStats; canWrite: boolean; canDelete: boolean;
 }) {
-  const [view, setView] = useState<ViewMode>("grid");
+  const [view, setView] = useState<ViewMode>("table");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);
@@ -181,7 +179,7 @@ export function QuotesTable({
   };
   return (
     <>
-    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className={`${STAT_STRIP} lg:grid-cols-4`}>
       <StatCard index={0} tone="brand" icon={FileText} label="Devis" sub="tous statuts confondus"><AnimatedNumber value={stats.all} /></StatCard>
       <StatCard index={1} tone="sky" icon={Hourglass} label="En attente" sub={`${stats.sentCount} devis envoyé${stats.sentCount > 1 ? "s" : ""}`}><AnimatedNumber value={stats.sentValue} kind="mad" /></StatCard>
       <StatCard index={2} tone="emerald" icon={CheckCircle2} label="Acceptés" sub={`${stats.acceptedCount} devis`}><AnimatedNumber value={stats.acceptedValue} kind="mad" /></StatCard>

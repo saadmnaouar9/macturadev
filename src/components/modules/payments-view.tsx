@@ -9,7 +9,7 @@ import type { PaymentMethod } from "@prisma/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StatCard } from "@/components/ui/stat-card";
+import { StatCard, STAT_STRIP } from "@/components/ui/stat-card";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
 import { startNavProgress } from "@/components/layout/top-progress";
@@ -91,7 +91,6 @@ function PaymentCard({ r, kind, index }: { r: PaymentRowData; kind: "in" | "out"
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: voided ? 0.7 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const b = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
@@ -106,10 +105,9 @@ function PaymentCard({ r, kind, index }: { r: PaymentRowData; kind: "in" | "out"
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-0.5 opacity-80", voided ? "bg-faint" : meta.bar)} />
 
       <div className="relative flex items-start gap-3">
-        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110", meta.tile)}>
+        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", meta.tile)}>
           <meta.icon className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -138,7 +136,7 @@ export function PaymentsView({ rows, kind, state, total, sum, page, pageSize, in
   rows: PaymentRowData[]; kind: "in" | "out"; state: "active" | "voided"; total: number; sum: number; page: number; pageSize: number;
   inCount: number; outCount: number; methods: MethodStat[];
 }) {
-  const [view, setView] = useState<ViewMode>("grid");
+  const [view, setView] = useState<ViewMode>("table");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);
@@ -151,7 +149,7 @@ export function PaymentsView({ rows, kind, state, total, sum, page, pageSize, in
 
   return (
     <ListState>
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-3">
+      <div className={`${STAT_STRIP} lg:grid-cols-3`}>
         <StatCard index={0} tone={kind === "in" ? "emerald" : "brand"} icon={CircleDollarSign} label={label} sub="selon les filtres"><AnimatedNumber value={sum} kind="mad" /></StatCard>
         <StatCard index={1} tone="violet" icon={Hash} label="Nombre de paiements" sub={`${inCount} encaissement${inCount > 1 ? "s" : ""} · ${outCount} décaissement${outCount > 1 ? "s" : ""}`}><AnimatedNumber value={total} /></StatCard>
         <div className="col-span-2 lg:col-span-1">

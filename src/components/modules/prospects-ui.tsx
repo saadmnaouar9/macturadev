@@ -47,19 +47,16 @@ function Kpi({ label, sub, icon: Icon, tone, index, children, pulse }: { label: 
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: index * 0.06, ease: EASE }}
-      whileHover={{ y: -3, transition: { duration: 0.2 } }}
       className="glass group relative overflow-hidden rounded-xl p-4 shadow-[var(--shadow-ring),var(--shadow-md)]"
     >
-      <span aria-hidden className={cn("pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full opacity-60 blur-2xl transition-opacity duration-500 group-hover:opacity-100", t.glow)} />
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[12px] font-medium uppercase tracking-wide text-muted">{label}</p>
+          <p className="text-[12px] font-medium tracking-wide text-muted">{label}</p>
           <p className="mt-1.5 truncate text-[22px] font-semibold tracking-tight text-ink">{children}</p>
           <p className="mt-0.5 truncate text-[11px] text-faint">{sub}</p>
         </div>
-        <span className={cn("relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110", t.tile)}>
+        <span className={cn("relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", t.tile)}>
           <Icon className="h-5 w-5" />
-          {pulse && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 animate-ping rounded-full bg-amber-400/80" />}
         </span>
       </div>
     </motion.div>
@@ -104,7 +101,6 @@ function Pipeline({ stages }: { stages: ProspectStats["pipeline"] }) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.34 + i * 0.05, ease: EASE }}
-              whileHover={{ y: -2, transition: { duration: 0.15 } }}
               whileTap={{ scale: 0.97 }}
               className={cn("rounded-lg p-3 text-left ring-1 ring-inset transition-colors", active ? "bg-white/[0.07] ring-brand-200/60" : "bg-white/[0.025] ring-line hover:bg-white/[0.05]")}
             >
@@ -176,7 +172,6 @@ export function ProspectCard({ row, api }: { row: Row; api: CardApi }) {
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: status === "LOST" ? 0.7 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(api.index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -190,10 +185,9 @@ export function ProspectCard({ row, api }: { row: Row; api: CardApi }) {
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-0.5 opacity-80", st.bar)} />
 
       <div className="relative flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-50 to-violet-50 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-100 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm font-semibold text-brand-700 ">
           {initials(name || "?")}
         </span>
         <div className="min-w-0 flex-1">
@@ -226,7 +220,7 @@ export function ProspectCard({ row, api }: { row: Row; api: CardApi }) {
         <div className="min-w-0">
           <p className="whitespace-nowrap text-lg font-semibold tabular tracking-tight text-ink">{value > 0 ? formatMAD(value) : "—"}</p>
           <p className={cn("mt-0.5 inline-flex items-center gap-1.5 whitespace-nowrap text-xs", overdue ? "font-medium text-rose-600" : "text-muted")}>
-            {overdue ? <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400/70" /><span className="relative h-2 w-2 rounded-full bg-rose-500" /></span> : <CalendarClock className="h-3.5 w-3.5" />}
+            {overdue ? <span className="relative flex h-2 w-2"><span className="relative h-2 w-2 rounded-full bg-rose-500" /></span> : <CalendarClock className="h-3.5 w-3.5" />}
             {next ? `${overdue ? "À relancer · " : "Relance "}${formatDate(next)}` : "Aucune relance prévue"}
           </p>
         </div>

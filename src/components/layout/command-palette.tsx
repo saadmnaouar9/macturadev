@@ -137,7 +137,7 @@ export function CommandPalette({ open, onOpenChange, canWrite }: { open: boolean
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
                   transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                  className="pointer-events-auto flex h-fit max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-popover shadow-[var(--shadow-ring),0_24px_64px_-12px_rgb(16_18_35/0.3)] focus:outline-none"
+                  className="pointer-events-auto flex h-fit max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-lg bg-popover focus:outline-none"
                 >
                   <D.Title className="sr-only">Recherche</D.Title>
                   <D.Description className="sr-only">Rechercher des clients, factures, devis et produits</D.Description>
@@ -163,7 +163,7 @@ export function CommandPalette({ open, onOpenChange, canWrite }: { open: boolean
                       lastGroup = r.group;
                       return (
                         <div key={r.id}>
-                          {header && <div className="px-2.5 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.07em] text-faint first:pt-1">{header}</div>}
+                          {header && <div className="px-2.5 pb-1 pt-3 text-[11px] font-semibold text-faint first:pt-1">{header}</div>}
                           <button
                             data-idx={i}
                             onMouseMove={() => setActive(i)}

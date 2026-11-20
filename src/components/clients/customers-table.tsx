@@ -12,7 +12,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DropdownContent, DropdownItem, DropdownMenu, DropdownSeparator, DropdownTrigger } from "@/components/ui/dropdown";
 import { useConfirm } from "@/components/ui/confirm";
-import { StatCard } from "@/components/ui/stat-card";
+import { StatCard, STAT_STRIP } from "@/components/ui/stat-card";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
 import { startNavProgress } from "@/components/layout/top-progress";
@@ -115,7 +115,6 @@ function CustomerCard({ r, index, canWrite, canDelete }: { r: CustomerRow; index
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: r.archived ? 0.6 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const b = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
@@ -129,10 +128,9 @@ function CustomerCard({ r, index, canWrite, canDelete }: { r: CustomerRow; index
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-px opacity-70 bg-gradient-to-r from-transparent to-transparent", r.type === "COMPANY" ? "via-brand-400/70" : "via-accent-400/70")} />
 
       <div className="relative flex items-start gap-3">
-        <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110"><CustomerAvatar name={r.name} type={r.type} size="lg" /></span>
+        <span className=" "><CustomerAvatar name={r.name} type={r.type} size="lg" /></span>
         <div className="min-w-0 flex-1">
           <Link prefetch={false} href={`/clients/${r.id}`} className="block truncate text-[15px] font-semibold text-ink outline-none transition-colors group-hover:text-brand-700 focus-visible:underline">{r.name}</Link>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
@@ -180,7 +178,7 @@ export function CustomersTable({
   rows: CustomerRow[]; total: number; page: number; pageSize: number; hasQuery: boolean; archivedView: boolean;
   counts: { all: number; company: number; individual: number; archived: number }; totals: { invoiced: number; outstanding: number }; canWrite: boolean; canDelete: boolean;
 }) {
-  const [view, setView] = useState<ViewMode>("grid");
+  const [view, setView] = useState<ViewMode>("table");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);
@@ -190,7 +188,7 @@ export function CustomersTable({
   };
   return (
     <>
-    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className={`${STAT_STRIP} lg:grid-cols-4`}>
       <StatCard index={0} tone="brand" icon={Users} label="Clients actifs" sub={`${counts.archived} archivé${counts.archived > 1 ? "s" : ""}`}><AnimatedNumber value={counts.all} /></StatCard>
       <StatCard index={1} tone="sky" icon={Building2} label="Entreprises" sub={`${counts.individual} particulier${counts.individual > 1 ? "s" : ""}`}><AnimatedNumber value={counts.company} /></StatCard>
       <StatCard index={2} tone="emerald" icon={TrendingUp} label="Total facturé" sub="clients actifs"><AnimatedNumber value={totals.invoiced} kind="mad" /></StatCard>

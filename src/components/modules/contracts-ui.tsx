@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { AlertTriangle, CalendarClock, FileSignature, Hourglass, Repeat, TrendingUp } from "lucide-react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Badge } from "@/components/ui/badge";
-import { StatCard } from "@/components/ui/stat-card";
+import { StatCard, STAT_STRIP } from "@/components/ui/stat-card";
 import type { CardApi } from "@/components/data/resource-view";
 import { CONTRACT_STATUS } from "@/lib/status";
 import { formatMAD } from "@/lib/money";
@@ -25,7 +25,7 @@ const LINE: Record<string, string> = {
 
 export function ContractStatsPanel({ stats }: { stats: ContractStats }) {
   return (
-    <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className={`${STAT_STRIP} lg:grid-cols-4`}>
       <StatCard index={0} tone="emerald" icon={FileSignature} label="Contrats actifs" sub="en cours de validité"><AnimatedNumber value={stats.activeCount} /></StatCard>
       <StatCard index={1} tone="brand" icon={TrendingUp} label="Revenu récurrent mensuel" sub="HT, contrats actifs"><AnimatedNumber value={stats.mrr} kind="mad" /></StatCard>
       <StatCard index={2} tone="amber" icon={Hourglass} label="Expirent sous 30 jours" sub="à renouveler" pulse={stats.expiringCount > 0}><AnimatedNumber value={stats.expiringCount} /></StatCard>
@@ -58,7 +58,6 @@ export function ContractCard({ row, api }: { row: Row; api: CardApi }) {
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: display === "TERMINATED" ? 0.65 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(api.index, 14) * 0.035, ease: EASE }}
-      whileHover={{ y: -4, transition: { duration: 0.2, ease: EASE } }}
       onMouseMove={(e) => {
         const b = e.currentTarget.getBoundingClientRect();
         e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
@@ -72,10 +71,9 @@ export function ContractCard({ row, api }: { row: Row; api: CardApi }) {
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
-      <span aria-hidden className={cn("absolute inset-x-0 top-0 h-0.5 opacity-80", LINE[tone])} />
 
       <div className="relative flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-inset ring-violet-100 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ">
           <FileSignature className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">

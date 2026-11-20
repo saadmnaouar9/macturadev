@@ -13,14 +13,14 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-gradient-to-r from-brand-500 via-[#3b6df7] to-[#7357f5] text-white shadow-[0_8px_22px_-8px_rgb(59_110_255/0.75),inset_0_1px_0_rgb(255_255_255/0.22)] hover:-translate-y-px hover:brightness-110 hover:shadow-[0_12px_30px_-8px_rgb(59_110_255/0.95),inset_0_1px_0_rgb(255_255_255/0.28)]",
-  accent: "bg-gradient-to-r from-accent-500 to-[#ff5f6d] text-white shadow-[0_8px_22px_-8px_rgb(255_110_70/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:-translate-y-px hover:brightness-110",
-  success: "bg-emerald-400 text-emerald-950 shadow-[0_8px_22px_-10px_rgb(16_185_129/0.8)] hover:-translate-y-px hover:bg-emerald-300",
+    "bg-brand-600 text-white hover:bg-brand-700",
+  accent: "bg-accent-500 text-white hover:bg-accent-600",
+  success: "bg-emerald-500 text-white hover:bg-emerald-600",
   secondary:
-    "bg-subtle text-ink shadow-[0_0_0_1px_var(--color-line),var(--shadow-xs)] hover:bg-hover hover:shadow-[0_0_0_1px_var(--color-line-strong),0_0_18px_-6px_rgb(59_130_246/0.5)]",
+    "bg-subtle text-ink shadow-[0_0_0_1px_var(--color-line),var(--shadow-xs)] hover:bg-hover",
   outline: "border border-line bg-transparent text-ink hover:bg-subtle hover:border-line-strong",
   ghost: "text-ink-soft hover:bg-hover hover:text-ink",
-  danger: "bg-rose-500 text-white shadow-[0_8px_22px_-10px_rgb(244_63_94/0.8)] hover:-translate-y-px hover:bg-rose-400",
+  danger: "bg-rose-600 text-white hover:bg-rose-700",
 };
 
 const sizes: Record<Size, string> = {

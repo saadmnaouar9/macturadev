@@ -50,7 +50,7 @@ function DiscountToggle({ value, onChange, label }: { value: DiscountKind; onCha
       onClick={() => onChange(value === "PERCENT" ? "AMOUNT" : "PERCENT")}
       aria-label={`${label} : ${value === "PERCENT" ? "pourcentage" : "montant fixe en dirhams"}. Cliquer pour changer.`}
       title={value === "PERCENT" ? "Remise en % — cliquer pour un montant fixe" : "Remise en DH — cliquer pour un pourcentage"}
-      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold text-muted ring-1 ring-inset ring-line transition-colors hover:bg-subtle hover:text-ink focus-visible:shadow-[var(--shadow-focus)] focus-visible:outline-none"
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold text-muted transition-colors hover:bg-subtle hover:text-ink focus-visible:shadow-[var(--shadow-focus)] focus-visible:outline-none"
     >
       {value === "PERCENT" ? "%" : "DH"}
     </button>
@@ -606,7 +606,7 @@ export function DocumentEditor({
                 }
               />
               <div className="mt-4">
-                <div className="hidden grid-cols-[20px_minmax(0,1fr)_76px_76px_108px_118px_84px_108px_32px] items-center gap-2 border-y border-line-soft bg-canvas/70 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.05em] text-muted lg:grid" aria-hidden>
+                <div className="hidden grid-cols-[20px_minmax(0,1fr)_76px_76px_108px_118px_84px_108px_32px] items-center gap-2 border-y border-line-soft bg-canvas/70 px-4 py-2 text-[11px] font-medium text-muted lg:grid" aria-hidden>
                   <span />
                   <span>Désignation</span>
                   <span className="text-right">Qté</span>
@@ -662,7 +662,7 @@ export function DocumentEditor({
           </div>
 
           <div hidden={view !== "preview"}>
-            <div className="rounded-2xl bg-stage p-3 sm:p-8">
+            <div className="rounded-lg bg-stage p-3 sm:p-8">
               <DocumentPaper
                 kind={kind}
                 number={documentNumber ?? (isQuote ? "Numéro attribué à la création" : null)}

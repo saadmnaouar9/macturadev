@@ -54,7 +54,7 @@ function Cell({ col, row }: { col: Column; row: RowData }) {
     case "title":
       return (
         <div className="flex items-center gap-3">
-          {col.avatar && <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-100">{initials(String(v ?? "?"))}</span>}
+          {col.avatar && <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-xs font-semibold text-brand-700">{initials(String(v ?? "?"))}</span>}
           <div className="min-w-0">
             <div className="truncate font-medium text-ink group-hover:text-brand-700">{String(v ?? "—")}</div>
             {col.subKey && row[col.subKey] ? <div className="max-w-[320px] truncate text-xs text-muted">{String(row[col.subKey])}</div> : null}
@@ -138,7 +138,7 @@ export function ResourceView(p: ResourceViewProps) {
   const params = useSearchParams();
   const confirm = useConfirm();
   const [drawer, setDrawer] = useState<{ open: boolean; row: RowData | null }>({ open: false, row: null });
-  const [view, setView] = useState<ViewMode>(p.cardView ? "grid" : "table");
+  const [view, setView] = useState<ViewMode>("table");
   const storageKey = p.cardView?.storageKey;
   useEffect(() => {
     if (!storageKey) return;
