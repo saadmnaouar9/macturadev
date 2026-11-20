@@ -17,6 +17,7 @@ import { ProspectCard, ProspectStatsPanel, type ProspectStats } from "./prospect
 import { SupplierCard, SuppliersPanel, type SupplierStats } from "./suppliers-ui";
 import type { MapPoint } from "./suppliers-map";
 import { EmployeeCard } from "./employees-ui";
+import { ProjectCard } from "./projects-ui";
 import { ContractCard, ContractStatsPanel, type ContractStats } from "./contracts-ui";
 
 type Common = Pick<ResourceViewProps, "rows" | "total" | "page" | "pageSize" | "hasQuery" | "canWrite" | "canDelete" | "filters" | "summary">;
@@ -158,6 +159,7 @@ export function ProjectsView({ customers, ...p }: Common & { customers: { value:
       title="Projets"
       description="Pilotez vos projets clients : avancement, budget et tâches associées."
       icon={FolderKanban}
+      cardView={{ defaultGrid: true, storageKey: "mactura.projects.view", render: (row, api) => <ProjectCard row={row} api={api} /> }}
       entity="projet"
       columns={[
         { key: "name", header: "Projet", kind: "title", subKey: "customerName", sort: "name" },
