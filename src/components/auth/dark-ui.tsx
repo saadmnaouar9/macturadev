@@ -52,7 +52,7 @@ export function DarkButton({ loading, children, className, ...props }: React.But
       {...props}
       disabled={props.disabled || loading}
       className={cn(
-        "space-btn group relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-brand-500 text-sm font-semibold text-white",
+        "space-btn group relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-brand-500 text-sm font-semibold text-white [[data-theme=dark]_&]:bg-[#ED5D35]",
         " transition-transform duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0a22] active:translate-y-0 active:scale-[0.985] disabled:pointer-events-none disabled:opacity-60",
         className,
