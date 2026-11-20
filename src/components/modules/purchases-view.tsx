@@ -14,7 +14,7 @@ import { PaymentDialog, VoidPaymentDialog } from "@/components/documents/payment
 import { INVOICE_STATUS, PAYMENT_METHODS } from "@/lib/status";
 import { formatMAD, formatRate } from "@/lib/money";
 import { cn, formatDate } from "@/lib/utils";
-import { PurchaseStatsPanel, type PurchaseStats } from "./achats-ui";
+import { PurchaseCard, PurchaseStatsPanel, type PurchaseStats } from "./achats-ui";
 import { addPurchasePayment, cancelPurchase, deletePurchase, savePurchase, voidPurchasePayment } from "@/app/(app)/achats/actions";
 
 type Common = Pick<ResourceViewProps, "rows" | "total" | "page" | "pageSize" | "hasQuery" | "canWrite" | "canDelete" | "filters" | "summary" | "defaults">;
@@ -63,6 +63,7 @@ export function PurchasesView({ suppliers, taxRates, stats, ...p }: Common & { s
         description="Factures fournisseurs, règlements partiels ou totaux et TVA déductible."
         icon={ShoppingCart}
         summaryNode={<PurchaseStatsPanel stats={stats} />}
+        cardView={{ defaultGrid: true, storageKey: "mactura.purchases.view", render: (row, api) => <PurchaseCard row={row} api={api} /> }}
         entity="achat"
         columns={[
           { key: "reference", header: "Facture fournisseur", kind: "title", subKey: "supplierName", sort: "reference" },
