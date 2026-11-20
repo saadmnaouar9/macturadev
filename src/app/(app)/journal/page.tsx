@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import Link from "@/components/ui/fast-link";
 import type { Prisma } from "@prisma/client";
 import { Clock } from "lucide-react";
 import { requireAuth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PAGE_SIZE, parseListParams } from "@/lib/list-params";
-import { formatMAD } from "@/lib/money";
-import { formatDate, initials } from "@/lib/utils";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { FilterTabs, ListState, Pagination, Row, SearchInput, Table, Td, Th, THead } from "@/components/data/list-state";
+import { FilterTabs, ListState, Pagination, SearchInput } from "@/components/data/list-state";
+import { JournalFeed, type JournalRow } from "@/components/modules/journal-feed";
 
 export const metadata: Metadata = { title: "Journal d'activité" };
 
@@ -44,57 +42,31 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
     db.activity.count({ where }),
     db.activity.count({ where: { companyId } }),
   ]);
+  const feed: JournalRow[] = rows.map((a) => ({
+    id: a.id,
+    createdAt: a.createdAt.toISOString(),
+    message: a.message,
+    type: a.type,
+    userName: a.user?.name ?? null,
+    amount: a.amount ? Number(a.amount) : null,
+    href: hrefFor(a.type, a.entityType, a.entityId) ?? null,
+  }));
   return (
     <PageContainer>
       <PageHeader title="Journal d'activité" description="Piste d'audit : chaque création, modification, paiement et annulation est tracé avec son auteur." />
       <ListState>
-        <Card className="overflow-hidden">
-          <div className="flex flex-col gap-3 p-4 xl:flex-row xl:items-center xl:justify-between">
-            <FilterTabs param="group" layoutId="journal-group" options={[{ value: "", label: "Tout", count: all }, ...Object.entries(GROUPS).map(([v, g]) => ({ value: v, label: g.label }))]} />
-            <SearchInput placeholder="Rechercher dans le journal…" />
-          </div>
-          {rows.length === 0 ? (
-            <EmptyState icon={Clock} title="Aucune activité" description="Aucun événement ne correspond à ces critères." />
-          ) : (
-            <>
-              <Table>
-                <THead>
-                  <Th>Date</Th>
-                  <Th>Événement</Th>
-                  <Th className="hidden md:table-cell">Utilisateur</Th>
-                  <Th align="right" className="hidden sm:table-cell">Montant</Th>
-                </THead>
-                <tbody>
-                  {rows.map((a, i) => {
-                    const href = hrefFor(a.type, a.entityType, a.entityId);
-                    return (
-                      <Row key={a.id} index={i} href={href ?? undefined}>
-                        <Td className="whitespace-nowrap text-[13px] text-ink-soft">
-                          {formatDate(a.createdAt)}
-                          <span className="ml-2 text-xs text-faint">{a.createdAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Casablanca" })}</span>
-                        </Td>
-                        <Td>
-                          <span className="text-[13px] text-ink">{href ? <Link href={href} className="hover:text-brand-700">{a.message}</Link> : a.message}</span>
-                          <span className="block font-mono text-[11px] text-faint">{a.type}</span>
-                        </Td>
-                        <Td className="hidden md:table-cell">
-                          {a.user ? (
-                            <span className="inline-flex items-center gap-2 text-[13px] text-ink-soft">
-                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent-50 text-[10px] font-semibold text-accent-600">{initials(a.user.name)}</span>
-                              {a.user.name}
-                            </span>
-                          ) : <span className="text-faint">Système</span>}
-                        </Td>
-                        <Td align="right" className="hidden text-[13px] tabular text-ink-soft sm:table-cell">{a.amount ? formatMAD(a.amount) : "—"}</Td>
-                      </Row>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              <Pagination page={page} pageSize={PAGE_SIZE * 2} total={total} />
-            </>
-          )}
-        </Card>
+        <div className="mb-5 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <FilterTabs param="group" layoutId="journal-group" options={[{ value: "", label: "Tout", count: all }, ...Object.entries(GROUPS).map(([v, g]) => ({ value: v, label: g.label }))]} />
+          <SearchInput placeholder="Rechercher dans le journal…" className="xl:w-72" />
+        </div>
+        {rows.length === 0 ? (
+          <Card><EmptyState icon={Clock} title="Aucune activité" description="Aucun événement ne correspond à ces critères." /></Card>
+        ) : (
+          <>
+            <JournalFeed rows={feed} total={total} />
+            <Card className="mt-6 overflow-hidden"><Pagination page={page} pageSize={PAGE_SIZE * 2} total={total} /></Card>
+          </>
+        )}
       </ListState>
     </PageContainer>
   );
