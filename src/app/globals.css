@@ -497,3 +497,27 @@ html { scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; 
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 9999px; border: 2px solid transparent; background-clip: content-box; transition: background-color 0.2s ease; }
 ::-webkit-scrollbar-thumb:hover { background: var(--logo-orange); background-clip: content-box; }
+
+/* ───────────── Transition clair ⇄ sombre ─────────────
+   Le nouveau thème se révèle en cercle depuis le bouton (coordonnées --vt-x / --vt-y, rayon --vt-r posés par ThemeToggle),
+   l'ancien thème recule en s'assombrissant légèrement. Aucune animation si « réduire les animations » est activé. */
+::view-transition-group(root) { animation-duration: 850ms; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; animation: theme-old 850ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+::view-transition-new(root) { z-index: 2; animation: theme-reveal 850ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+@keyframes theme-reveal {
+  from { clip-path: circle(0px at var(--vt-x, 100%) var(--vt-y, 0px)); }
+  to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 100%) var(--vt-y, 0px)); }
+}
+@keyframes theme-old { to { transform: scale(0.985); filter: brightness(0.9); } }
+/* pendant la bascule, les transitions de couleur des composants sont suspendues : le changement est porté par la capture, sans scintillement */
+html.theme-switching *:not([data-keep-transition]),
+html.theme-switching *:not([data-keep-transition])::before,
+html.theme-switching *:not([data-keep-transition])::after { transition: none !important; }
+/* repli (navigateurs sans View Transitions) : fondu rapide des couleurs */
+html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, fill 0.4s ease, stroke 0.4s ease, box-shadow 0.4s ease !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
