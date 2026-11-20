@@ -21,7 +21,7 @@ export function createDemoClient(): PrismaClient {
   const ready = (async () => {
     await pg.waitReady;
     await pg.exec(DEMO_SCHEMA_SQL);
-    await seedDemo(base, { quiet: true });
+    await seedDemo(base, { quiet: true, cheapHash: true });
   })();
   ready.catch((e) => console.error("[demo] initialisation impossible", e));
 

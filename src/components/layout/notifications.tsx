@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, Bell, CheckCheck, CircleDollarSign, Clock, FileCheck2, Inbox } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

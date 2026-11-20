@@ -55,19 +55,12 @@ function ProductCard({ p, index, canWrite, onOpen, menu }: { p: ProductRow; inde
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: p.active ? 1 : 0.6, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-      }}
       onClick={(e) => {
         if (!canWrite || (e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
         onOpen();
       }}
       className={cn("glass group relative flex flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60", canWrite && "cursor-pointer")}
-    >
-      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+    >
 
       <div className="relative flex items-start gap-3">
         <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", isService ? "bg-brand-50 text-brand-600 ring-brand-100" : "bg-brand-50 text-brand-600 ring-brand-100")}>

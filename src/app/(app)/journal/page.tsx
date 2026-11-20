@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import type { Prisma } from "@prisma/client";
 import { Clock } from "lucide-react";
 import { requireAuth } from "@/lib/auth";
@@ -74,7 +74,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
                           <span className="ml-2 text-xs text-faint">{a.createdAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Africa/Casablanca" })}</span>
                         </Td>
                         <Td>
-                          <span className="text-[13px] text-ink">{href ? <Link prefetch={false} href={href} className="hover:text-brand-700">{a.message}</Link> : a.message}</span>
+                          <span className="text-[13px] text-ink">{href ? <Link href={href} className="hover:text-brand-700">{a.message}</Link> : a.message}</span>
                           <span className="block font-mono text-[11px] text-faint">{a.type}</span>
                         </Td>
                         <Td className="hidden md:table-cell">

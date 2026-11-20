@@ -93,7 +93,7 @@ function genIce() {
 }
 
 /** Remplit la base avec le jeu de données de démonstration (utilisé par le CLI et par le Mode Démo en ligne). */
-export async function seedDemo(client: PrismaClient, opts: { quiet?: boolean } = {}) {
+export async function seedDemo(client: PrismaClient, opts: { quiet?: boolean; cheapHash?: boolean } = {}) {
   db = client;
   seed = SEED_START;
   const log = opts.quiet ? () => {} : console.log;
@@ -145,7 +145,8 @@ export async function seedDemo(client: PrismaClient, opts: { quiet?: boolean } =
     data: {
       email: "demo@mactura.ma",
       name: "Yasmine El Idrissi",
-      passwordHash: await bcrypt.hash("Demo1234", 12),
+      // Base en mémoire jetable (Mode Démo) : coût 4 au lieu de 12, la connexion démo est ~250 ms plus rapide (le mot de passe démo est public)
+      passwordHash: await bcrypt.hash("Demo1234", opts.cheapHash ? 4 : 12),
       memberships: { create: { companyId: company.id, role: "OWNER", notificationsSeenAt: addDays(today, -3) } },
     },
   });

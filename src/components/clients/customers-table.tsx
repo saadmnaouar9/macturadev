@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -115,24 +115,17 @@ function CustomerCard({ r, index, canWrite, canDelete }: { r: CustomerRow; index
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: r.archived ? 0.6 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      onMouseMove={(e) => {
-        const b = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
-      }}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
         open();
       }}
       className="glass group relative flex cursor-pointer flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60"
-    >
-      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+    >
 
       <div className="relative flex items-start gap-3">
         <span className=" "><CustomerAvatar name={r.name} type={r.type} size="lg" /></span>
         <div className="min-w-0 flex-1">
-          <Link prefetch={false} href={`/clients/${r.id}`} className="block truncate text-[15px] font-semibold text-ink outline-none transition-colors group-hover:text-brand-700 focus-visible:underline">{r.name}</Link>
+          <Link href={`/clients/${r.id}`} className="block truncate text-[15px] font-semibold text-ink outline-none transition-colors group-hover:text-brand-700 focus-visible:underline">{r.name}</Link>
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
             <span className="inline-flex items-center gap-1">{r.type === "COMPANY" ? <Building2 className="h-3.5 w-3.5" /> : <UserRound className="h-3.5 w-3.5" />}{r.type === "COMPANY" ? "Entreprise" : "Particulier"}</span>
             {r.city && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{r.city}</span>}
@@ -163,8 +156,8 @@ function CustomerCard({ r, index, canWrite, canDelete }: { r: CustomerRow; index
         <span>{docs > 0 ? `${r._count.quotes} devis · ${r._count.invoices} facture${r._count.invoices > 1 ? "s" : ""}` : "Aucun document"} · depuis le {formatDate(r.createdAt)}</span>
         {canWrite && !r.archived && (
           <span data-no-row-click className="flex shrink-0 gap-1">
-            <Link prefetch={false} href={`/devis/new?customer=${r.id}`} title="Nouveau devis" aria-label="Nouveau devis" className="rounded-md p-1.5 text-muted transition-colors hover:bg-subtle hover:text-brand-700"><FileText className="h-4 w-4" /></Link>
-            <Link prefetch={false} href={`/factures/new?customer=${r.id}`} title="Nouvelle facture" aria-label="Nouvelle facture" className="rounded-md p-1.5 text-muted transition-colors hover:bg-subtle hover:text-brand-700"><Receipt className="h-4 w-4" /></Link>
+            <Link href={`/devis/new?customer=${r.id}`} title="Nouveau devis" aria-label="Nouveau devis" className="rounded-md p-1.5 text-muted transition-colors hover:bg-subtle hover:text-brand-700"><FileText className="h-4 w-4" /></Link>
+            <Link href={`/factures/new?customer=${r.id}`} title="Nouvelle facture" aria-label="Nouvelle facture" className="rounded-md p-1.5 text-muted transition-colors hover:bg-subtle hover:text-brand-700"><Receipt className="h-4 w-4" /></Link>
           </span>
         )}
       </div>

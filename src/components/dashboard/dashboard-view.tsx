@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, type Variants } from "framer-motion";
 import { toast } from "sonner";
@@ -92,7 +92,7 @@ function KpiFeatured({
     </div>
   );
   return href ? (
-    <Link prefetch={false} href={href} className="block rounded-md focus-visible:outline-offset-4 hover:[&_p:nth-child(2)]:underline">
+    <Link href={href} className="block rounded-md focus-visible:outline-offset-4 hover:[&_p:nth-child(2)]:underline">
       {inner}
     </Link>
   ) : (
@@ -126,7 +126,7 @@ function KpiTile({
     </div>
   );
   return href ? (
-    <Link prefetch={false} href={href} className="block rounded-md focus-visible:outline-offset-4 hover:[&_p:nth-child(2)]:underline">
+    <Link href={href} className="block rounded-md focus-visible:outline-offset-4 hover:[&_p:nth-child(2)]:underline">
       {inner}
     </Link>
   ) : (
@@ -192,7 +192,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                 { href: "/clients/new", label: "Nouveau client", icon: UserPlus },
                 { href: "/produits?new=1", label: "Nouveau produit", icon: PackagePlus },
               ].map((a) => (
-                <Link prefetch={false} key={a.href} href={a.href} aria-label={a.label} className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:bg-subtle hover:text-ink">
+                <Link key={a.href} href={a.href} aria-label={a.label} className="inline-flex items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:bg-subtle hover:text-ink">
                   <a.icon className="h-3.5 w-3.5 text-muted" />
                   <span>{a.label}</span>
                 </Link>
@@ -216,7 +216,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                   { href: "/produits?new=1", label: "2. Ajouter un produit", icon: PackagePlus },
                   { href: "/devis/new", label: "3. Créer un devis", icon: FileText },
                 ].map((s) => (
-                  <Link prefetch={false} key={s.href} href={s.href} className="inline-flex items-center gap-2 rounded-lg bg-subtle px-3 py-2 text-[13px] font-medium text-ink ring-1 ring-inset ring-line transition-colors hover:bg-brand-50 hover:text-brand-800 hover:ring-brand-200">
+                  <Link key={s.href} href={s.href} className="inline-flex items-center gap-2 rounded-lg bg-subtle px-3 py-2 text-[13px] font-medium text-ink ring-1 ring-inset ring-line transition-colors hover:bg-brand-50 hover:text-brand-800 hover:ring-brand-200">
                     <s.icon className="h-4 w-4" /> {s.label}
                   </Link>
                 ))}
@@ -374,14 +374,14 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
       <div className="mt-4 grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.12, ease }}>
           <Card className="h-full rounded-xl">
-            <CardHeader title="Transactions récentes" description="Derniers paiements reçus" action={<Link prefetch={false} href="/factures?status=PAID" className="text-[13px] font-medium text-brand-700 hover:underline">Tout voir</Link>} />
+            <CardHeader title="Transactions récentes" description="Derniers paiements reçus" action={<Link href="/factures?status=PAID" className="text-[13px] font-medium text-brand-700 hover:underline">Tout voir</Link>} />
             {data.recentPayments.length === 0 ? (
               <EmptyState icon={CircleDollarSign} title="Aucun paiement" description="Les règlements enregistrés sur vos factures apparaîtront ici." />
             ) : (
               <ul className="mt-3 divide-y divide-line-soft">
                 {data.recentPayments.map((p, i) => (
                   <motion.li key={p.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 + i * 0.04, duration: 0.35, ease }}>
-                    <Link prefetch={false} href={`/factures/${p.invoiceId}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-canvas">
+                    <Link href={`/factures/${p.invoiceId}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-canvas">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-[11px] font-semibold text-emerald-700">{initials(p.customerName)}</span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13px] font-medium text-ink">{p.customerName}</span>
@@ -410,7 +410,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                   const max = data.topCustomers[0].amount || 1;
                   return (
                     <li key={c.id}>
-                      <Link prefetch={false} href={`/clients/${c.id}`} className="group block">
+                      <Link href={`/clients/${c.id}`} className="group block">
                         <div className="flex items-baseline justify-between gap-3">
                           <span className="flex min-w-0 items-center gap-2.5"><span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-semibold", i === 0 ? "text-muted" : "bg-subtle text-muted")}>{i + 1}</span><span className="truncate text-[13px] font-medium text-ink group-hover:text-brand-700">{c.name}</span></span>
                           <span className="shrink-0 text-[13px] font-semibold tabular text-ink">{formatMAD(c.amount)}</span>
@@ -456,7 +456,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
                   );
                   return (
                     <motion.li key={a.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 + i * 0.04, duration: 0.35, ease }} className="mb-4 last:mb-0">
-                      {a.href ? <Link prefetch={false} href={a.href} className="group flex gap-3">{body}</Link> : <div className="flex gap-3">{body}</div>}
+                      {a.href ? <Link href={a.href} className="group flex gap-3">{body}</Link> : <div className="flex gap-3">{body}</div>}
                     </motion.li>
                   );
                 })}

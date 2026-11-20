@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -249,7 +249,7 @@ export function LedgerView(p: {
                             </span>
                           )}
                           <div className="min-w-0">
-                            <span className="text-[13px] font-medium text-ink">{r.href ? <Link prefetch={false} href={r.href} className="hover:text-brand-700">{r.label}</Link> : r.label}</span>
+                            <span className="text-[13px] font-medium text-ink">{r.href ? <Link href={r.href} className="hover:text-brand-700">{r.label}</Link> : r.label}</span>
                             {(r.detail || r.reference) && <span className="block max-w-[300px] truncate text-xs text-muted">{[r.detail, r.reference].filter(Boolean).join(" · ")}</span>}
                           </div>
                         </div>

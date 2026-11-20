@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { ArrowLeft, KeyRound } from "lucide-react";
 import { AuthCard, AuthTitle } from "@/components/auth/auth-card";
 

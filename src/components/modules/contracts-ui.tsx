@@ -58,19 +58,12 @@ export function ContractCard({ row, api }: { row: Row; api: CardApi }) {
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: display === "TERMINATED" ? 0.65 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(api.index, 14) * 0.035, ease: EASE }}
-      onMouseMove={(e) => {
-        const b = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
-      }}
       onClick={(e) => {
         if (!api.editable || (e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
         api.open();
       }}
       className={cn("glass group relative flex flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60", api.editable && "cursor-pointer")}
-    >
-      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+    >
 
       <div className="relative flex items-start gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ">

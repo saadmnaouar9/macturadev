@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { motion } from "framer-motion";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { InvoiceStatusBadge } from "@/components/ui/badge";
@@ -62,7 +62,7 @@ export function PurchaseStatsPanel({ stats }: { stats: PurchaseStats }) {
             <dd className={cn("mt-0.5 font-medium tabular", p.key === "overdue" && p.value > 0 ? "text-rose-700" : "text-ink")}>
               {formatMAD(p.value)}
               {p.key === "overdue" && p.value > 0 && (
-                <Link prefetch={false} href="/achats?status=OVERDUE" className="ml-2 text-[13px] font-normal text-brand-700 hover:underline">
+                <Link href="/achats?status=OVERDUE" className="ml-2 text-[13px] font-normal text-brand-700 hover:underline">
                   Voir les factures en retard
                 </Link>
               )}

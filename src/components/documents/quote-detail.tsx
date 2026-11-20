@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { ArrowRight, CheckCircle2, Copy, Download, Mail, MoreHorizontal, Pencil, Printer, Receipt, RotateCcw, Send, Sparkles, Trash2, XCircle } from "lucide-react";
@@ -66,7 +66,7 @@ export function QuoteDetail({
             <QuoteStatusBadge status={q.status} />
           </div>
           <p className="mt-1 text-sm text-muted">
-            Devis pour <Link prefetch={false} href={`/clients/${q.customer.id}`} className="font-medium text-ink-soft hover:text-brand-700">{q.customer.name}</Link> · {formatMAD(q.total)} TTC · valable jusqu&apos;au {formatDate(q.expiryDate, "long")}
+            Devis pour <Link href={`/clients/${q.customer.id}`} className="font-medium text-ink-soft hover:text-brand-700">{q.customer.name}</Link> · {formatMAD(q.total)} TTC · valable jusqu&apos;au {formatDate(q.expiryDate, "long")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -155,7 +155,7 @@ export function QuoteDetail({
               <motion.div key="invoiced" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <Card className="p-5">
                   <p className="text-sm font-semibold text-ink">Facture associée</p>
-                  <Link prefetch={false} href={`/factures/${q.invoice.id}`} className="mt-3 flex items-center justify-between rounded-lg bg-canvas px-3.5 py-3 ring-1 ring-inset ring-line-soft transition-colors hover:bg-brand-50 hover:ring-brand-200">
+                  <Link href={`/factures/${q.invoice.id}`} className="mt-3 flex items-center justify-between rounded-lg bg-canvas px-3.5 py-3 ring-1 ring-inset ring-line-soft transition-colors hover:bg-brand-50 hover:ring-brand-200">
                     <span className="flex items-center gap-2.5">
                       <Receipt className="h-4 w-4 text-brand-600" />
                       <span className="font-mono text-[13px] font-medium text-ink">{q.invoice.number ?? "Brouillon"}</span>

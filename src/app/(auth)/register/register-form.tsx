@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Building2, Check, Eye, EyeOff, Hash, Lock, Mail, MapPin, UserRound } from "lucide-react";

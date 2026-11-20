@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import type { CardApi } from "@/components/data/resource-view";
@@ -78,7 +78,7 @@ export function ProjectCard({ row, api }: { row: Row; api: CardApi }) {
       {api.extras.some((a) => a.href) && (
         <div data-no-row-click className="mt-3 flex flex-wrap gap-1">
           {api.extras.filter((a) => a.href).map((a) => (
-            <Link key={a.label} prefetch={false} href={a.href!} className="rounded-md px-2 py-1 text-[13px] font-medium text-brand-700 hover:bg-subtle">{a.label}</Link>
+            <Link key={a.label} href={a.href!} className="rounded-md px-2 py-1 text-[13px] font-medium text-brand-700 hover:bg-subtle">{a.label}</Link>
           ))}
         </div>
       )}

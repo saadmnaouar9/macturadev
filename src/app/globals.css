@@ -328,8 +328,6 @@ html[data-theme="light"] {
   /* Verre dépoli : surfaces principales (cartes, tableaux) */
   .glass {
     background: rgb(22 20 60 / 0.72);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
   }
   /* Halo animé discret derrière l'en-tête des pages */
   .ambient-orb { position: absolute; border-radius: 9999px; pointer-events: none; will-change: transform, opacity; animation: ambient-drift 16s ease-in-out infinite; }
@@ -378,8 +376,6 @@ html[data-theme="light"] body::before {
 }
 html[data-theme="light"] .glass {
   background: rgb(255 255 255 / 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 html[data-theme="light"] .ambient-orb { display: none; }
 html[data-theme="light"] ::selection { background: rgb(54 48 126 / 0.22); color: #14122e; }

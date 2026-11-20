@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
@@ -182,7 +182,7 @@ export function CustomerDetail({ customer: c, stats, invoices, quotes, payments,
                     <ul className="mt-2 divide-y divide-line-soft">
                       {payments.slice(0, 4).map((p) => (
                         <li key={p.id}>
-                          <Link prefetch={false} href={`/factures/${p.invoiceId}`} className="flex items-center justify-between gap-3 px-5 py-2.5 transition-colors hover:bg-canvas">
+                          <Link href={`/factures/${p.invoiceId}`} className="flex items-center justify-between gap-3 px-5 py-2.5 transition-colors hover:bg-canvas">
                             <span className="min-w-0">
                               <span className="block text-[13px] font-medium text-ink">{p.invoiceNumber}</span>
                               <span className="block text-xs text-muted">{formatDate(p.date)} · {PAYMENT_METHODS[p.method]}</span>
@@ -244,7 +244,7 @@ export function CustomerDetail({ customer: c, stats, invoices, quotes, payments,
                     );
                     return (
                       <motion.li key={a.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(i, 15) * 0.03 }} className="mb-4 last:mb-0">
-                        {a.href ? <Link prefetch={false} href={a.href} className="group flex gap-3">{content}</Link> : <div className="flex gap-3">{content}</div>}
+                        {a.href ? <Link href={a.href} className="group flex gap-3">{content}</Link> : <div className="flex gap-3">{content}</div>}
                       </motion.li>
                     );
                   })}

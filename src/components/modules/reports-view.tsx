@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { Banknote, CalendarRange, Download, Filter, Percent, ShoppingCart, TrendingUp, Trophy } from "lucide-react";
@@ -99,7 +99,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
               {presets.map((p) => {
                 const on = p.from === from && p.to === to;
                 return (
-                  <Link prefetch={false} key={p.label} href={`/rapports?from=${p.from}&to=${p.to}`} className={cn("relative rounded-xl px-3 py-1.5 text-[13px] font-medium transition-colors", on ? "text-white" : "text-muted hover:text-ink")}>
+                  <Link key={p.label} href={`/rapports?from=${p.from}&to=${p.to}`} className={cn("relative rounded-xl px-3 py-1.5 text-[13px] font-medium transition-colors", on ? "text-white" : "text-muted hover:text-ink")}>
                     {on && <motion.span layoutId="reports-preset" className="absolute inset-0 rounded-xl bg-brand-500" transition={{ type: "spring", stiffness: 480, damping: 36 }} />}
                     <span className="relative">{p.label}</span>
                   </Link>
@@ -158,7 +158,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
                 <div key="n" className="flex items-center gap-3">
                   <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold", i === 0 ? "text-muted" : "bg-subtle text-muted")}>{i === 0 ? <Trophy className="h-3.5 w-3.5" /> : i + 1}</span>
                   <div className="min-w-0 flex-1">
-                    <Link prefetch={false} href={`/clients/${c.id}`} className="block truncate font-medium text-ink hover:text-brand-700">{c.name}</Link>
+                    <Link href={`/clients/${c.id}`} className="block truncate font-medium text-ink hover:text-brand-700">{c.name}</Link>
                     <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-subtle"><motion.div className="h-full rounded-full bg-brand-500" initial={{ width: 0 }} animate={{ width: `${(c.ht / Math.max(1, ...data.topCustomers.map((x) => x.ht))) * 100}%` }} transition={{ duration: 0.8, delay: 0.1 + i * 0.05, ease }} /></div>
                   </div>
                 </div>,
@@ -249,7 +249,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
             </Card>
             <Card className="rounded-xl">
               <CardHeader title="Plus gros retards" />
-              <Table head={[{ label: "Facture" }, { label: "Retard", right: true }, { label: "Reste", right: true }]} empty="Aucun retard de paiement 🎉" rows={data.lateInvoices.map((i) => [<Link prefetch={false} key="n" href={`/factures/${i.id}`} className="block font-medium text-ink hover:text-brand-700"><span className="font-mono text-xs">{i.number}</span><span className="block text-xs font-normal text-muted">{i.customer}</span></Link>, <span key="d" className="text-rose-600">{i.days} j</span>, formatMAD(i.balance)])} />
+              <Table head={[{ label: "Facture" }, { label: "Retard", right: true }, { label: "Reste", right: true }]} empty="Aucun retard de paiement 🎉" rows={data.lateInvoices.map((i) => [<Link key="n" href={`/factures/${i.id}`} className="block font-medium text-ink hover:text-brand-700"><span className="font-mono text-xs">{i.number}</span><span className="block text-xs font-normal text-muted">{i.customer}</span></Link>, <span key="d" className="text-rose-600">{i.days} j</span>, formatMAD(i.balance)])} />
             </Card>
           </div>
         )}

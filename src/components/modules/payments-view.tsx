@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Banknote, CalendarDays, CircleDollarSign, CreditCard, Hash, Landmark, ReceiptText, Sigma, Wallet, type LucideIcon } from "lucide-react";
@@ -91,20 +91,13 @@ function PaymentCard({ r, kind, index }: { r: PaymentRowData; kind: "in" | "out"
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: voided ? 0.7 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      onMouseMove={(e) => {
-        const b = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
-      }}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button,a,[data-no-row-click]")) return;
         startNavProgress();
         router.push(r.href);
       }}
       className="glass group relative flex cursor-pointer flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60"
-    >
-      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+    >
 
       <div className="relative flex items-start gap-3">
         <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", meta.tile)}>
@@ -120,8 +113,8 @@ function PaymentCard({ r, kind, index }: { r: PaymentRowData; kind: "in" | "out"
       </div>
 
       <div className="relative mt-3 space-y-1.5 text-xs">
-        <p className="flex items-center gap-2 text-muted"><Hash className="h-3.5 w-3.5 shrink-0" /><Link prefetch={false} href={r.href} className="truncate font-mono font-medium text-ink transition-colors hover:text-brand-700">{r.doc}</Link></p>
-        <p className="flex items-center gap-2 text-muted"><Wallet className="h-3.5 w-3.5 shrink-0" /><Link prefetch={false} href={r.partyHref} className="truncate font-medium text-ink-soft transition-colors hover:text-brand-700">{r.party}</Link></p>
+        <p className="flex items-center gap-2 text-muted"><Hash className="h-3.5 w-3.5 shrink-0" /><Link href={r.href} className="truncate font-mono font-medium text-ink transition-colors hover:text-brand-700">{r.doc}</Link></p>
+        <p className="flex items-center gap-2 text-muted"><Wallet className="h-3.5 w-3.5 shrink-0" /><Link href={r.partyHref} className="truncate font-medium text-ink-soft transition-colors hover:text-brand-700">{r.party}</Link></p>
       </div>
 
       <div className="relative mt-4 flex items-center justify-between gap-2 border-t border-line-soft pt-3 text-[11px] text-muted">
@@ -194,7 +187,7 @@ export function PaymentsView({ rows, kind, state, total, sum, page, pageSize, in
                     <Row key={r.id} index={i} href={r.href}>
                       <Td className="text-[13px] text-ink-soft">{formatDate(r.date)}</Td>
                       <Td><span className="font-mono text-[13px] font-medium text-ink">{r.doc}</span></Td>
-                      <Td><Link prefetch={false} href={r.partyHref} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{r.party}</Link></Td>
+                      <Td><Link href={r.partyHref} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{r.party}</Link></Td>
                       <Td className="hidden text-[13px] text-ink-soft md:table-cell">{PAYMENT_METHODS[r.method]}</Td>
                       <Td className="hidden text-xs text-muted lg:table-cell">{r.reference ?? "—"}</Td>
                       <Td align="right">

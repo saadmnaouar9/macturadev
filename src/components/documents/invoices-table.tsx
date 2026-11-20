@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertTriangle, Ban, CalendarClock, CircleDollarSign, Copy, Download, Eye, FilePlus2, MoreHorizontal, Pencil, Receipt, Send, Trash2, TrendingUp, Wallet } from "lucide-react";
@@ -100,28 +100,21 @@ function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; ind
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: inv.lifecycle === "CANCELLED" ? 0.6 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(index, 14) * 0.035, ease: EASE }}
-      onMouseMove={(e) => {
-        const b = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
-      }}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
         startNavProgress();
         router.push(`/factures/${inv.id}`);
       }}
       className="glass group relative flex cursor-pointer flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60"
-    >
-      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
+    >
 
       <div className="relative flex items-start gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ">
           <Receipt className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <Link prefetch={false} href={`/factures/${inv.id}`} className={cn("block truncate font-mono text-[15px] font-semibold outline-none transition-colors group-hover:text-brand-700 focus-visible:underline", inv.number ? "text-ink" : "italic text-muted")}>{inv.number ?? "Brouillon"}</Link>
-          <Link prefetch={false} href={`/clients/${inv.customer.id}`} className="mt-0.5 block truncate text-xs text-muted transition-colors hover:text-brand-700">{inv.customer.name}</Link>
+          <Link href={`/factures/${inv.id}`} className={cn("block truncate font-mono text-[15px] font-semibold outline-none transition-colors group-hover:text-brand-700 focus-visible:underline", inv.number ? "text-ink" : "italic text-muted")}>{inv.number ?? "Brouillon"}</Link>
+          <Link href={`/clients/${inv.customer.id}`} className="mt-0.5 block truncate text-xs text-muted transition-colors hover:text-brand-700">{inv.customer.name}</Link>
         </div>
         <div data-no-row-click className="-mr-1 -mt-1 shrink-0"><InvoiceRowActions inv={inv} canWrite={canWrite} canDelete={canDelete} /></div>
       </div>
@@ -240,7 +233,7 @@ export function InvoicesTable({
                         <span className={cn("font-mono text-[13px] font-medium group-hover:text-brand-700", inv.number ? "text-ink" : "italic text-muted")}>{inv.number ?? "Brouillon"}</span>
                         {(inv.reference || inv.quoteNumber) && <span className="block max-w-[170px] truncate text-xs text-muted">{inv.quoteNumber ? `Devis ${inv.quoteNumber}` : inv.reference}</span>}
                       </Td>
-                      <Td><Link prefetch={false} href={`/clients/${inv.customer.id}`} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{inv.customer.name}</Link></Td>
+                      <Td><Link href={`/clients/${inv.customer.id}`} className="text-[13px] font-medium text-ink-soft hover:text-brand-700">{inv.customer.name}</Link></Td>
                       <Td className="hidden text-[13px] text-ink-soft md:table-cell">{formatDate(inv.issueDate)}</Td>
                       <Td className={cn("hidden text-[13px] lg:table-cell", inv.status === "OVERDUE" ? "font-medium text-rose-600" : "text-ink-soft")}>{formatDate(inv.dueDate)}</Td>
                       <Td align="right" className="text-[13px] font-semibold tabular text-ink">{formatMAD(inv.total)}</Td>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { redirect } from "next/navigation";
 import { ArrowRight, BarChart3, FileText, Receipt, ShieldCheck, Users, Wallet } from "lucide-react";
 import { getAuth } from "@/lib/auth";

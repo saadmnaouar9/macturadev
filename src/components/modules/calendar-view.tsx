@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { AlertTriangle, ArrowUpRight, CalendarCheck2, CalendarClock, CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, ListTodo, SlidersHorizontal } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
@@ -76,7 +76,7 @@ function MiniStat({ icon: Icon, label, value, tone }: { icon: typeof CalendarDay
 
 function EventRow({ e, today, compact }: { e: CalEvent; today: string; compact?: boolean }) {
   return (
-    <Link prefetch={false} href={e.href} className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-subtle">
+    <Link href={e.href} className="group flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-subtle">
       <span className="mt-1.5 flex shrink-0 flex-col items-center"><span className={cn("h-2.5 w-2.5 rounded-full ring-4 ring-subtle", KINDS[e.kind].dot)} /></span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[13px] font-medium text-ink">{e.title}</span>
@@ -179,9 +179,9 @@ export function CalendarView({ month, events, today }: { month: string; events: 
         <div className="relative flex flex-col gap-5 p-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-0.5 rounded-lg bg-subtle p-1">
-              <Link prefetch={false} href={`/calendrier?m=${shift(month, -1)}`} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois précédent"><ChevronLeft className="h-4 w-4" /></Link>
-              <Link prefetch={false} href={`/calendrier?m=${today.slice(0, 7)}`} className="rounded-xl px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-all hover:bg-surface hover:shadow-[var(--shadow-xs)]">Aujourd&apos;hui</Link>
-              <Link prefetch={false} href={`/calendrier?m=${shift(month, 1)}`} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois suivant"><ChevronRight className="h-4 w-4" /></Link>
+              <Link href={`/calendrier?m=${shift(month, -1)}`} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois précédent"><ChevronLeft className="h-4 w-4" /></Link>
+              <Link href={`/calendrier?m=${today.slice(0, 7)}`} className="rounded-xl px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-all hover:bg-surface hover:shadow-[var(--shadow-xs)]">Aujourd&apos;hui</Link>
+              <Link href={`/calendrier?m=${shift(month, 1)}`} className="rounded-xl p-2 text-muted transition-all hover:bg-surface hover:text-ink hover:shadow-[var(--shadow-xs)] active:scale-90" aria-label="Mois suivant"><ChevronRight className="h-4 w-4" /></Link>
             </div>
             <div className="overflow-hidden">
               <AnimatePresence mode="wait" custom={dir} initial={false}>

@@ -1,7 +1,7 @@
 "use client";
 
 import * as M from "@radix-ui/react-dropdown-menu";
-import Link from "next/link";
+import Link from "@/components/ui/fast-link";
 import { cn } from "@/lib/utils";
 
 export const DropdownMenu = M.Root;
