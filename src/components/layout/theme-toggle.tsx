@@ -6,7 +6,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 export const THEME_COOKIE = "mactura_theme";
 export const THEME_EVENT = "mactura:theme";
 
-/** Durée de la transition (voir `globals.css` : `theme-reveal` / `theme-old`) et du repli en fondu. */
+/** Repli en fondu (navigateurs sans View Transitions) ; la vague de dégradé dure 1000 ms (voir `globals.css`, `theme-wave`). */
 const FADE_MS = 450;
 
 type VTransition = { finished: Promise<void> };
@@ -22,16 +22,21 @@ function applyTheme(next: "light" | "dark") {
   window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: next }));
 }
 
+/** La vague demande les View Transitions et les propriétés CSS typées (@property) pour animer le dégradé sans saccade. */
+function supportsWave(doc: DocWithVT) {
+  return typeof doc.startViewTransition === "function" && typeof CSS !== "undefined" && "registerProperty" in CSS;
+}
+
 /**
  * Bascule clair / sombre.
- * - Navigateurs compatibles : le nouveau thème se révèle en cercle depuis le bouton (en haut à droite) et balaie tout l'écran vers la gauche,
- *   pendant que l'ancien thème s'assombrit légèrement en retrait (View Transitions API, une capture de la page entière : barre latérale,
- *   cartes, menus, fonds, bordures et textes changent ensemble, sans scintillement).
+ * - Navigateurs compatibles : le nouveau thème se révèle par une vague de dégradé qui traverse tout l'écran de droite à gauche. Le bord de la vague
+ *   est un fondu progressif entre l'ancien et le nouveau thème (une seule capture animée, sur le GPU : barre latérale, cartes, menus, fonds,
+ *   bordures et textes changent ensemble, sans scintillement).
  * - Autres navigateurs : fondu rapide des couleurs.
  * - « Réduire les animations » activé : changement immédiat.
  */
 export function ThemeToggle() {
-  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const toggle = () => {
     if (switching) return;
     const root = document.documentElement;
     const next = root.dataset.theme === "light" ? "dark" : "light";
@@ -48,24 +53,16 @@ export function ThemeToggle() {
     };
     const doc = document as DocWithVT;
 
-    if (!doc.startViewTransition) {
+    if (!supportsWave(doc)) {
       root.classList.add("theme-fade");
       applyTheme(next);
       window.setTimeout(finish, FADE_MS);
       return;
     }
 
-    // Le cercle part du centre du bouton et grandit jusqu'à couvrir le coin le plus éloigné de l'écran
-    const r = e.currentTarget.getBoundingClientRect();
-    const x = r.left + r.width / 2;
-    const y = r.top + r.height / 2;
-    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
-    root.style.setProperty("--vt-x", `${x}px`);
-    root.style.setProperty("--vt-y", `${y}px`);
-    root.style.setProperty("--vt-r", `${Math.ceil(radius)}px`);
     root.classList.add("theme-switching");
     try {
-      doc.startViewTransition(() => applyTheme(next)).finished.then(finish, finish);
+      doc.startViewTransition!(() => applyTheme(next)).finished.then(finish, finish);
     } catch {
       applyTheme(next);
       finish();
@@ -82,8 +79,8 @@ export function ThemeToggle() {
       >
         {/* Les deux icônes sont rendues, superposées ; le CSS les fait pivoter et se fondre l'une dans l'autre : aucun écart d'hydratation */}
         <span className="relative block h-[18px] w-[18px]" aria-hidden>
-          <Sun data-keep-transition className="absolute inset-0 h-[18px] w-[18px] transition-all duration-500 ease-out [[data-theme=light]_&]:-rotate-90 [[data-theme=light]_&]:scale-50 [[data-theme=light]_&]:opacity-0" />
-          <Moon data-keep-transition className="absolute inset-0 h-[18px] w-[18px] rotate-90 scale-50 opacity-0 transition-all duration-500 ease-out [[data-theme=light]_&]:rotate-0 [[data-theme=light]_&]:scale-100 [[data-theme=light]_&]:opacity-100" />
+          <Sun data-keep-transition className="absolute inset-0 h-[18px] w-[18px] transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] [[data-theme=light]_&]:-rotate-180 [[data-theme=light]_&]:scale-50 [[data-theme=light]_&]:opacity-0" />
+          <Moon data-keep-transition className="absolute inset-0 h-[18px] w-[18px] rotate-180 scale-50 opacity-0 transition-all duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] [[data-theme=light]_&]:rotate-0 [[data-theme=light]_&]:scale-100 [[data-theme=light]_&]:opacity-100" />
         </span>
       </button>
     </Tooltip>
