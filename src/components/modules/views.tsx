@@ -13,6 +13,8 @@ import { deleteProject, saveProject } from "@/app/(app)/projets/actions";
 import { createInvoiceFromContract, deleteContract, saveContract } from "@/app/(app)/contrats/actions";
 import { deleteEmployee, saveEmployee } from "@/app/(app)/employes/actions";
 import { ProspectCard, ProspectStatsPanel, type ProspectStats } from "./prospects-ui";
+import { SupplierCard, SuppliersPanel, type SupplierStats } from "./suppliers-ui";
+import type { MapPoint } from "./suppliers-map";
 import { ContractCard, ContractStatsPanel, type ContractStats } from "./contracts-ui";
 
 type Common = Pick<ResourceViewProps, "rows" | "total" | "page" | "pageSize" | "hasQuery" | "canWrite" | "canDelete" | "filters" | "summary">;
@@ -93,13 +95,15 @@ const SUPPLIER_FIELDS: FieldDef[] = [
   { name: "notes", label: "Notes", type: "textarea" },
 ];
 
-export function SuppliersView(p: Common) {
+export function SuppliersView({ stats, mapPoints, ...p }: Common & { stats: SupplierStats; mapPoints: MapPoint[] }) {
   return (
     <ResourceView
       {...p}
       title="Fournisseurs"
-      description="Gérez vos fournisseurs et suivez ce que vous leur devez."
+      description="Gérez vos fournisseurs, suivez ce que vous leur devez et visualisez où ils se trouvent."
       icon={Truck}
+      summaryNode={<SuppliersPanel stats={stats} points={mapPoints} />}
+      cardView={{ storageKey: "mactura.suppliers.view", render: (row, api) => <SupplierCard row={row} api={api} /> }}
       entity="fournisseur"
       columns={[
         { key: "name", header: "Fournisseur", kind: "title", subKey: "contact", avatar: true, sort: "name" },
