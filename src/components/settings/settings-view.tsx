@@ -52,6 +52,34 @@ function Section({ title, description, children, footer }: { title: string; desc
   );
 }
 
+/** Formulaire de paramètres : une seule surface, des groupes séparés par un filet et une barre d'enregistrement unique. */
+function SettingsForm({ children, footer, hint }: { children: React.ReactNode; footer?: React.ReactNode; hint?: string }) {
+  return (
+    <Card className="@container">
+      <div className="divide-y divide-line-soft">{children}</div>
+      {footer && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line-soft px-5 py-3.5 sm:px-6">
+          <p className="text-xs text-muted">{hint}</p>
+          {footer}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/** Groupe de champs : titre et explication à gauche, champs à droite (empilés sur les largeurs étroites). */
+function SettingsGroup({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+  return (
+    <section className="grid gap-x-10 gap-y-4 px-5 py-6 sm:px-6 @2xl:grid-cols-[220px_minmax(0,1fr)]">
+      <div>
+        <h3 className="text-sm font-semibold text-ink">{title}</h3>
+        {description && <p className="mt-1 text-[13px] leading-relaxed text-muted">{description}</p>}
+      </div>
+      <div>{children}</div>
+    </section>
+  );
+}
+
 function CompanyTab({ initial, canEdit }: { initial: Record<string, string>; canEdit: boolean }) {
   const router = useRouter();
   const { values, set, errors, pending, submit } = useForm<Str<typeof initial>>(initial as Str<typeof initial>);
@@ -73,46 +101,44 @@ function CompanyTab({ initial, canEdit }: { initial: Record<string, string>; can
     </Field>
   );
   return (
-    <form onSubmit={(e) => { e.preventDefault(); submit(() => updateCompany(values)); }} className="space-y-5" noValidate>
-      <Section title="Identité" description="Affichée en en-tête de vos devis et factures.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {f("name", "Raison sociale", { span: true })}
-          {f("legalForm", "Forme juridique", { placeholder: "SARL, SA, SARL AU, auto-entrepreneur…" })}
-          {f("capital", "Capital social", { placeholder: "100 000 DH" })}
-          {f("nameAr", "Raison sociale en arabe", { dir: "rtl", span: true, placeholder: "الاسم التجاري" })}
-        </div>
-      </Section>
-      <Section title="Identifiants légaux" description="Mentions obligatoires sur les factures au Maroc.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {f("ice", "ICE", { hint: "15 chiffres", mono: true, numeric: true })}
-          {f("taxId", "Identifiant fiscal (IF)", { mono: true, numeric: true })}
-          {f("rc", "Registre de commerce (RC)", { mono: true })}
-          {f("rcCity", "Tribunal du RC", { placeholder: "Casablanca", list: "settings-cities" })}
-          {f("patente", "Taxe professionnelle (patente)", { mono: true })}
-          {f("cnss", "CNSS", { mono: true })}
-        </div>
-      </Section>
-      <Section title="Coordonnées" description="Adresse et contacts imprimés sur vos documents.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {f("address", "Adresse", { span: true })}
-          {f("city", "Ville", { list: "settings-cities" })}
-          {f("postalCode", "Code postal", { numeric: true })}
-          {f("phone", "Téléphone")}
-          {f("email", "E-mail")}
-          {f("website", "Site web", { span: true })}
-        </div>
-        <datalist id="settings-cities">{MOROCCAN_CITIES.map((c) => <option key={c} value={c} />)}</datalist>
-      </Section>
-      <Section
-        title="Coordonnées bancaires"
-        description="Affichées sur vos factures pour faciliter les virements."
-        footer={canEdit && <Button type="submit" loading={pending}>Enregistrer les modifications</Button>}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {f("bankName", "Banque", { placeholder: "Attijariwafa Bank, BMCE, CIH…" })}
-          {f("rib", "RIB", { hint: "24 chiffres", mono: true, numeric: true })}
-        </div>
-      </Section>
+    <form onSubmit={(e) => { e.preventDefault(); submit(() => updateCompany(values)); }} noValidate>
+      <SettingsForm footer={canEdit && <Button type="submit" loading={pending}>Enregistrer les modifications</Button>} hint="Ces informations apparaissent sur vos devis et factures.">
+        <SettingsGroup title="Identité" description="Affichée en en-tête de vos devis et factures.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {f("name", "Raison sociale", { span: true })}
+            {f("legalForm", "Forme juridique", { placeholder: "SARL, SA, SARL AU, auto-entrepreneur…" })}
+            {f("capital", "Capital social", { placeholder: "100 000 DH" })}
+            {f("nameAr", "Raison sociale en arabe", { dir: "rtl", span: true, placeholder: "الاسم التجاري" })}
+          </div>
+        </SettingsGroup>
+        <SettingsGroup title="Identifiants légaux" description="Mentions obligatoires sur les factures au Maroc.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {f("ice", "ICE", { hint: "15 chiffres", mono: true, numeric: true })}
+            {f("taxId", "Identifiant fiscal (IF)", { mono: true, numeric: true })}
+            {f("rc", "Registre de commerce (RC)", { mono: true })}
+            {f("rcCity", "Tribunal du RC", { placeholder: "Casablanca", list: "settings-cities" })}
+            {f("patente", "Taxe professionnelle (patente)", { mono: true })}
+            {f("cnss", "CNSS", { mono: true })}
+          </div>
+        </SettingsGroup>
+        <SettingsGroup title="Coordonnées" description="Adresse et contacts imprimés sur vos documents.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {f("address", "Adresse", { span: true })}
+            {f("city", "Ville", { list: "settings-cities" })}
+            {f("postalCode", "Code postal", { numeric: true })}
+            {f("phone", "Téléphone")}
+            {f("email", "E-mail")}
+            {f("website", "Site web", { span: true })}
+          </div>
+          <datalist id="settings-cities">{MOROCCAN_CITIES.map((c) => <option key={c} value={c} />)}</datalist>
+        </SettingsGroup>
+        <SettingsGroup title="Coordonnées bancaires" description="Affichées sur vos factures pour faciliter les virements.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {f("bankName", "Banque", { placeholder: "Attijariwafa Bank, BMCE, CIH…" })}
+            {f("rib", "RIB", { hint: "24 chiffres", mono: true, numeric: true })}
+          </div>
+        </SettingsGroup>
+      </SettingsForm>
     </form>
   );
 }
@@ -124,48 +150,56 @@ function DocumentsTab({ initial, taxRates, canEdit }: { initial: Record<string, 
   return (
     <form
       noValidate
-      className="space-y-5"
       onSubmit={(e) => {
         e.preventDefault();
         submit(() => updateDocumentSettings({ ...values, defaultTaxRate: Number(values.defaultTaxRate) }));
       }}
     >
-      <Section title="Numérotation" description="Séquence continue par année, attribuée automatiquement.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Préfixe des factures" error={errors.invoicePrefix} hint={`Exemple : ${values.invoicePrefix || "FAC"}-${year}-0001`}>
-            {(p) => <Input {...p} disabled={!canEdit} value={values.invoicePrefix as string} onChange={(e) => set("invoicePrefix", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} maxLength={8} className="font-mono" />}
-          </Field>
-          <Field label="Préfixe des devis" error={errors.quotePrefix} hint={`Exemple : ${values.quotePrefix || "DEV"}-${year}-0001`}>
-            {(p) => <Input {...p} disabled={!canEdit} value={values.quotePrefix as string} onChange={(e) => set("quotePrefix", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} maxLength={8} className="font-mono" />}
-          </Field>
-        </div>
-      </Section>
-      <Section title="Valeurs par défaut">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Délai de paiement" error={errors.defaultPaymentDays}>
-            {(p) => <Input {...p} disabled={!canEdit} inputMode="numeric" value={values.defaultPaymentDays as string} onChange={(e) => set("defaultPaymentDays", e.target.value.replace(/\D/g, ""))} trailing="jours" />}
-          </Field>
-          <Field label="Validité des devis" error={errors.quoteValidityDays}>
-            {(p) => <Input {...p} disabled={!canEdit} inputMode="numeric" value={values.quoteValidityDays as string} onChange={(e) => set("quoteValidityDays", e.target.value.replace(/\D/g, ""))} trailing="jours" />}
-          </Field>
-          <Field label="TVA par défaut" error={errors.defaultTaxRate}>
-            {(p) => (
-              <Select {...p} disabled={!canEdit} value={values.defaultTaxRate as string} onChange={(e) => set("defaultTaxRate", e.target.value)}>
-                {taxRates.map((t) => <option key={t.id} value={t.rate}>{t.name}</option>)}
-              </Select>
-            )}
-          </Field>
-        </div>
-      </Section>
-      <Section title="Textes par défaut" description="Pré-remplis à la création de chaque document, modifiables ensuite." footer={canEdit && <Button type="submit" loading={pending}>Enregistrer</Button>}>
-        <div className="grid gap-4 md:grid-cols-2">
-          {(["invoiceNotes", "invoiceTerms", "quoteNotes", "quoteTerms"] as const).map((k) => (
-            <Field key={k} label={{ invoiceNotes: "Note des factures", invoiceTerms: "Conditions des factures", quoteNotes: "Note des devis", quoteTerms: "Conditions des devis" }[k]} error={errors[k]}>
-              {(p) => <Textarea {...p} disabled={!canEdit} rows={3} value={values[k] as string} onChange={(e) => set(k, e.target.value)} />}
+      <SettingsForm footer={canEdit && <Button type="submit" loading={pending}>Enregistrer</Button>} hint="S'applique aux nouveaux documents. Les documents existants ne sont pas modifiés.">
+        <SettingsGroup title="Factures" description="Numérotation (séquence continue par année, attribuée automatiquement), délai de paiement et textes pré-remplis.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Préfixe des factures" error={errors.invoicePrefix} hint={`Exemple : ${values.invoicePrefix || "FAC"}-${year}-0001`}>
+              {(p) => <Input {...p} disabled={!canEdit} value={values.invoicePrefix as string} onChange={(e) => set("invoicePrefix", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} maxLength={8} className="font-mono" />}
             </Field>
-          ))}
-        </div>
-      </Section>
+            <Field label="Délai de paiement" error={errors.defaultPaymentDays}>
+              {(p) => <Input {...p} disabled={!canEdit} inputMode="numeric" value={values.defaultPaymentDays as string} onChange={(e) => set("defaultPaymentDays", e.target.value.replace(/\D/g, ""))} trailing="jours" />}
+            </Field>
+            <Field label="Note des factures" error={errors.invoiceNotes}>
+              {(p) => <Textarea {...p} disabled={!canEdit} rows={4} value={values.invoiceNotes as string} onChange={(e) => set("invoiceNotes", e.target.value)} />}
+            </Field>
+            <Field label="Conditions des factures" error={errors.invoiceTerms}>
+              {(p) => <Textarea {...p} disabled={!canEdit} rows={4} value={values.invoiceTerms as string} onChange={(e) => set("invoiceTerms", e.target.value)} />}
+            </Field>
+          </div>
+        </SettingsGroup>
+        <SettingsGroup title="Devis" description="Numérotation, durée de validité et textes pré-remplis, modifiables à la création de chaque devis.">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Préfixe des devis" error={errors.quotePrefix} hint={`Exemple : ${values.quotePrefix || "DEV"}-${year}-0001`}>
+              {(p) => <Input {...p} disabled={!canEdit} value={values.quotePrefix as string} onChange={(e) => set("quotePrefix", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} maxLength={8} className="font-mono" />}
+            </Field>
+            <Field label="Validité des devis" error={errors.quoteValidityDays}>
+              {(p) => <Input {...p} disabled={!canEdit} inputMode="numeric" value={values.quoteValidityDays as string} onChange={(e) => set("quoteValidityDays", e.target.value.replace(/\D/g, ""))} trailing="jours" />}
+            </Field>
+            <Field label="Note des devis" error={errors.quoteNotes}>
+              {(p) => <Textarea {...p} disabled={!canEdit} rows={4} value={values.quoteNotes as string} onChange={(e) => set("quoteNotes", e.target.value)} />}
+            </Field>
+            <Field label="Conditions des devis" error={errors.quoteTerms}>
+              {(p) => <Textarea {...p} disabled={!canEdit} rows={4} value={values.quoteTerms as string} onChange={(e) => set("quoteTerms", e.target.value)} />}
+            </Field>
+          </div>
+        </SettingsGroup>
+        <SettingsGroup title="TVA" description="Taux appliqué par défaut aux nouvelles lignes de devis et de factures.">
+          <div className="max-w-xs">
+            <Field label="TVA par défaut" error={errors.defaultTaxRate}>
+              {(p) => (
+                <Select {...p} disabled={!canEdit} value={values.defaultTaxRate as string} onChange={(e) => set("defaultTaxRate", e.target.value)}>
+                  {taxRates.map((t) => <option key={t.id} value={t.rate}>{t.name}</option>)}
+                </Select>
+              )}
+            </Field>
+          </div>
+        </SettingsGroup>
+      </SettingsForm>
     </form>
   );
 }
