@@ -25,7 +25,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
           <D.Portal forceMount>
             <D.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[2px]"
+                className="fixed inset-0 z-50 bg-[#0b0a22]/70 backdrop-blur-[2px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -77,7 +77,7 @@ export function Drawer({ open, onOpenChange, title, description, children, foote
           <D.Portal forceMount>
             <D.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[1px]"
+                className="fixed inset-0 z-50 bg-[#0b0a22]/70 backdrop-blur-[1px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

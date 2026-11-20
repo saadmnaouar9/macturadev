@@ -38,7 +38,7 @@ interface CustomerRow {
   _count: { invoices: number; quotes: number };
 }
 
-const AVATAR_TONES = ["bg-brand-50 text-brand-700 ring-brand-100", "bg-accent-50 text-accent-600 ring-accent-100", "bg-emerald-50 text-emerald-700 ring-emerald-100", "bg-sky-50 text-sky-700 ring-sky-100", "bg-violet-50 text-violet-700 ring-violet-100", "bg-amber-50 text-amber-700 ring-amber-100"];
+const AVATAR_TONES = ["bg-brand-50 text-brand-700 ring-brand-100", "bg-accent-50 text-accent-600 ring-accent-100", "bg-emerald-50 text-emerald-700 ring-emerald-100", "bg-brand-50 text-brand-700 ring-brand-100", "bg-brand-50 text-brand-700 ring-brand-100", "bg-amber-50 text-amber-700 ring-amber-100"];
 export function avatarTone(name: string) {
   let h = 0;
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) | 0;

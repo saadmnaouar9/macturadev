@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 
 export const STAT_TONES = {
   brand: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
-  sky: { tile: "bg-sky-50 text-sky-700 ring-sky-200/70", glow: "bg-sky-500/25" },
+  sky: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
   emerald: { tile: "bg-emerald-50 text-emerald-700 ring-emerald-200/70", glow: "bg-emerald-500/25" },
-  violet: { tile: "bg-violet-50 text-violet-700 ring-violet-200/70", glow: "bg-violet-500/25" },
+  violet: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
   amber: { tile: "bg-amber-50 text-amber-700 ring-amber-200/80", glow: "bg-amber-500/25" },
   rose: { tile: "bg-rose-50 text-rose-700 ring-rose-200/70", glow: "bg-rose-500/25" },
 } as const;

@@ -73,7 +73,7 @@ export function TopProgress() {
   return (
     <div aria-hidden className="no-print pointer-events-none fixed inset-x-0 top-0 z-[80] h-0.5">
       <div
-        className="h-full bg-sky-400"
+        className="h-full bg-brand-400"
         style={{ width: `${width}%`, opacity: visible ? 1 : 0, transition: "width 220ms ease-out, opacity 200ms ease-out" }}
       />
     </div>

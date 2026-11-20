@@ -253,9 +253,9 @@ function TeamTab({ members, canManage }: { members: Props["members"]; canManage:
   const { values, set, setValues, errors, pending, submit } = useForm({ name: "", email: "", role: "MEMBER", password: "" });
   const ROLE_UI: Record<Role, { icon: typeof Crown; bubble: string; chip: string; avatar: string }> = {
     OWNER: { icon: Crown, bubble: "text-muted", chip: "text-muted", avatar: "bg-amber-500" },
-    ADMIN: { icon: ShieldCheck, bubble: "text-muted", chip: "text-muted", avatar: "bg-violet-500" },
+    ADMIN: { icon: ShieldCheck, bubble: "text-muted", chip: "text-muted", avatar: "bg-brand-500" },
     MEMBER: { icon: Pencil, bubble: "text-muted", chip: "text-muted", avatar: "bg-emerald-500" },
-    VIEWER: { icon: Eye, bubble: "text-muted", chip: "text-muted", avatar: "bg-sky-500" },
+    VIEWER: { icon: Eye, bubble: "text-muted", chip: "text-muted", avatar: "bg-brand-500" },
   };
   const count = (r: Role) => members.filter((m) => m.role === r).length;
   const roleCards: { role: Role; title: string; desc: string }[] = [

@@ -128,7 +128,7 @@ export function CommandPalette({ open, onOpenChange, canWrite }: { open: boolean
         {open && (
           <D.Portal forceMount>
             <D.Overlay asChild forceMount>
-              <motion.div className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} />
+              <motion.div className="fixed inset-0 z-50 bg-[#0b0a22]/70 backdrop-blur-[2px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} />
             </D.Overlay>
             <div className="pointer-events-none fixed inset-0 z-50 flex justify-center px-3 pt-[12vh]">
               <D.Content asChild forceMount>

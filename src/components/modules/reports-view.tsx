@@ -67,9 +67,9 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
   const marginPct = s.revenueHT ? Math.max(0, Math.min(100, (s.grossMargin / s.revenueHT) * 100)) : 0;
   const kpis = [
     { label: "Chiffre d'affaires HT", value: s.revenueHT, sub: `${s.invoiceCount} factures émises`, icon: TrendingUp, accent: "bg-brand-500", iconTone: "text-muted", tone: undefined as string | undefined, bar: undefined as number | undefined },
-    { label: "Achats HT", value: s.purchasesHT, sub: `${s.purchaseCount} factures fournisseurs`, icon: ShoppingCart, accent: "bg-orange-500", iconTone: "text-muted", tone: undefined, bar: undefined },
+    { label: "Achats HT", value: s.purchasesHT, sub: `${s.purchaseCount} factures fournisseurs`, icon: ShoppingCart, accent: "bg-accent-500", iconTone: "text-muted", tone: undefined, bar: undefined },
     { label: "Marge brute (HT)", value: s.grossMargin, sub: s.revenueHT ? `${((s.grossMargin / s.revenueHT) * 100).toFixed(1).replace(".", ",")} % du CA` : "—", tone: s.grossMargin < 0 ? "text-rose-600" : "text-emerald-700", icon: Banknote, accent: "bg-emerald-500", iconTone: "text-muted", bar: marginPct },
-    { label: s.vatDue >= 0 ? "TVA à reverser" : "Crédit de TVA", value: Math.abs(s.vatDue), sub: "collectée − déductible", icon: Percent, accent: "bg-violet-500", iconTone: "text-muted", tone: undefined, bar: undefined },
+    { label: s.vatDue >= 0 ? "TVA à reverser" : "Crédit de TVA", value: Math.abs(s.vatDue), sub: "collectée − déductible", icon: Percent, accent: "bg-brand-500", iconTone: "text-muted", tone: undefined, bar: undefined },
   ];
 
   return (
@@ -146,7 +146,7 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
             <Card className="rounded-xl xl:col-span-3">
               <CardHeader title="Ventes et achats par mois" description="Montants HT" />
               <div className="px-2 pb-4 pt-3 sm:px-4">
-                <div className="mb-2 flex gap-5 px-3 text-xs text-muted"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#4a8df8]" />Ventes</span><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#e86533]" />Achats</span></div>
+                <div className="mb-2 flex gap-5 px-3 text-xs text-muted"><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[var(--chart-1)]" />Ventes</span><span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[var(--chart-2)]" />Achats</span></div>
                 <div className="h-[260px]">
                   <SalesChart data={data.months} />
                 </div>
@@ -203,8 +203,8 @@ export function ReportsView({ data, from, to, today }: { data: ReportsData; from
                 {(() => {
                   const total = data.aging.reduce((s2, a) => s2 + a.amount, 0);
                   const max = Math.max(1, ...data.aging.map((a) => a.amount));
-                  const tones = ["bg-emerald-500", "bg-lime-500", "bg-amber-500", "bg-orange-500", "bg-rose-500"];
-                  const dots = ["bg-emerald-500", "bg-lime-500", "bg-amber-500", "bg-orange-500", "bg-rose-500"];
+                  const tones = ["bg-emerald-500", "bg-emerald-500", "bg-amber-500", "bg-accent-500", "bg-rose-500"];
+                  const dots = ["bg-emerald-500", "bg-emerald-500", "bg-amber-500", "bg-accent-500", "bg-rose-500"];
                   const tone = (i: number) => tones[Math.min(i, tones.length - 1)];
                   const dot = (i: number) => dots[Math.min(i, dots.length - 1)];
                   return (

@@ -84,7 +84,7 @@ export function AppShell({
             {mobileOpen && (
               <D.Portal forceMount>
                 <D.Overlay asChild forceMount>
-                  <motion.div className="fixed inset-0 z-50 bg-[#020617]/65 backdrop-blur-[2px] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+                  <motion.div className="fixed inset-0 z-50 bg-[#0b0a22]/70 backdrop-blur-[2px] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
                 </D.Overlay>
                 <D.Content asChild forceMount>
                   <motion.aside

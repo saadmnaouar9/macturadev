@@ -38,14 +38,14 @@ export function LoginForm({ next }: { next?: string }) {
           onChange={(e) => set("password", e.target.value)}
           error={errors.password}
           trailing={
-            <button type="button" onClick={() => setShow((s) => !s)} className="rounded-lg p-2 text-white/45 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60" aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={show}>
+            <button type="button" onClick={() => setShow((s) => !s)} className="rounded-lg p-2 text-white/45 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300/60" aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={show}>
               {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           }
         />
         <div className="flex items-center justify-between pb-1 pt-1.5">
           <DarkCheckbox checked={values.remember} onChange={(v) => set("remember", v)}>Se souvenir de moi</DarkCheckbox>
-          <Link href="/mot-de-passe-oublie" className="text-[13px] font-medium text-violet-300 transition-colors hover:text-violet-200 hover:underline">Mot de passe oublié ?</Link>
+          <Link href="/mot-de-passe-oublie" className="text-[13px] font-medium text-brand-300 transition-colors hover:text-brand-200 hover:underline">Mot de passe oublié ?</Link>
         </div>
         <DarkButton type="submit" loading={pending}>
           Se connecter
@@ -57,7 +57,7 @@ export function LoginForm({ next }: { next?: string }) {
         <span className="font-medium text-white/70">Compte démo :</span> demo@mactura.ma · <span className="font-mono text-white/70">Demo1234</span>
       </div>
       <p className="mt-5 text-center text-[13px] text-white/50">
-        Pas encore de compte ? <Link href="/register" className="font-medium text-violet-300 transition-colors hover:text-violet-200 hover:underline">Créer un espace</Link>
+        Pas encore de compte ? <Link href="/register" className="font-medium text-brand-300 transition-colors hover:text-brand-200 hover:underline">Créer un espace</Link>
       </p>
     </SplitAuth>
   );

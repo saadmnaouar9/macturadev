@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export function GlassLogo() {
   return (
     <div className="space-logo relative">
-      <div className="absolute inset-0 -m-6 rounded-full bg-sky-400/30 blur-3xl [[data-theme=light]_&]:bg-sky-500/15" />
+      <div className="absolute inset-0 -m-6 rounded-full bg-brand-400/30 blur-3xl [[data-theme=light]_&]:bg-brand-500/15" />
       <Image src="/brand/a-mark-light.png" alt="Mactura" width={768} height={768} priority className="relative h-[88px] w-[88px] object-contain drop- [[data-theme=light]_&]:hidden" />
       <Image src="/brand/a-mark.png" alt="Mactura" width={768} height={768} priority className="relative hidden h-[88px] w-[88px] object-contain drop- [[data-theme=light]_&]:block" />
     </div>

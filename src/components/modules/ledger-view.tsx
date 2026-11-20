@@ -42,8 +42,8 @@ export interface LedgerRow {
 const ease = [0.16, 1, 0.3, 1] as const;
 // Recharts (≈100 ko) n'est chargé que sur la page Trésorerie, après l'affichage de la page
 const CashflowChart = dynamic(() => import("./cashflow-chart").then((m) => m.CashflowChart), { ssr: false, loading: () => <div className="skeleton h-full w-full" /> });
-const C_IN = "#4a8df8";
-const C_OUT = "#e86533";
+const C_IN = "var(--chart-1)";
+const C_OUT = "var(--chart-2)";
 
 export function LedgerView(p: {
   mode: "caisse" | "tresorerie";
@@ -106,7 +106,7 @@ export function LedgerView(p: {
     ? [{ label: "Solde de la caisse", value: p.balances.cash, icon: Banknote, tone: "bg-emerald-50 text-emerald-700 ring-emerald-100", big: true }]
     : [
         { label: "Trésorerie totale", value: p.balances.total, icon: Scale, tone: "bg-brand-50 text-brand-700 ring-brand-100", big: true },
-        { label: "Banque", value: p.balances.bank, icon: Landmark, tone: "bg-sky-50 text-sky-700 ring-sky-100" },
+        { label: "Banque", value: p.balances.bank, icon: Landmark, tone: "bg-brand-50 text-brand-700 ring-brand-100" },
         { label: "Caisse (espèces)", value: p.balances.cash, icon: Banknote, tone: "bg-emerald-50 text-emerald-700 ring-emerald-100" },
       ];
 
@@ -160,7 +160,7 @@ export function LedgerView(p: {
             <div>
               <div className="flex h-2.5 overflow-hidden rounded-full bg-subtle" role="img" aria-label="Répartition entrées / sorties du mois">
                 <motion.div className="h-full bg-emerald-500" initial={{ width: 0 }} animate={{ width: `${inPct}%` }} transition={{ duration: 0.9, delay: 0.2, ease }} />
-                <motion.div className="h-full bg-orange-500" initial={{ width: 0 }} animate={{ width: `${100 - inPct}%` }} transition={{ duration: 0.9, delay: 0.3, ease }} />
+                <motion.div className="h-full bg-accent-500" initial={{ width: 0 }} animate={{ width: `${100 - inPct}%` }} transition={{ duration: 0.9, delay: 0.3, ease }} />
               </div>
               <div className="mt-1.5 flex justify-between text-[11px] font-medium text-faint"><span>{flowTotal ? Math.round(inPct) : 0} % entrées</span><span>{flowTotal ? Math.round(100 - inPct) : 0} % sorties</span></div>
             </div>
@@ -257,7 +257,7 @@ export function LedgerView(p: {
                       {!isCash && <Td className="hidden md:table-cell"><Badge tone={r.account === "CASH" ? "success" : "info"} dot={false}>{r.account === "CASH" ? "Caisse" : "Banque"}</Badge></Td>}
                       <Td className="hidden text-[13px] text-ink-soft lg:table-cell">{r.category ?? "—"}</Td>
                       <Td align="right" className="whitespace-nowrap text-[13px] font-semibold tabular text-emerald-700">{r.direction === "IN" ? (isCash ? <span className="inline-block rounded-lg bg-emerald-500/10 px-2 py-1">{`+${formatMAD(r.amount)}`}</span> : `+${formatMAD(r.amount)}`) : ""}</Td>
-                      <Td align="right" className="whitespace-nowrap text-[13px] font-semibold tabular text-ink">{r.direction === "OUT" ? (isCash ? <span className="inline-block rounded-lg bg-orange-500/10 px-2 py-1">{`−${formatMAD(r.amount)}`}</span> : `−${formatMAD(r.amount)}`) : ""}</Td>
+                      <Td align="right" className="whitespace-nowrap text-[13px] font-semibold tabular text-ink">{r.direction === "OUT" ? (isCash ? <span className="inline-block rounded-lg bg-accent-500/10 px-2 py-1">{`−${formatMAD(r.amount)}`}</span> : `−${formatMAD(r.amount)}`) : ""}</Td>
                       <Td align="right" className={cn("hidden text-[13px] tabular md:table-cell", r.balanceAfter < 0 ? "text-rose-600" : "text-muted")}>{formatMAD(r.balanceAfter)}</Td>
                       <Td>
                         {r.entryId && p.canWrite && (

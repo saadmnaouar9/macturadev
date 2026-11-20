@@ -43,7 +43,7 @@ export function RegisterForm() {
           onChange={(e) => set("password", e.target.value)}
           error={errors.password}
           trailing={
-            <button type="button" onClick={() => setShow((s) => !s)} className="rounded-lg p-2 text-white/45 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60" aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={show}>
+            <button type="button" onClick={() => setShow((s) => !s)} className="rounded-lg p-2 text-white/45 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300/60" aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={show}>
               {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           }
@@ -73,7 +73,7 @@ export function RegisterForm() {
         </div>
       </form>
       <p className="mt-5 text-center text-[13px] text-white/50">
-        Déjà inscrit ? <Link href="/login" className="font-medium text-violet-300 transition-colors hover:text-violet-200 hover:underline">Se connecter</Link>
+        Déjà inscrit ? <Link href="/login" className="font-medium text-brand-300 transition-colors hover:text-brand-200 hover:underline">Se connecter</Link>
       </p>
     </AuthCard>
   );

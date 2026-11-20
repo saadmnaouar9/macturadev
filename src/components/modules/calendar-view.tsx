@@ -20,11 +20,11 @@ export interface CalEvent {
 /** text : couleur du libellé · dot : pastille · chip : fond/bordure de la pastille de filtre active */
 const KINDS: Record<CalEvent["kind"], { label: string; text: string; dot: string; chip: string }> = {
   invoice: { label: "Échéances clients", text: "text-emerald-700", dot: "bg-emerald-500", chip: "border-emerald-500/35 bg-emerald-500/10" },
-  purchase: { label: "À payer (fournisseurs)", text: "text-accent-600", dot: "bg-orange-500", chip: "border-orange-500/35 bg-orange-500/10" },
+  purchase: { label: "À payer (fournisseurs)", text: "text-accent-600", dot: "bg-accent-500", chip: "border-accent-500/35 bg-accent-500/10" },
   quote: { label: "Expirations de devis", text: "text-amber-700", dot: "bg-amber-500", chip: "border-amber-500/35 bg-amber-500/10" },
-  task: { label: "Tâches", text: "text-brand-700", dot: "bg-blue-500", chip: "border-blue-500/35 bg-blue-500/10" },
-  contract: { label: "Fins de contrat", text: "text-violet-700", dot: "bg-violet-500", chip: "border-violet-500/35 bg-violet-500/10" },
-  project: { label: "Fins de projet", text: "text-sky-700", dot: "bg-sky-500", chip: "border-sky-500/35 bg-sky-500/10" },
+  task: { label: "Tâches", text: "text-brand-700", dot: "bg-brand-500", chip: "border-brand-500/35 bg-brand-500/10" },
+  contract: { label: "Fins de contrat", text: "text-brand-700", dot: "bg-brand-500", chip: "border-brand-500/35 bg-brand-500/10" },
+  project: { label: "Fins de projet", text: "text-brand-700", dot: "bg-brand-500", chip: "border-brand-500/35 bg-brand-500/10" },
   prospect: { label: "Relances prospects", text: "text-rose-700", dot: "bg-rose-500", chip: "border-rose-500/35 bg-rose-500/10" },
 };
 const WEEK = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];

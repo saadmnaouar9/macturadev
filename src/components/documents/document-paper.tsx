@@ -75,7 +75,7 @@ export interface PaperProps {
 export function DocumentPaper(p: PaperProps) {
   const isQuote = p.kind === "quote";
   const title = isQuote ? "Devis" : "Facture";
-  const accent = p.company.accentColor || "#3A3182";
+  const accent = p.company.accentColor || "#36307E";
   const legal = [
     p.company.ice && `ICE : ${p.company.ice}`,
     p.company.taxId && `IF : ${p.company.taxId}`,

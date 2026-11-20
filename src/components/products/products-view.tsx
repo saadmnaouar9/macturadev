@@ -33,8 +33,8 @@ const VIEW_KEY = "mactura.products.view";
 
 const STAT_TONES = {
   brand: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
-  sky: { tile: "bg-sky-50 text-sky-700 ring-sky-200/70", glow: "bg-sky-500/25" },
-  violet: { tile: "bg-violet-50 text-violet-700 ring-violet-200/70", glow: "bg-violet-500/25" },
+  sky: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
+  violet: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
   amber: { tile: "bg-amber-50 text-amber-700 ring-amber-200/80", glow: "bg-amber-500/25" },
 } as const;
 
@@ -70,7 +70,7 @@ function ProductCard({ p, index, canWrite, onOpen, menu }: { p: ProductRow; inde
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
 
       <div className="relative flex items-start gap-3">
-        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", isService ? "bg-violet-50 text-violet-600 ring-violet-100" : "bg-sky-50 text-sky-600 ring-sky-100")}>
+        <span className={cn("flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", isService ? "bg-brand-50 text-brand-600 ring-brand-100" : "bg-brand-50 text-brand-600 ring-brand-100")}>
           {isService ? <Wrench className="h-5 w-5" /> : <Box className="h-5 w-5" />}
         </span>
         <div className="min-w-0 flex-1">
@@ -263,7 +263,7 @@ export function ProductsView({
                     <Row key={p.id} index={i} className={cn(!p.active && "opacity-55")}>
                       <Td>
                         <button className="flex w-full items-center gap-3 text-left" onClick={() => canWrite && setDrawer({ open: true, product: p })} disabled={!canWrite}>
-                          <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset", p.type === "SERVICE" ? "bg-violet-50 text-violet-600 ring-violet-100" : "bg-sky-50 text-sky-600 ring-sky-100")}>
+                          <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset", p.type === "SERVICE" ? "bg-brand-50 text-brand-600 ring-brand-100" : "bg-brand-50 text-brand-600 ring-brand-100")}>
                             {p.type === "SERVICE" ? <Wrench className="h-4 w-4" /> : <Box className="h-4 w-4" />}
                           </span>
                           <span className="min-w-0">

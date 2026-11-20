@@ -60,7 +60,7 @@ const COLS = { desc: "40%", qty: "12%", pu: "14%", disc: "10%", tax: "8%", total
 export function DocumentPdf(p: PaperProps) {
   registerFonts();
   const isQuote = p.kind === "quote";
-  const accent = p.company.accentColor || "#3A3182";
+  const accent = p.company.accentColor || "#36307E";
   const hasDiscount = p.items.some((i) => i.discount > 0);
   const cols = hasDiscount ? COLS : { ...COLS, desc: "50%", disc: "0%" };
   const legal = [

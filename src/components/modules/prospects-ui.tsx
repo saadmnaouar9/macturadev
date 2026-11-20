@@ -26,15 +26,15 @@ export interface ProspectStats {
 const TONES = {
   brand: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
   emerald: { tile: "bg-emerald-50 text-emerald-700 ring-emerald-200/70", glow: "bg-emerald-500/25" },
-  violet: { tile: "bg-violet-50 text-violet-700 ring-violet-200/70", glow: "bg-violet-500/25" },
+  violet: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
   amber: { tile: "bg-amber-50 text-amber-700 ring-amber-200/80", glow: "bg-amber-500/25" },
 } as const;
 
 /** Couleur de chaque étape du pipeline (barre, point, halo). */
 const STAGE: Record<string, { bar: string; dot: string; text: string }> = {
-  NEW: { bar: "bg-sky-500", dot: "bg-sky-400", text: "text-sky-700" },
+  NEW: { bar: "bg-brand-500", dot: "bg-brand-400", text: "text-brand-700" },
   CONTACTED: { bar: "bg-brand-500", dot: "bg-brand-400", text: "text-brand-700" },
-  QUALIFIED: { bar: "bg-violet-500", dot: "bg-violet-400", text: "text-violet-700" },
+  QUALIFIED: { bar: "bg-brand-500", dot: "bg-brand-400", text: "text-brand-700" },
   PROPOSAL: { bar: "bg-amber-500", dot: "bg-amber-400", text: "text-amber-700" },
   WON: { bar: "bg-emerald-500", dot: "bg-emerald-400", text: "text-emerald-700" },
   LOST: { bar: "bg-faint", dot: "bg-faint", text: "text-muted" },

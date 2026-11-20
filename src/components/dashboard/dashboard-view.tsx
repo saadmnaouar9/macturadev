@@ -138,11 +138,11 @@ const ACTIVITY_ICON: Record<string, { icon: LucideIcon; cls: string }> = {
   "payment.created": { icon: CircleDollarSign, cls: "bg-emerald-50 text-emerald-600 ring-emerald-100" },
   "quote.accepted": { icon: CheckCircle2, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
   "quote.rejected": { icon: AlertTriangle, cls: "bg-rose-50 text-rose-600 ring-rose-100" },
-  "invoice.issued": { icon: Receipt, cls: "bg-sky-50 text-sky-600 ring-sky-100" },
-  "invoice.sent": { icon: Receipt, cls: "bg-sky-50 text-sky-600 ring-sky-100" },
+  "invoice.issued": { icon: Receipt, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
+  "invoice.sent": { icon: Receipt, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
   "quote.created": { icon: FileText, cls: "bg-subtle text-muted ring-line" },
-  "quote.sent": { icon: FileText, cls: "bg-sky-50 text-sky-600 ring-sky-100" },
-  "quote.converted": { icon: Receipt, cls: "bg-violet-50 text-violet-600 ring-violet-100" },
+  "quote.sent": { icon: FileText, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
+  "quote.converted": { icon: Receipt, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
   "customer.created": { icon: UserPlus, cls: "bg-accent-50 text-accent-600 ring-accent-100" },
 };
 
@@ -240,7 +240,7 @@ export function DashboardView({ data, firstName, canWrite, welcome, forbidden }:
             label="Total facturé (TTC)"
             value={kpis.invoiced.value}
             icon={Receipt}
-            accent="bg-sky-500"
+            accent="bg-brand-500"
             tone="text-muted"
             href="/factures"
             footer={<><Change value={kpis.invoiced.change} /> <span>{kpis.invoiced.count} factures émises</span></>}

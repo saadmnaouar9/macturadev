@@ -8,8 +8,8 @@ import { formatCompactMAD, formatMAD } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 // Palette validée (CVD, contraste) : indigo Mactura + orange Mactura
-const C_PRIMARY = "#4a8df8";
-const C_SECONDARY = "#e86533";
+const C_PRIMARY = "var(--chart-1)";
+const C_SECONDARY = "var(--chart-2)";
 const GRID = "var(--chart-grid)";
 const AXIS = "var(--chart-axis)";
 
@@ -133,7 +133,7 @@ export function QuotesChart({ data }: { data: { month: string; sent: number; acc
 }
 
 // Couleurs de statut (réservées) — toujours accompagnées d'un libellé
-const STATUS_COLORS: Record<string, string> = { PAID: "#10b981", PARTIAL: "#8b5cf6", PENDING: "#f59e0b", OVERDUE: "#f43f5e" };
+const STATUS_COLORS: Record<string, string> = { PAID: "#10b981", PARTIAL: "var(--chart-1)", PENDING: "#f59e0b", OVERDUE: "#f43f5e" };
 
 export function StatusDonut({ data }: { data: { key: string; label: string; value: number }[] }) {
   const reduce = useReducedMotion();

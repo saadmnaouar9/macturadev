@@ -110,7 +110,7 @@ export function SupplierCard({ row, api }: { row: Row; api: CardApi }) {
           <p className="text-[11px] text-muted">Achats</p>
           <p className="mt-0.5 text-[15px] font-semibold tabular text-ink">{purchases}</p>
         </div>
-        <div className={cn("rounded-lg p-2.5 ring-1 ring-inset", balance > 0 ? "bg-orange-500/8 ring-orange-500/25" : "bg-emerald-500/8 ring-emerald-500/20")}>
+        <div className={cn("rounded-lg p-2.5 ring-1 ring-inset", balance > 0 ? "bg-accent-500/8 ring-accent-500/25" : "bg-emerald-500/8 ring-emerald-500/20")}>
           <p className="text-[11px] text-muted">Reste à payer</p>
           <p className={cn("mt-0.5 truncate text-[15px] font-semibold tabular", balance > 0 ? "text-accent-600" : "text-emerald-700")}>{balance > 0 ? formatMAD(balance) : "À jour"}</p>
         </div>

@@ -144,7 +144,7 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
         <div ref={el} className="sup-map absolute inset-0" role="application" aria-label="Carte des fournisseurs" />
         <div className="pointer-events-none absolute left-3 top-3 z-[500] flex gap-2">
           <span className="sup-legend"><span className="h-2.5 w-2.5 rounded-full bg-brand-500" /> À jour</span>
-          <span className="sup-legend"><span className="h-2.5 w-2.5 rounded-full bg-orange-500" /> Solde à payer</span>
+          <span className="sup-legend"><span className="h-2.5 w-2.5 rounded-full bg-accent-500" /> Solde à payer</span>
         </div>
       </div>
       <div className="flex max-h-[460px] flex-col border-t border-line-soft lg:border-l lg:border-t-0">
@@ -159,7 +159,7 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
                 aria-pressed={active === g.city}
                 className={cn("flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-subtle", active === g.city && "bg-brand-500/10")}
               >
-                <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white", g.due > 0 ? "bg-orange-500" : "bg-brand-500")}>{g.items.length}</span>
+                <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white", g.due > 0 ? "bg-accent-500" : "bg-brand-500")}>{g.items.length}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-medium text-ink">{g.city}</span>
                   <span className={cn("block truncate text-[11.5px]", g.due > 0 ? "text-accent-600" : "text-muted")}>{g.due > 0 ? `${formatMAD(g.due)} à payer` : "Tout est réglé"}</span>

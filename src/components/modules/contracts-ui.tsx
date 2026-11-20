@@ -20,7 +20,7 @@ export interface ContractStats {
 }
 
 const LINE: Record<string, string> = {
-  neutral: "bg-faint", info: "bg-sky-500", success: "bg-emerald-500", warning: "bg-amber-500", danger: "bg-rose-500", brand: "bg-brand-500", violet: "bg-violet-500",
+  neutral: "bg-faint", info: "bg-brand-500", success: "bg-emerald-500", warning: "bg-amber-500", danger: "bg-rose-500", brand: "bg-brand-500", violet: "bg-brand-500",
 };
 
 export function ContractStatsPanel({ stats }: { stats: ContractStats }) {
@@ -73,7 +73,7 @@ export function ContractCard({ row, api }: { row: Row; api: CardApi }) {
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
 
       <div className="relative flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ">
           <FileSignature className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">

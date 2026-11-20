@@ -85,7 +85,7 @@ function InvoiceRowActions({ inv, canWrite, canDelete }: { inv: InvoiceRow; canW
 const VIEW_KEY = "mactura.invoices.view";
 const EASE = [0.16, 1, 0.3, 1] as const;
 const LINE: Record<string, string> = {
-  neutral: "bg-faint", info: "bg-sky-500", success: "bg-emerald-500", warning: "bg-amber-500", danger: "bg-rose-500", brand: "bg-brand-500", violet: "bg-violet-500",
+  neutral: "bg-faint", info: "bg-brand-500", success: "bg-emerald-500", warning: "bg-amber-500", danger: "bg-rose-500", brand: "bg-brand-500", violet: "bg-brand-500",
 };
 
 function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; index: number; canWrite: boolean; canDelete: boolean }) {
@@ -116,7 +116,7 @@ function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; ind
         style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
 
       <div className="relative flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ">
           <Receipt className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -149,7 +149,7 @@ function InvoiceCard({ inv, index, canWrite, canDelete }: { inv: InvoiceRow; ind
         {inv.lifecycle !== "CANCELLED" && inv.lifecycle !== "DRAFT" && (
           <div className="mt-3">
             <span className="block h-1.5 overflow-hidden rounded-full bg-subtle">
-              <motion.span className={cn("block h-full rounded-full", inv.paymentStatus === "PAID" ? "bg-emerald-500" : "bg-violet-500")} initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.25 + Math.min(index, 14) * 0.03, ease: EASE }} />
+              <motion.span className={cn("block h-full rounded-full", inv.paymentStatus === "PAID" ? "bg-emerald-500" : "bg-brand-500")} initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.25 + Math.min(index, 14) * 0.03, ease: EASE }} />
             </span>
             <p className="mt-1.5 flex justify-between gap-2 text-[11px] tabular">
               <span className="text-muted">Encaissé {formatMAD(inv.amountPaid)}</span>
@@ -250,7 +250,7 @@ export function InvoicesTable({
                         </span>
                         {inv.paymentStatus === "PARTIAL" && (
                           <span className="mt-1 ml-auto block h-1 w-20 overflow-hidden rounded-full bg-subtle">
-                            <motion.span className="block h-full rounded-full bg-violet-500" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.2 + i * 0.02 }} />
+                            <motion.span className="block h-full rounded-full bg-brand-500" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.2 + i * 0.02 }} />
                           </span>
                         )}
                       </Td>

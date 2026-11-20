@@ -41,8 +41,8 @@ const METHOD_META: Record<string, { icon: LucideIcon; bar: string; tile: string 
   BANK_TRANSFER: { icon: Landmark, bar: "bg-brand-500", tile: "bg-brand-50 text-brand-700 ring-brand-100" },
   CASH: { icon: Banknote, bar: "bg-emerald-500", tile: "bg-emerald-50 text-emerald-700 ring-emerald-100" },
   CHECK: { icon: ReceiptText, bar: "bg-amber-500", tile: "bg-amber-50 text-amber-700 ring-amber-100" },
-  CARD: { icon: CreditCard, bar: "bg-violet-500", tile: "bg-violet-50 text-violet-700 ring-violet-100" },
-  LCN: { icon: Wallet, bar: "bg-sky-500", tile: "bg-sky-50 text-sky-700 ring-sky-100" },
+  CARD: { icon: CreditCard, bar: "bg-brand-500", tile: "bg-brand-50 text-brand-700 ring-brand-100" },
+  LCN: { icon: Wallet, bar: "bg-brand-500", tile: "bg-brand-50 text-brand-700 ring-brand-100" },
   OTHER: { icon: CircleDollarSign, bar: "bg-faint", tile: "bg-subtle text-ink-soft ring-line" },
 };
 

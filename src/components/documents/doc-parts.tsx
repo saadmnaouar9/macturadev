@@ -46,9 +46,9 @@ const ICON: Record<string, { icon: typeof Clock; cls: string }> = {
   accepted: { icon: Check, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
   rejected: { icon: XCircle, cls: "bg-rose-50 text-rose-600 ring-rose-100" },
   cancelled: { icon: XCircle, cls: "bg-rose-50 text-rose-600 ring-rose-100" },
-  sent: { icon: Send, cls: "bg-sky-50 text-sky-600 ring-sky-100" },
-  issued: { icon: Receipt, cls: "bg-sky-50 text-sky-600 ring-sky-100" },
-  converted: { icon: Receipt, cls: "bg-violet-50 text-violet-600 ring-violet-100" },
+  sent: { icon: Send, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
+  issued: { icon: Receipt, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
+  converted: { icon: Receipt, cls: "bg-brand-50 text-brand-600 ring-brand-100" },
   default: { icon: FileText, cls: "bg-subtle text-muted ring-line" },
 };
 

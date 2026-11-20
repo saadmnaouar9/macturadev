@@ -3,8 +3,8 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatCompactMAD, formatMAD } from "@/lib/money";
 
-const C_IN = "#4a8df8";
-const C_OUT = "#e86533";
+const C_IN = "var(--chart-1)";
+const C_OUT = "var(--chart-2)";
 
 export function CashflowChart({ data }: { data: { month: string; inflow: number; outflow: number }[] }) {
   return (

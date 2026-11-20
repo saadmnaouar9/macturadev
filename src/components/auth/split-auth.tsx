@@ -14,10 +14,10 @@ const PILLS = [
 ] as const;
 
 const AVATARS = [
-  { t: "SM", c: "from-sky-400 to-blue-600" },
-  { t: "YE", c: "from-amber-400 to-orange-500" },
-  { t: "AB", c: "from-emerald-400 to-teal-600" },
-  { t: "KH", c: "from-violet-400 to-fuchsia-600" },
+  { t: "SM", c: "bg-brand-400" },
+  { t: "YE", c: "bg-accent-500" },
+  { t: "AB", c: "bg-brand-300" },
+  { t: "KH", c: "bg-accent-400" },
 ] as const;
 
 /**
@@ -35,8 +35,8 @@ export function SplitAuth({ children }: { children: React.ReactNode }) {
       >
         {/* Panneau de marque */}
         <aside className="brand-panel relative hidden flex-col justify-between overflow-hidden p-8 md:flex">
-          <div aria-hidden className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl" />
-          <div aria-hidden className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-blue-500/35 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-brand-400/25 blur-3xl" />
+          <div aria-hidden className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full bg-brand-500/35 blur-3xl" />
 
           <div className="relative z-10">
             <Logo priority className="h-[26px]" />
@@ -60,7 +60,7 @@ export function SplitAuth({ children }: { children: React.ReactNode }) {
             <div className="mt-6 flex items-center gap-3">
               <div className="flex -space-x-2">
                 {AVATARS.map((a) => (
-                  <span key={a.t} className={`bp-avatar flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br text-[11px] font-semibold ${a.c}`}>{a.t}</span>
+                  <span key={a.t} className={`bp-avatar flex h-9 w-9 items-center justify-center rounded-full text-[11px] font-semibold ${a.c}`}>{a.t}</span>
                 ))}
               </div>
               <p className="bp-muted text-[13px] leading-snug">Facturation, devis, TVA et trésorerie, au même endroit.</p>

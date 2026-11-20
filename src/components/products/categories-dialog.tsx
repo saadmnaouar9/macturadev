@@ -19,7 +19,7 @@ export interface CategoryItem {
   count: number;
 }
 
-const COLORS = ["#4F43AD", "#0EA5E9", "#10B981", "#F59E0B", "#EE6136", "#8B5CF6", "#EC4899", "#64748B"];
+const COLORS = ["#36307E", "#5B54B6", "#8E89D2", "#EC5D34", "#F07A58", "#10B981", "#F59E0B", "#64748B"];
 
 function ColorPicker({ value, onChange }: { value: string; onChange: (c: string) => void }) {
   return (
