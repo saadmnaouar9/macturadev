@@ -222,15 +222,15 @@ export function ResourceView(p: ResourceViewProps) {
       />
       {p.summaryNode}
       {!p.summaryNode && p.summary && (
-        <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <dl className={cn("mb-4 grid grid-cols-2 gap-x-8 gap-y-5 rounded-xl border border-line-soft bg-surface px-5 py-4", p.summary.length >= 4 ? "lg:grid-cols-4" : p.summary.length === 3 ? "lg:grid-cols-3" : "")}>
           {p.summary.map((s) => (
-            <Card key={s.label} className="px-4 py-3.5">
-              <p className="text-xs text-muted">{s.label}</p>
-              <p className={cn("mt-1 truncate text-[17px] font-semibold tracking-tight tabular", toneCls[s.tone ?? "default"])}>{s.value}</p>
-              {s.sub && <p className="mt-0.5 truncate text-[11px] text-faint">{s.sub}</p>}
-            </Card>
+            <div key={s.label} className="min-w-0">
+              <dt className="text-[13px] text-muted">{s.label}</dt>
+              <dd className={cn("mt-1 truncate text-xl font-semibold tracking-tight tabular", toneCls[s.tone ?? "default"])}>{s.value}</dd>
+              {s.sub && <dd className="mt-0.5 truncate text-xs text-faint">{s.sub}</dd>}
+            </div>
           ))}
-        </div>
+        </dl>
       )}
       <ListState>
         <Card className="overflow-hidden">

@@ -16,6 +16,7 @@ import { deleteEmployee, saveEmployee } from "@/app/(app)/employes/actions";
 import { ProspectCard, ProspectStatsPanel, type ProspectStats } from "./prospects-ui";
 import { SupplierCard, SuppliersPanel, type SupplierStats } from "./suppliers-ui";
 import type { MapPoint } from "./suppliers-map";
+import { EmployeeCard } from "./employees-ui";
 import { ContractCard, ContractStatsPanel, type ContractStats } from "./contracts-ui";
 
 type Common = Pick<ResourceViewProps, "rows" | "total" | "page" | "pageSize" | "hasQuery" | "canWrite" | "canDelete" | "filters" | "summary">;
@@ -252,6 +253,7 @@ export function EmployeesView(p: Common) {
       title="Employés"
       description="Registre du personnel de l'entreprise (accès réservé aux administrateurs)."
       icon={UserRound}
+      cardView={{ defaultGrid: true, storageKey: "mactura.employees.view", render: (row, api) => <EmployeeCard row={row} api={api} /> }}
       entity="employé"
       columns={[
         { key: "fullName", header: "Employé", kind: "title", subKey: "position", avatar: true, sort: "lastName" },
