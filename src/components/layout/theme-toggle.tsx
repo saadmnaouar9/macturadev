@@ -77,7 +77,7 @@ export function ThemeToggle() {
       <button
         type="button"
         onClick={toggle}
-        className="relative rounded-md p-2 text-muted transition-colors hover:bg-subtle hover:text-ink"
+        className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-subtle hover:text-ink"
         aria-label="Basculer entre le mode clair et le mode sombre"
       >
         {/* Les deux icônes sont rendues, superposées ; le CSS les fait pivoter et se fondre l'une dans l'autre : aucun écart d'hydratation */}

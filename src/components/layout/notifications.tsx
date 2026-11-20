@@ -35,7 +35,7 @@ export function Notifications({ items }: { items: NotificationItem[] }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="relative rounded-md p-2 text-muted transition-colors hover:bg-subtle hover:text-ink data-[state=open]:bg-subtle data-[state=open]:text-ink" aria-label={`Notifications${unread ? ` (${unread} non lues)` : ""}`}>
+        <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-subtle hover:text-ink data-[state=open]:bg-subtle data-[state=open]:text-ink" aria-label={`Notifications${unread ? ` (${unread} non lues)` : ""}`}>
           <Bell className="h-[18px] w-[18px]" />
           <AnimatePresence>
             {unread > 0 && (

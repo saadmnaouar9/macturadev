@@ -57,7 +57,7 @@ export function Breadcrumbs() {
             >
               {i > 0 && <ChevronRight className="hidden h-3.5 w-3.5 shrink-0 text-faint sm:block" />}
               {last ? (
-                <span className="truncate font-medium text-ink">{c.label}</span>
+                <span className="truncate text-[15px] font-semibold tracking-tight text-ink">{c.label}</span>
               ) : (
                 <Link href={c.href} className="truncate rounded px-1 py-0.5 text-muted transition-colors hover:bg-subtle hover:text-ink">
                   {c.label}
