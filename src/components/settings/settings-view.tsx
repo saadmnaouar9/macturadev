@@ -184,14 +184,37 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
       if (res.ok) { toast.success(res.message); setName(""); setRate(""); } else toast.error(res.error);
     });
   };
+  const def = taxRates.find((t) => t.isDefault);
   return (
-    <Section title="Taux de TVA" description="Configurez les taux applicables à votre activité (taux marocains standards : 20 %, 14 %, 10 %, 7 %, exonéré). Les documents existants conservent leur taux.">
-      <ul className="divide-y divide-line-soft rounded-xl ring-1 ring-line-soft">
+    <div className="space-y-4">
+      {/* En-tête */}
+      <motion.section initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="relative overflow-hidden rounded-3xl border border-line-soft bg-surface shadow-[var(--shadow-sm)]">
+        <div aria-hidden className="pointer-events-none absolute -left-20 -top-24 h-60 w-60 rounded-full bg-brand-500/15 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-28 right-10 h-56 w-56 rounded-full bg-violet-500/12 blur-3xl" />
+        <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_8px_20px_-6px_rgb(59_110_245/0.6)]"><Percent className="h-6 w-6" /></span>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-semibold tracking-tight text-ink">Taux de TVA</h2>
+            <p className="mt-0.5 text-[13px] text-muted">Configurez les taux applicables à votre activité (taux marocains standards : 20 %, 14 %, 10 %, 7 %, exonéré). Les documents existants conservent leur taux.</p>
+          </div>
+        </div>
+        <div className="relative flex flex-wrap items-center gap-2 border-t border-line-soft bg-canvas/40 px-5 py-3 sm:px-6">
+          <span className="mr-1 text-2xl font-semibold tabular text-ink">{taxRates.length}</span>
+          <span className="mr-3 text-[13px] text-muted">taux configuré{taxRates.length > 1 ? "s" : ""}</span>
+          {def && <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/12 px-2.5 py-1 text-xs font-semibold text-amber-700"><Star className="h-3 w-3" /> Par défaut : {formatRate(def.rate)} %</span>}
+        </div>
+      </motion.section>
+
+      {/* Taux */}
+      <ul className="grid gap-3 sm:grid-cols-2">
         <AnimatePresence initial={false}>
-          {taxRates.map((t) => (
-            <motion.li key={t.id} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex items-center gap-3 px-4 py-3">
-              <span className="flex h-9 w-14 items-center justify-center rounded-lg bg-brand-50 text-sm font-semibold tabular text-brand-700">{formatRate(t.rate)} %</span>
-              <span className="flex-1 text-sm font-medium text-ink">{t.name}</span>
+          {taxRates.map((t, i) => (
+            <motion.li key={t.id} layout initial={{ opacity: 0, y: 14, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.35, delay: Math.min(i * 0.05, 0.3), ease }} whileHover={{ y: -3 }} className={cn("group flex items-center gap-4 rounded-3xl border bg-surface p-4 shadow-[var(--shadow-xs)] transition-shadow duration-200 hover:shadow-[var(--shadow-md)]", t.isDefault ? "border-brand-500/40 ring-1 ring-brand-500/20" : "border-line-soft")}>
+              <span className={cn("flex h-14 w-[76px] shrink-0 items-center justify-center rounded-2xl text-lg font-semibold tabular tracking-tight", t.isDefault ? "bg-gradient-to-br from-brand-500 to-violet-500 text-white shadow-[0_8px_18px_-6px_rgb(59_110_245/0.6)]" : "bg-brand-500/10 text-brand-700")}>{formatRate(t.rate)} %</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-semibold text-ink">{t.name}</span>
+                <span className="block text-xs text-muted">{t.isDefault ? "Appliqué par défaut aux nouveaux documents" : "Disponible dans les documents"}</span>
+              </span>
               {t.isDefault ? <Badge tone="brand" dot={false}><Star className="h-3 w-3" /> Par défaut</Badge> : canEdit && (
                 <button
                   onClick={async () => {
@@ -199,7 +222,7 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
                     const res = await deleteTaxRate(t.id);
                     if (res.ok) { toast.success(res.message); } else toast.error(res.error);
                   }}
-                  className="rounded-md p-1.5 text-faint hover:bg-rose-50 hover:text-rose-600"
+                  className="rounded-xl p-2 text-faint transition-colors hover:bg-rose-500/10 hover:text-rose-600"
                   aria-label={`Supprimer ${t.name}`}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -209,14 +232,19 @@ function TaxTab({ taxRates, canEdit }: { taxRates: Props["taxRates"]; canEdit: b
           ))}
         </AnimatePresence>
       </ul>
+
+      {/* Ajout d'un taux */}
       {canEdit && (
-        <form onSubmit={(e) => { e.preventDefault(); add(); }} className="mt-4 flex flex-col gap-2 sm:flex-row">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Libellé (ex. TVA réduite)" aria-label="Libellé du taux" />
-          <div className="sm:w-36"><Input value={rate} onChange={(e) => setRate(e.target.value)} inputMode="decimal" placeholder="Taux" trailing="%" aria-label="Taux en pourcentage" /></div>
-          <Button type="submit" loading={pending} disabled={!rate}><Plus className="h-4 w-4" /> Ajouter</Button>
-        </form>
+        <motion.form initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25, ease }} onSubmit={(e) => { e.preventDefault(); add(); }} className="rounded-3xl border border-dashed border-line bg-canvas/40 p-4 sm:p-5">
+          <p className="mb-3 flex items-center gap-2 text-[13px] font-semibold text-ink"><span className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-500/12 text-brand-600"><Plus className="h-3.5 w-3.5" /></span> Ajouter un taux</p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Libellé (ex. TVA réduite)" aria-label="Libellé du taux" />
+            <div className="sm:w-36"><Input value={rate} onChange={(e) => setRate(e.target.value)} inputMode="decimal" placeholder="Taux" trailing="%" aria-label="Taux en pourcentage" /></div>
+            <Button type="submit" loading={pending} disabled={!rate}><Plus className="h-4 w-4" /> Ajouter</Button>
+          </div>
+        </motion.form>
       )}
-    </Section>
+    </div>
   );
 }
 

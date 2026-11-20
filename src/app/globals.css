@@ -419,3 +419,31 @@ html[data-theme="light"] [data-auth] [class*=" bg-white/"], html[data-theme="lig
 html[data-theme="light"] [data-auth] [class*="border-white/"]:not(.space-input) { border-color: rgb(24 44 110 / 0.14); }
 html[data-theme="light"] [data-auth] [role="checkbox"] > span:first-child:not(.bg-violet-500) { background: #fff; border-color: rgb(24 44 110 / 0.3); }
 html[data-theme="light"] [data-auth] .space-input + span, html[data-theme="light"] [data-auth] .group > span.pointer-events-none { color: #6b7799; }
+
+/* ───────────── Connexion : écran partagé (panneau de marque + formulaire) ───────────── */
+.split-card { border: 1px solid rgb(125 170 255 / 0.22); box-shadow: 0 30px 90px -30px rgb(10 30 120 / 0.6), 0 0 0 1px rgb(2 6 23 / 0.4); }
+html[data-theme="light"] [data-auth] .split-card { border-color: rgb(24 44 110 / 0.12); box-shadow: 0 30px 80px -30px rgb(30 60 160 / 0.35); }
+.split-form { background: rgb(7 14 36 / 0.88); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+html[data-theme="light"] [data-auth] .split-form { background: #fff; }
+.brand-panel {
+  color: #fff;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 100%, rgb(37 99 235 / 0.55), transparent 70%),
+    linear-gradient(145deg, #020617 0%, #07174d 38%, #0c2a8a 72%, #1d4ed8 100%);
+}
+.brand-panel::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgb(255 255 255 / 0.055) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.055) 1px, transparent 1px);
+  background-size: 38px 38px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 55%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 55%, #000 25%, transparent 75%);
+}
+.bp-title { color: #fff; }
+.bp-muted { color: rgb(255 255 255 / 0.7); }
+.bp-pill {
+  padding: 8px 16px; border-radius: 9999px; font-size: 12.5px; font-weight: 500; color: #fff; white-space: nowrap;
+  background: rgb(255 255 255 / 0.08); border: 1px solid rgb(255 255 255 / 0.16);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px -10px rgb(0 0 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+.bp-avatar { color: #fff; border: 2px solid rgb(255 255 255 / 0.4); }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { AuthCard, AuthTitle } from "@/components/auth/auth-card";
+import { SplitAuth } from "@/components/auth/split-auth";
 import { DarkButton, DarkCheckbox, DarkInput } from "@/components/auth/dark-ui";
 import { useForm } from "@/hooks/use-form";
 import { loginAction } from "../actions";
@@ -15,8 +15,11 @@ export function LoginForm({ next }: { next?: string }) {
   const { values, set, errors, pending, submit } = useForm({ email: "", password: "", remember: true });
 
   return (
-    <AuthCard>
-      <AuthTitle title={"Bienvenue sur Mactura"} subtitle="Vos identifiants servent uniquement à vous authentifier. Toutes les données restent dans votre base." />
+    <SplitAuth>
+      <div>
+        <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-white">Bienvenue sur Mactura</h1>
+        <p className="mt-2 text-[13px] leading-relaxed text-white/50">Vos identifiants servent uniquement à vous authentifier. Toutes les données restent dans votre base.</p>
+      </div>
       <form
         noValidate
         className="mt-7 space-y-3.5"
@@ -56,6 +59,6 @@ export function LoginForm({ next }: { next?: string }) {
       <p className="mt-5 text-center text-[13px] text-white/50">
         Pas encore de compte ? <Link href="/register" className="font-medium text-violet-300 transition-colors hover:text-violet-200 hover:underline">Créer un espace</Link>
       </p>
-    </AuthCard>
+    </SplitAuth>
   );
 }
