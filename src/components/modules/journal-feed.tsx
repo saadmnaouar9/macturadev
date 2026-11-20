@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "@/components/ui/fast-link";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { motion, type PanInfo } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -75,25 +75,90 @@ function dayTitle(key: string): string {
 /** Libellé de la date d'un évènement : « Aujourd'hui », « Hier » ou la date complète. */
 const dayLabel = (iso: string) => dayTitle(dayKey(iso));
 
-const slide = {
-  enter: (dir: number) => ({ opacity: 0, x: dir * 70 }),
-  center: { opacity: 1, x: 0, transition: { duration: 0.38, ease: EASE } },
-  exit: (dir: number) => ({ opacity: 0, x: dir * -70, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] as const } }),
-};
+/** Largeur du plateau : sert à dimensionner la carte centrale et l'écart des cartes voisines (mobile compris). */
+function useWidth() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [w, setW] = useState(900);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setW(el.clientWidth));
+    ro.observe(el);
+    setW(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, w] as const;
+}
+
+/** Pose d'une carte selon son écart `d` avec la carte active : x, échelle, inclinaison en perspective, opacité et profondeur. */
+function pose(d: number, cardW: number) {
+  const a = Math.abs(d);
+  const side = Math.sign(d);
+  if (a === 0) return { x: 0, scale: 1, rotateY: 0, opacity: 1, dim: 0, z: 30 };
+  if (a === 1) return { x: side * cardW * 0.72, scale: 0.88, rotateY: -side * 40, opacity: 1, dim: 0.4, z: 20 };
+  if (a === 2) return { x: side * cardW * 1.2, scale: 0.76, rotateY: -side * 48, opacity: 1, dim: 0.62, z: 10 };
+  return { x: side * cardW * 1.4, scale: 0.66, rotateY: -side * 52, opacity: 0, dim: 0.8, z: 0 };
+}
+
+/** Face d'une carte : complète au centre, résumée sur les côtés. */
+function CardFace({ r, active }: { r: JournalRow; active: boolean }) {
+  const { label, tone } = labelFor(r.type);
+  return (
+    <div className="flex h-full flex-col p-4 sm:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Badge tone={tone}>{label}</Badge>
+        <p className="text-[13px] text-muted">
+          <span>{dayLabel(r.createdAt)}</span> · <span className="tabular">{timeOf(r.createdAt)}</span>
+        </p>
+      </div>
+      <p className={cn("mt-5 font-semibold leading-snug tracking-tight text-ink", active ? "line-clamp-4 text-xl sm:text-2xl" : "line-clamp-3 text-lg")}>{r.message}</p>
+      <div className="mt-auto">
+        {active ? (
+          <>
+            <dl className="grid grid-cols-2 gap-6 border-t border-line-soft pt-4">
+              <div>
+                <dt className="text-xs text-muted">Auteur</dt>
+                <dd className="mt-1.5 flex items-center gap-2 text-sm text-ink">
+                  {r.userName ? (
+                    <>
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-subtle text-[11px] font-semibold text-ink-soft">{initials(r.userName)}</span>
+                      <span className="truncate">{r.userName}</span>
+                    </>
+                  ) : <span className="text-faint">Système</span>}
+                </dd>
+              </div>
+              <div className="text-right">
+                <dt className="text-xs text-muted">Montant</dt>
+                <dd className="mt-1 whitespace-nowrap text-lg font-semibold tabular text-ink sm:text-xl">{r.amount ? formatMAD(r.amount) : "—"}</dd>
+              </div>
+            </dl>
+            <div className="mt-4 flex items-center justify-between gap-3">
+              <span className="font-mono text-[11px] text-faint">{r.type}</span>
+              {r.href && (
+                <Link href={r.href} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-brand-700 transition-colors hover:bg-subtle">
+                  Ouvrir <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="border-t border-line-soft pt-3 text-right text-base font-semibold tabular text-ink-soft">{r.amount ? formatMAD(r.amount) : ""}</p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 /**
- * Une carte à la fois : grande carte centrée, évènement par évènement, avec flèches, balayage (tactile ou souris), flèches du clavier,
- * compteur et barre de progression. La carte précédente sort et la suivante entre dans le sens du déplacement.
+ * Une carte à la fois, en « coverflow » : la carte active est au centre, de face ; les voisines, inclinées en perspective et partiellement
+ * cachées derrière, s'estompent avec la distance. Un clic sur une voisine l'amène au centre. Flèches, balayage (tactile ou souris),
+ * flèches du clavier, compteur et barre de progression.
  */
 function CardViewer({ rows }: { rows: JournalRow[] }) {
-  const [state, setState] = useState({ i: 0, dir: 1 });
+  const [i, setI] = useState(0);
+  const [stage, width] = useWidth();
   const n = rows.length;
-  const go = useCallback((delta: 1 | -1) => {
-    setState((s) => {
-      const next = s.i + delta;
-      return next < 0 || next >= n ? s : { i: next, dir: delta };
-    });
-  }, [n]);
+  const go = useCallback((delta: number) => setI((cur) => Math.min(n - 1, Math.max(0, cur + delta))), [n]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -107,94 +172,73 @@ function CardViewer({ rows }: { rows: JournalRow[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [go]);
 
-  const r = rows[state.i];
-  if (!r) return null;
-  const { label, tone } = labelFor(r.type);
+  if (n === 0) return null;
+  // Petits écrans : la carte centrale occupe l'essentiel de la largeur, les voisines n'apparaissent que sur les côtés
+  const cardW = width < 600 ? width * 0.8 : Math.max(240, Math.min(430, width * 0.46));
   const onDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.x < -70 || info.velocity.x < -500) go(1);
     else if (info.offset.x > 70 || info.velocity.x > 500) go(-1);
   };
   const arrow = "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-soft transition-colors hover:bg-subtle hover:text-ink disabled:cursor-default disabled:opacity-35 disabled:hover:bg-transparent";
+  const window3 = rows.map((r, idx) => ({ r, idx })).filter(({ idx }) => Math.abs(idx - i) <= 3);
 
   return (
-    <section aria-roledescription="carousel" aria-label="Évènements du journal" className="mx-auto max-w-3xl">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
-        <button type="button" onClick={() => go(-1)} disabled={state.i === 0} aria-label="Évènement précédent" className={cn(arrow, "order-2 sm:order-1")}>
+    <section aria-roledescription="carousel" aria-label="Évènements du journal" className="mx-auto max-w-4xl">
+      <div className="relative">
+        <button type="button" onClick={() => go(-1)} disabled={i === 0} aria-label="Évènement précédent" className={cn(arrow, "absolute left-1 top-1/2 z-40 hidden -translate-y-1/2 bg-popover sm:flex")}>
           <ChevronLeft className="h-5 w-5" />
         </button>
 
-        <div className="order-1 col-span-3 overflow-hidden sm:order-2 sm:col-span-1" aria-live="polite">
-          <AnimatePresence mode="wait" custom={state.dir} initial={false}>
-            <motion.article
-              key={r.id}
-              custom={state.dir}
-              variants={slide}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.35}
-              onDragEnd={onDragEnd}
-              className="cursor-grab rounded-xl border border-line-soft bg-surface p-6 shadow-[var(--shadow-sm)] active:cursor-grabbing sm:p-8"
-              aria-label={`${state.i + 1} sur ${n} : ${label}`}
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Badge tone={tone}>{label}</Badge>
-                <p className="text-[13px] text-muted">
-                  <span>{dayLabel(r.createdAt)}</span> · <span className="tabular">{timeOf(r.createdAt)}</span>
-                </p>
-              </div>
-
-              <p className="mt-6 text-xl font-semibold leading-snug tracking-tight text-ink sm:text-2xl">{r.message}</p>
-
-              <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-line-soft pt-5">
-                <div>
-                  <dt className="text-xs text-muted">Auteur</dt>
-                  <dd className="mt-1.5 flex items-center gap-2 text-sm text-ink">
-                    {r.userName ? (
-                      <>
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-subtle text-[11px] font-semibold text-ink-soft">{initials(r.userName)}</span>
-                        {r.userName}
-                      </>
-                    ) : <span className="text-faint">Système</span>}
-                  </dd>
-                </div>
-                <div className="text-right">
-                  <dt className="text-xs text-muted">Montant</dt>
-                  <dd className="mt-1 text-xl font-semibold tabular text-ink">{r.amount ? formatMAD(r.amount) : "—"}</dd>
-                </div>
-              </dl>
-
-              <div className="mt-6 flex items-center justify-between gap-3">
-                <span className="font-mono text-[11px] text-faint">{r.type}</span>
-                {r.href && (
-                  <Link href={r.href} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-brand-700 transition-colors hover:bg-subtle">
-                    Ouvrir <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                )}
-              </div>
-            </motion.article>
-          </AnimatePresence>
+        <div ref={stage} className="relative h-[370px] min-w-0 overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_9%,#000_91%,transparent)] sm:h-[360px]" aria-live="polite">
+          <motion.div className="absolute inset-0" style={{ perspective: 1300 }} drag="x" dragConstraints={{ left: 0, right: 0 }} dragElastic={0.25} dragSnapToOrigin onDragEnd={onDragEnd}>
+            {window3.map(({ r, idx }) => {
+              const d = idx - i;
+              const t = pose(d, cardW);
+              const active = d === 0;
+              return (
+                <motion.div
+                  key={r.id}
+                  initial={false}
+                  animate={{ x: t.x, scale: t.scale, rotateY: t.rotateY, opacity: t.opacity }}
+                  transition={{ type: "spring", stiffness: 170, damping: 24, mass: 0.9 }}
+                  style={{ width: cardW, marginLeft: -cardW / 2, zIndex: t.z, left: "50%", top: 14, bottom: 14, pointerEvents: Math.abs(d) > 2 ? "none" : "auto" }}
+                  onTap={() => { if (!active) go(d); }}
+                  className={cn("absolute overflow-hidden rounded-xl border border-line-soft bg-popover", active ? "shadow-[var(--shadow-lg)]" : "cursor-pointer shadow-[var(--shadow-md)]")}
+                  aria-hidden={!active}
+                  role={active ? "group" : undefined}
+                  aria-label={active ? `${i + 1} sur ${n}` : undefined}
+                >
+                  <CardFace r={r} active={active} />
+                  <motion.div initial={false} animate={{ opacity: t.dim }} transition={{ duration: 0.4 }} className="pointer-events-none absolute inset-0 bg-canvas" aria-hidden />
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
 
-        <button type="button" onClick={() => go(1)} disabled={state.i === n - 1} aria-label="Évènement suivant" className={cn(arrow, "order-3")}>
+        <button type="button" onClick={() => go(1)} disabled={i === n - 1} aria-label="Évènement suivant" className={cn(arrow, "absolute right-1 top-1/2 z-40 hidden -translate-y-1/2 bg-popover sm:flex")}>
           <ChevronRight className="h-5 w-5" />
         </button>
       </div>
 
-      <div className="mt-5 flex items-center gap-4">
-        <p className="w-16 shrink-0 text-[13px] tabular text-muted"><span className="font-medium text-ink-soft">{state.i + 1}</span> / {n}</p>
-        <div className="h-1 flex-1 overflow-hidden rounded-sm bg-subtle" role="progressbar" aria-valuemin={1} aria-valuemax={n} aria-valuenow={state.i + 1}>
-          <motion.div className="h-full bg-brand-500" initial={false} animate={{ width: `${((state.i + 1) / n) * 100}%` }} transition={{ duration: 0.4, ease: EASE }} />
+      <div className="mt-5 flex items-center gap-3 sm:gap-4">
+        <button type="button" onClick={() => go(-1)} disabled={i === 0} aria-label="Évènement précédent" className={cn(arrow, "sm:hidden")}>
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <p className="w-14 shrink-0 text-[13px] tabular text-muted"><span className="font-medium text-ink-soft">{i + 1}</span> / {n}</p>
+        <div className="h-1 flex-1 overflow-hidden rounded-sm bg-subtle" role="progressbar" aria-valuemin={1} aria-valuemax={n} aria-valuenow={i + 1}>
+          <motion.div className="h-full bg-brand-500" initial={false} animate={{ width: `${((i + 1) / n) * 100}%` }} transition={{ duration: 0.4, ease: EASE }} />
         </div>
         <p className="hidden w-24 shrink-0 text-right text-xs text-faint sm:block">← → clavier</p>
+        <button type="button" onClick={() => go(1)} disabled={i === n - 1} aria-label="Évènement suivant" className={cn(arrow, "sm:hidden")}>
+          <ChevronRight className="h-5 w-5" />
+        </button>
       </div>
     </section>
   );
 }
 
-/** Journal d'activité : une carte à la fois (flèches, balayage, clavier), avec bascule vers le tableau d'origine. */
+/** Journal d'activité : une carte à la fois en coverflow (flèches, balayage, clavier), avec bascule vers le tableau d'origine. */
 export function JournalFeed({ rows, total }: { rows: JournalRow[]; total: number }) {
   const [view, setView] = useState<ViewMode>("grid");
   useEffect(() => {
