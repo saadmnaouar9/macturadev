@@ -178,7 +178,7 @@ export function CustomersTable({
   rows: CustomerRow[]; total: number; page: number; pageSize: number; hasQuery: boolean; archivedView: boolean;
   counts: { all: number; company: number; individual: number; archived: number }; totals: { invoiced: number; outstanding: number }; canWrite: boolean; canDelete: boolean;
 }) {
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>("grid");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);
