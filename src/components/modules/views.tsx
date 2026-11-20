@@ -74,7 +74,7 @@ export function ProspectsView({ stats, ...p }: Common & { stats: ProspectStats }
       description="Suivez vos opportunités commerciales de la première prise de contact à la conversion en client."
       icon={BriefcaseBusiness}
       summaryNode={<ProspectStatsPanel stats={stats} />}
-      cardView={{ storageKey: "mactura.prospects.view", render: (row, api) => <ProspectCard row={row} api={api} /> }}
+      cardView={{ defaultGrid: true, storageKey: "mactura.prospects.view", render: (row, api) => <ProspectCard row={row} api={api} /> }}
       entity="prospect"
       columns={[
         { key: "name", header: "Prospect", kind: "title", subKey: "contact", avatar: true, sort: "name" },
