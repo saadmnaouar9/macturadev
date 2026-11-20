@@ -61,6 +61,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
         total={total} page={page} pageSize={PAGE_SIZE} hasQuery={!!q || !!status}
         canWrite={can(auth.role, "write")} canDelete={can(auth.role, "delete")}
         filters={[{ param: "status", layoutId: "purchase-status", options: [{ value: "", label: "Toutes", count: allCount }, ...tabs.map((t, i) => ({ value: t, label: badges[t], count: counts[i] }))] }]}
+        stats={{ total: Number(agg._sum.total ?? 0n), paid: Number(agg._sum.amountPaid ?? 0n), due: Number(due), overdue: Number((overdue._sum.total ?? 0n) - (overdue._sum.amountPaid ?? 0n)) }}
         summary={[
           { label: "Achats TTC (hors annulés)", value: formatMAD(agg._sum.total ?? 0n) },
           { label: "Déjà payé", value: formatMAD(agg._sum.amountPaid ?? 0n), tone: "good" },

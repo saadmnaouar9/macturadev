@@ -14,6 +14,7 @@ import { PaymentDialog, VoidPaymentDialog } from "@/components/documents/payment
 import { INVOICE_STATUS, PAYMENT_METHODS } from "@/lib/status";
 import { formatMAD, formatRate } from "@/lib/money";
 import { cn, formatDate } from "@/lib/utils";
+import { PurchaseCard, PurchaseStatsPanel, type PurchaseStats } from "./achats-ui";
 import { addPurchasePayment, cancelPurchase, deletePurchase, savePurchase, voidPurchasePayment } from "@/app/(app)/achats/actions";
 
 type Common = Pick<ResourceViewProps, "rows" | "total" | "page" | "pageSize" | "hasQuery" | "canWrite" | "canDelete" | "filters" | "summary" | "defaults">;
@@ -34,7 +35,7 @@ interface PurchaseRow {
 
 const STATUS_BADGES = Object.fromEntries(Object.entries(INVOICE_STATUS));
 
-export function PurchasesView({ suppliers, taxRates, ...p }: Common & { suppliers: { value: string; label: string }[]; taxRates: { value: string; label: string }[] }) {
+export function PurchasesView({ suppliers, taxRates, stats, ...p }: Common & { suppliers: { value: string; label: string }[]; taxRates: { value: string; label: string }[]; stats: PurchaseStats }) {
   const router = useRouter();
   const confirm = useConfirm();
   const [openId, setOpenId] = useState<string | null>(null); // dialogue de suivi des paiements
@@ -61,6 +62,8 @@ export function PurchasesView({ suppliers, taxRates, ...p }: Common & { supplier
         title="Achats"
         description="Factures fournisseurs, règlements partiels ou totaux et TVA déductible."
         icon={ShoppingCart}
+        summaryNode={<PurchaseStatsPanel stats={stats} />}
+        cardView={{ storageKey: "mactura.purchases.view", render: (row, api) => <PurchaseCard row={row} api={api} /> }}
         entity="achat"
         columns={[
           { key: "reference", header: "Facture fournisseur", kind: "title", subKey: "supplierName", sort: "reference" },
