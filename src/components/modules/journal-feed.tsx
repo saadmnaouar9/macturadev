@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "@/components/ui/fast-link";
-import { motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ViewToggle, type ViewMode } from "@/components/ui/view-toggle";
@@ -71,47 +72,129 @@ function dayTitle(key: string): string {
   return formatDate(new Date(`${key}T12:00:00Z`), "long");
 }
 
-const group: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.045 } } };
-const card: Variants = {
-  hidden: { opacity: 0, y: 14, scale: 0.98 },
-  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.42, ease: EASE } },
+/** Libellé de la date d'un évènement : « Aujourd'hui », « Hier » ou la date complète. */
+const dayLabel = (iso: string) => dayTitle(dayKey(iso));
+
+const slide = {
+  enter: (dir: number) => ({ opacity: 0, x: dir * 70 }),
+  center: { opacity: 1, x: 0, transition: { duration: 0.38, ease: EASE } },
+  exit: (dir: number) => ({ opacity: 0, x: dir * -70, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] as const } }),
 };
 
-function EventCard({ r }: { r: JournalRow }) {
+/**
+ * Une carte à la fois : grande carte centrée, évènement par évènement, avec flèches, balayage (tactile ou souris), flèches du clavier,
+ * compteur et barre de progression. La carte précédente sort et la suivante entre dans le sens du déplacement.
+ */
+function CardViewer({ rows }: { rows: JournalRow[] }) {
+  const [state, setState] = useState({ i: 0, dir: 1 });
+  const n = rows.length;
+  const go = useCallback((delta: 1 | -1) => {
+    setState((s) => {
+      const next = s.i + delta;
+      return next < 0 || next >= n ? s : { i: next, dir: delta };
+    });
+  }, [n]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
+      if (e.key === "ArrowRight") go(1);
+      else if (e.key === "ArrowLeft") go(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [go]);
+
+  const r = rows[state.i];
+  if (!r) return null;
   const { label, tone } = labelFor(r.type);
-  const body = (
-    <>
-      <div className="flex items-center justify-between gap-2">
-        <Badge tone={tone}>{label}</Badge>
-        <span className="text-xs tabular text-faint">{timeOf(r.createdAt)}</span>
-      </div>
-      <p className="mt-3 text-[13.5px] leading-snug text-ink">{r.message}</p>
-      <div className="mt-4 flex items-end justify-between gap-3 border-t border-line-soft pt-3">
-        {r.userName ? (
-          <span className="inline-flex min-w-0 items-center gap-2 text-xs text-ink-soft">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-subtle text-[10px] font-semibold text-ink-soft">{initials(r.userName)}</span>
-            <span className="truncate">{r.userName}</span>
-          </span>
-        ) : (
-          <span className="text-xs text-faint">Système</span>
-        )}
-        {r.amount ? <span className="shrink-0 text-[13px] font-semibold tabular text-ink">{formatMAD(r.amount)}</span> : null}
-      </div>
-    </>
-  );
-  const cls = "flex h-full flex-col rounded-xl border border-line-soft bg-surface p-4 transition-colors duration-200";
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.x < -70 || info.velocity.x < -500) go(1);
+    else if (info.offset.x > 70 || info.velocity.x > 500) go(-1);
+  };
+  const arrow = "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-soft transition-colors hover:bg-subtle hover:text-ink disabled:cursor-default disabled:opacity-35 disabled:hover:bg-transparent";
+
   return (
-    <motion.li variants={card}>
-      {r.href ? (
-        <Link href={r.href} className={cn(cls, "hover:border-brand-400/60 focus-visible:border-brand-400")} aria-label={`${label} : ${r.message}`}>{body}</Link>
-      ) : (
-        <div className={cls}>{body}</div>
-      )}
-    </motion.li>
+    <section aria-roledescription="carousel" aria-label="Évènements du journal" className="mx-auto max-w-3xl">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
+        <button type="button" onClick={() => go(-1)} disabled={state.i === 0} aria-label="Évènement précédent" className={cn(arrow, "order-2 sm:order-1")}>
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+
+        <div className="order-1 col-span-3 overflow-hidden sm:order-2 sm:col-span-1" aria-live="polite">
+          <AnimatePresence mode="wait" custom={state.dir} initial={false}>
+            <motion.article
+              key={r.id}
+              custom={state.dir}
+              variants={slide}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.35}
+              onDragEnd={onDragEnd}
+              className="cursor-grab rounded-xl border border-line-soft bg-surface p-6 shadow-[var(--shadow-sm)] active:cursor-grabbing sm:p-8"
+              aria-label={`${state.i + 1} sur ${n} : ${label}`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <Badge tone={tone}>{label}</Badge>
+                <p className="text-[13px] text-muted">
+                  <span>{dayLabel(r.createdAt)}</span> · <span className="tabular">{timeOf(r.createdAt)}</span>
+                </p>
+              </div>
+
+              <p className="mt-6 text-xl font-semibold leading-snug tracking-tight text-ink sm:text-2xl">{r.message}</p>
+
+              <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-line-soft pt-5">
+                <div>
+                  <dt className="text-xs text-muted">Auteur</dt>
+                  <dd className="mt-1.5 flex items-center gap-2 text-sm text-ink">
+                    {r.userName ? (
+                      <>
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-subtle text-[11px] font-semibold text-ink-soft">{initials(r.userName)}</span>
+                        {r.userName}
+                      </>
+                    ) : <span className="text-faint">Système</span>}
+                  </dd>
+                </div>
+                <div className="text-right">
+                  <dt className="text-xs text-muted">Montant</dt>
+                  <dd className="mt-1 text-xl font-semibold tabular text-ink">{r.amount ? formatMAD(r.amount) : "—"}</dd>
+                </div>
+              </dl>
+
+              <div className="mt-6 flex items-center justify-between gap-3">
+                <span className="font-mono text-[11px] text-faint">{r.type}</span>
+                {r.href && (
+                  <Link href={r.href} className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-brand-700 transition-colors hover:bg-subtle">
+                    Ouvrir <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                )}
+              </div>
+            </motion.article>
+          </AnimatePresence>
+        </div>
+
+        <button type="button" onClick={() => go(1)} disabled={state.i === n - 1} aria-label="Évènement suivant" className={cn(arrow, "order-3")}>
+          <ChevronRight className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="mt-5 flex items-center gap-4">
+        <p className="w-16 shrink-0 text-[13px] tabular text-muted"><span className="font-medium text-ink-soft">{state.i + 1}</span> / {n}</p>
+        <div className="h-1 flex-1 overflow-hidden rounded-sm bg-subtle" role="progressbar" aria-valuemin={1} aria-valuemax={n} aria-valuenow={state.i + 1}>
+          <motion.div className="h-full bg-brand-500" initial={false} animate={{ width: `${((state.i + 1) / n) * 100}%` }} transition={{ duration: 0.4, ease: EASE }} />
+        </div>
+        <p className="hidden w-24 shrink-0 text-right text-xs text-faint sm:block">← → clavier</p>
+      </div>
+    </section>
   );
 }
 
-/** Journal d'activité : fil de cartes regroupé par jour (animées à l'apparition), avec bascule vers le tableau d'origine. */
+/** Journal d'activité : une carte à la fois (flèches, balayage, clavier), avec bascule vers le tableau d'origine. */
 export function JournalFeed({ rows, total }: { rows: JournalRow[]; total: number }) {
   const [view, setView] = useState<ViewMode>("grid");
   useEffect(() => {
@@ -121,12 +204,6 @@ export function JournalFeed({ rows, total }: { rows: JournalRow[]; total: number
     setView(m);
     try { localStorage.setItem(VIEW_KEY, m); } catch { /* ignoré */ }
   };
-  const days = useMemo(() => {
-    const map = new Map<string, JournalRow[]>();
-    rows.forEach((r) => { const k = dayKey(r.createdAt); map.set(k, [...(map.get(k) ?? []), r]); });
-    return [...map.entries()];
-  }, [rows]);
-
   return (
     <div>
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -135,19 +212,7 @@ export function JournalFeed({ rows, total }: { rows: JournalRow[]; total: number
       </div>
 
       {view === "grid" ? (
-        <div className="space-y-7">
-          {days.map(([key, items]) => (
-            <section key={`${key}-${items[0]?.id}`} aria-label={dayTitle(key)}>
-              <div className="mb-3 flex items-baseline gap-3">
-                <h2 className="text-sm font-semibold text-ink">{dayTitle(key)}</h2>
-                <span className="text-xs tabular text-faint">{items.length} évènement{items.length > 1 ? "s" : ""}</span>
-              </div>
-              <motion.ul variants={group} initial="hidden" animate="show" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {items.map((r) => <EventCard key={r.id} r={r} />)}
-              </motion.ul>
-            </section>
-          ))}
-        </div>
+        <CardViewer key={`${rows[0]?.id}-${rows.length}`} rows={rows} />
       ) : (
         <Card className="overflow-hidden">
           <Table>
