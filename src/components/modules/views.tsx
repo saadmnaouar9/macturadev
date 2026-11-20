@@ -6,6 +6,7 @@ import { BriefcaseBusiness, FileSignature, FilePlus2, FolderKanban, ListChecks, 
 import { ResourceView, type ResourceViewProps, type RowAction } from "@/components/data/resource-view";
 import type { FieldDef } from "@/components/data/crud-form";
 import { MOROCCAN_CITIES } from "@/lib/cities";
+import { formatDate } from "@/lib/utils";
 import { CONTRACT_STATUS, FREQUENCY_LABELS, PROJECT_STATUS, PROSPECT_STATUS } from "@/lib/status";
 import { convertProspect, deleteProspect, saveProspect } from "@/app/(app)/prospects/actions";
 import { deleteSupplier, saveSupplier } from "@/app/(app)/fournisseurs/actions";
@@ -34,6 +35,18 @@ const PROSPECT_FIELDS: FieldDef[] = [
   { name: "notes", label: "Notes", type: "textarea" },
 ];
 
+/** « 29 nov 2026 · dans 9 j » / « … · en retard de 3 j » (les prospects clôturés n'affichent que la date). */
+function relanceLabel(next: unknown, status: unknown): string | null {
+  if (!next) return null;
+  const date = formatDate(String(next));
+  if (status === "WON" || status === "LOST") return date;
+  const today = new Date().toISOString().slice(0, 10);
+  const d = Math.round((Date.parse(String(next).slice(0, 10)) - Date.parse(today)) / 86400000);
+  if (d < 0) return `${date} · en retard de ${-d} j`;
+  if (d === 0) return `${date} · aujourd'hui`;
+  return `${date} · dans ${d} j`;
+}
+
 export function ProspectsView({ stats, ...p }: Common & { stats: ProspectStats }) {
   const router = useRouter();
   const actions = (row: { id: string; convertedCustomerId?: unknown }): RowAction[] =>
@@ -55,6 +68,8 @@ export function ProspectsView({ stats, ...p }: Common & { stats: ProspectStats }
   return (
     <ResourceView
       {...p}
+      rows={p.rows.map((r) => ({ ...r, relance: relanceLabel(r.nextActionDate, r.status) }))}
+      filters={[]}
       title="Prospects"
       description="Suivez vos opportunités commerciales de la première prise de contact à la conversion en client."
       icon={BriefcaseBusiness}
@@ -65,7 +80,7 @@ export function ProspectsView({ stats, ...p }: Common & { stats: ProspectStats }
         { key: "name", header: "Prospect", kind: "title", subKey: "contact", avatar: true, sort: "name" },
         { key: "status", header: "Étape", kind: "badge", badge: PROSPECT_STATUS },
         { key: "value", header: "Valeur estimée", kind: "money", align: "right", sort: "value" },
-        { key: "nextActionDate", header: "Prochaine relance", kind: "date", hide: "md", sort: "nextActionDate" },
+        { key: "relance", header: "Prochaine relance", kind: "text", hide: "md", sort: "nextActionDate" },
         { key: "source", header: "Source", kind: "text", hide: "lg" },
         { key: "createdAt", header: "Ajouté le", kind: "date", hide: "xl", sort: "createdAt" },
       ]}

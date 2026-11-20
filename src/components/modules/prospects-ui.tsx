@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { BellRing, CalendarClock, Mail, Percent, Phone, Target, Trophy, type LucideIcon } from "lucide-react";
+import { CalendarClock, Mail, Phone } from "lucide-react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import type { CardApi } from "@/components/data/resource-view";
 import { PROSPECT_STATUS } from "@/lib/status";
 import { formatMAD } from "@/lib/money";
@@ -23,130 +24,86 @@ export interface ProspectStats {
   pipeline: { status: string; count: number; value: number }[];
 }
 
-const TONES = {
-  brand: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
-  emerald: { tile: "bg-emerald-50 text-emerald-700 ring-emerald-200/70", glow: "bg-emerald-500/25" },
-  violet: { tile: "bg-brand-50 text-brand-700 ring-brand-200/70", glow: "bg-brand-500/25" },
-  amber: { tile: "bg-amber-50 text-amber-700 ring-amber-200/80", glow: "bg-amber-500/25" },
-} as const;
-
-/** Couleur de chaque étape du pipeline (barre, point, halo). */
-const STAGE: Record<string, { bar: string; dot: string; text: string }> = {
-  NEW: { bar: "bg-brand-500", dot: "bg-brand-400", text: "text-brand-700" },
-  CONTACTED: { bar: "bg-brand-500", dot: "bg-brand-400", text: "text-brand-700" },
-  QUALIFIED: { bar: "bg-brand-500", dot: "bg-brand-400", text: "text-brand-700" },
-  PROPOSAL: { bar: "bg-amber-500", dot: "bg-amber-400", text: "text-amber-700" },
-  WON: { bar: "bg-emerald-500", dot: "bg-emerald-400", text: "text-emerald-700" },
-  LOST: { bar: "bg-faint", dot: "bg-faint", text: "text-muted" },
+/** Couleur de chaque étape : l'indigo du logo s'intensifie jusqu'à la proposition (orange du logo), puis gagné / perdu. */
+const STAGE: Record<string, string> = {
+  NEW: "bg-brand-300",
+  CONTACTED: "bg-brand-400",
+  QUALIFIED: "bg-brand-500",
+  PROPOSAL: "bg-accent-500",
+  WON: "bg-emerald-500",
+  LOST: "bg-faint",
 };
 
-function Kpi({ label, sub, icon: Icon, tone, index, children, pulse }: { label: string; sub: string; icon: LucideIcon; tone: keyof typeof TONES; index: number; children: React.ReactNode; pulse?: boolean }) {
-  const t = TONES[tone];
+function Figure({ label, sub, children, alert }: { label: string; sub: string; children: React.ReactNode; alert?: boolean }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.06, ease: EASE }}
-      className="glass group relative overflow-hidden rounded-xl p-4 shadow-[var(--shadow-ring),var(--shadow-md)]"
-    >
-      <div className="relative flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[12px] font-medium tracking-wide text-muted">{label}</p>
-          <p className="mt-1.5 truncate text-[22px] font-semibold tracking-tight text-ink">{children}</p>
-          <p className="mt-0.5 truncate text-[11px] text-faint">{sub}</p>
-        </div>
-        <span className={cn("relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ", t.tile)}>
-          <Icon className="h-5 w-5" />
-        </span>
-      </div>
-    </motion.div>
+    <div className="min-w-0">
+      <dt className="text-[13px] text-muted">{label}</dt>
+      <dd className={cn("mt-1 truncate text-xl font-semibold tracking-tight tabular", alert ? "text-rose-700" : "text-ink")}>{children}</dd>
+      <dd className="mt-0.5 truncate text-xs text-faint">{sub}</dd>
+    </div>
   );
 }
 
-/** Pipeline : une colonne par étape, cliquable pour filtrer la liste (même paramètre d'URL que les onglets). */
-function Pipeline({ stages }: { stages: ProspectStats["pipeline"] }) {
+/**
+ * Synthèse des prospects : les chiffres clés, puis le pipeline commercial.
+ * Le pipeline est une seule barre (part de la valeur de chaque étape) dont la légende sert de filtre :
+ * cliquer sur une étape filtre la liste (paramètre d'URL `status`), un second clic retire le filtre.
+ */
+export function ProspectStatsPanel({ stats }: { stats: ProspectStats }) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
   const current = params.get("status") ?? "";
-  const max = Math.max(1, ...stages.map((s) => s.count));
   const select = (status: string) => {
     const next = new URLSearchParams(params.toString());
-    if (current === status) next.delete("status");
+    if (!status || current === status) next.delete("status");
     else next.set("status", status);
     next.delete("page");
     router.replace(next.toString() ? `${pathname}?${next}` : pathname, { scroll: false });
   };
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: 0.28, ease: EASE }}
-      className="glass mb-5 rounded-xl p-4 shadow-[var(--shadow-ring),var(--shadow-md)]"
-    >
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[13px] font-semibold text-ink">Pipeline commercial</h2>
-        <p className="text-[11px] text-faint">Cliquez sur une étape pour filtrer</p>
-      </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-        {stages.map((s, i) => {
-          const meta = PROSPECT_STATUS[s.status];
-          const st = STAGE[s.status];
-          const active = current === s.status;
-          return (
-            <motion.button
-              key={s.status}
-              onClick={() => select(s.status)}
-              aria-pressed={active}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.34 + i * 0.05, ease: EASE }}
-              whileTap={{ scale: 0.97 }}
-              className={cn("rounded-lg p-3 text-left ring-1 ring-inset transition-colors", active ? "bg-white/[0.07] ring-brand-200/60" : "bg-white/[0.025] ring-line hover:bg-white/[0.05]")}
-            >
-              <span className="flex items-center gap-1.5 text-xs font-medium text-ink-soft">
-                <span className={cn("h-1.5 w-1.5 rounded-full", st.dot)} />
-                {meta.label}
-              </span>
-              <span className="mt-1.5 flex items-baseline gap-1.5">
-                <span className="text-xl font-semibold tabular text-ink"><AnimatedNumber value={s.count} /></span>
-              </span>
-              <span className="block truncate text-[11px] tabular text-muted">{formatMAD(s.value)}</span>
-              <span className="mt-2 block h-1 overflow-hidden rounded-full bg-subtle">
-                <motion.span
-                  className={cn("block h-full rounded-full", st.bar)}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${(s.count / max) * 100}%` }}
-                  transition={{ duration: 0.8, delay: 0.5 + i * 0.05, ease: EASE }}
-                />
-              </span>
-            </motion.button>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
+  const totalValue = stats.pipeline.reduce((a, s) => a + s.value, 0);
+  const totalCount = stats.pipeline.reduce((a, s) => a + s.count, 0);
+  const share = (s: { count: number; value: number }) => (totalValue > 0 ? s.value / totalValue : totalCount > 0 ? s.count / totalCount : 0) * 100;
 
-export function ProspectStatsPanel({ stats }: { stats: ProspectStats }) {
   return (
-    <>
-      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi index={0} tone="brand" icon={Target} label="Pipeline ouvert" sub={`${stats.openCount} opportunité${stats.openCount > 1 ? "s" : ""}`}>
-          <AnimatedNumber value={stats.openValue} kind="mad" />
-        </Kpi>
-        <Kpi index={1} tone="emerald" icon={Trophy} label="Affaires gagnées" sub={`${stats.wonCount} prospect${stats.wonCount > 1 ? "s" : ""}`}>
-          <AnimatedNumber value={stats.wonValue} kind="mad" />
-        </Kpi>
-        <Kpi index={2} tone="violet" icon={Percent} label="Taux de conversion" sub="gagnés / clôturés">
-          {stats.conversionBp === null ? "—" : <AnimatedNumber value={stats.conversionBp} kind="percent" />}
-        </Kpi>
-        <Kpi index={3} tone="amber" icon={BellRing} label="À relancer" sub="relances échues" pulse={stats.dueCount > 0}>
-          <AnimatedNumber value={stats.dueCount} />
-        </Kpi>
+    <Card className="mb-4">
+      <dl className="grid grid-cols-2 gap-x-8 gap-y-5 p-5 lg:grid-cols-4">
+        <Figure label="Pipeline ouvert" sub={`${stats.openCount} opportunité${stats.openCount > 1 ? "s" : ""}`}><AnimatedNumber value={stats.openValue} kind="mad" /></Figure>
+        <Figure label="Affaires gagnées" sub={`${stats.wonCount} prospect${stats.wonCount > 1 ? "s" : ""}`}><AnimatedNumber value={stats.wonValue} kind="mad" /></Figure>
+        <Figure label="Taux de conversion" sub="gagnés / clôturés">{stats.conversionBp === null ? "—" : <AnimatedNumber value={stats.conversionBp} kind="percent" />}</Figure>
+        <Figure label="À relancer" sub="relances échues" alert={stats.dueCount > 0}><AnimatedNumber value={stats.dueCount} /></Figure>
+      </dl>
+
+      <div className="border-t border-line-soft p-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-sm font-medium text-ink">Pipeline commercial</h2>
+          <p className="text-xs text-faint">{current ? <button type="button" onClick={() => select("")} className="text-brand-700 hover:underline">Afficher toutes les étapes</button> : "Cliquez sur une étape pour filtrer la liste"}</p>
+        </div>
+        <div className="mt-3 flex h-2 gap-px overflow-hidden rounded-sm bg-subtle" role="img" aria-label="Répartition du pipeline par étape">
+          {stats.pipeline.map((s, i) => (
+            <motion.div key={s.status} className={cn("h-full", STAGE[s.status] ?? "bg-faint", current && current !== s.status && "opacity-30")} initial={{ width: 0 }} animate={{ width: `${share(s)}%` }} transition={{ duration: 0.6, delay: i * 0.06, ease: EASE }} />
+          ))}
+        </div>
+        <ul className="mt-3 grid grid-cols-2 gap-x-2 gap-y-1 sm:grid-cols-3 lg:grid-cols-6">
+          {stats.pipeline.map((s) => {
+            const meta = PROSPECT_STATUS[s.status];
+            const active = current === s.status;
+            return (
+              <li key={s.status}>
+                <button type="button" onClick={() => select(s.status)} aria-pressed={active} className={cn("w-full rounded-md px-2 py-2 text-left transition-colors hover:bg-subtle", active && "bg-subtle")}>
+                  <span className="flex items-center gap-2 text-[13px] text-ink-soft">
+                    <span className={cn("h-2 w-2 shrink-0 rounded-full", STAGE[s.status] ?? "bg-faint")} aria-hidden />
+                    <span className={cn(active && "font-medium text-ink")}>{meta?.label ?? s.status}</span>
+                    <span className="tabular text-faint">{s.count}</span>
+                  </span>
+                  <span className="mt-0.5 block truncate pl-4 text-xs tabular text-muted">{formatMAD(s.value)}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
-      <Pipeline stages={stats.pipeline} />
-    </>
+    </Card>
   );
 }
 
@@ -155,8 +112,7 @@ type Row = { id: string } & Record<string, unknown>;
 export function ProspectCard({ row, api }: { row: Row; api: CardApi }) {
   const status = String(row.status ?? "NEW");
   const meta = PROSPECT_STATUS[status];
-  const st = STAGE[status] ?? STAGE.NEW;
-  const name = String(row.name ?? "");
+    const name = String(row.name ?? "");
   const contactName = row.contactName ? String(row.contactName) : null;
   const email = row.email ? String(row.email) : null;
   const phone = row.phone ? String(row.phone) : null;
@@ -172,19 +128,12 @@ export function ProspectCard({ row, api }: { row: Row; api: CardApi }) {
       initial={{ opacity: 0, y: 18, scale: 0.97 }}
       animate={{ opacity: status === "LOST" ? 0.7 : 1, y: 0, scale: 1 }}
       transition={{ duration: 0.4, delay: Math.min(api.index, 14) * 0.035, ease: EASE }}
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-      }}
       onClick={(e) => {
         if (!api.editable || (e.target as HTMLElement).closest("button,a,[role=menuitem],[data-no-row-click]")) return;
         api.open();
       }}
-      className={cn("glass group relative flex flex-col overflow-hidden rounded-xl p-4 ring-1 ring-inset ring-line transition-shadow duration-300 hover:shadow-[var(--shadow-lg)] hover:ring-brand-200/60", api.editable && "cursor-pointer")}
+      className={cn("group relative flex flex-col overflow-hidden rounded-xl border border-line-soft bg-surface p-4 transition-colors hover:border-line", api.editable && "cursor-pointer")}
     >
-      <span aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(91 155 255 / 0.16), transparent 70%)" }} />
 
       <div className="relative flex items-start gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-sm font-semibold text-brand-700 ">
