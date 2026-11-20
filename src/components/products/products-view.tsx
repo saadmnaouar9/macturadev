@@ -132,7 +132,7 @@ export function ProductsView({
   const confirm = useConfirm();
   const [drawer, setDrawer] = useState<{ open: boolean; product: (ProductValue & { id?: string }) | null }>({ open: false, product: null });
   const [catOpen, setCatOpen] = useState(false);
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>("grid");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible : mode par défaut */ }
   }, []);
