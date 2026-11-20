@@ -136,7 +136,7 @@ export function PaymentsView({ rows, kind, state, total, sum, page, pageSize, in
   rows: PaymentRowData[]; kind: "in" | "out"; state: "active" | "voided"; total: number; sum: number; page: number; pageSize: number;
   inCount: number; outCount: number; methods: MethodStat[];
 }) {
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>("grid");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);

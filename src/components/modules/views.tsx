@@ -118,7 +118,7 @@ export function SuppliersView({ stats, mapPoints, ...p }: Common & { stats: Supp
       description="Gérez vos fournisseurs, suivez ce que vous leur devez et visualisez où ils se trouvent."
       icon={Truck}
       summaryNode={<SuppliersPanel stats={stats} points={mapPoints} />}
-      cardView={{ storageKey: "mactura.suppliers.view", render: (row, api) => <SupplierCard row={row} api={api} /> }}
+      cardView={{ defaultGrid: true, storageKey: "mactura.suppliers.view", render: (row, api) => <SupplierCard row={row} api={api} /> }}
       entity="fournisseur"
       columns={[
         { key: "name", header: "Fournisseur", kind: "title", subKey: "contact", avatar: true, sort: "name" },
@@ -200,7 +200,7 @@ export function ContractsView({ customers, stats, ...p }: Common & { customers: 
       description="Contrats clients récurrents : échéances, montants et génération de factures."
       icon={FileSignature}
       summaryNode={<ContractStatsPanel stats={stats} />}
-      cardView={{ storageKey: "mactura.contracts.view", render: (row, api) => <ContractCard row={row} api={api} /> }}
+      cardView={{ defaultGrid: true, storageKey: "mactura.contracts.view", render: (row, api) => <ContractCard row={row} api={api} /> }}
       entity="contrat"
       columns={[
         { key: "title", header: "Contrat", kind: "title", subKey: "subtitle", sort: "title" },

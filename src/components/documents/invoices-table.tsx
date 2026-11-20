@@ -168,7 +168,7 @@ export function InvoicesTable({
   rows: InvoiceRow[]; summary: { invoiced: number; paid: number; balance: number }; total: number; page: number; pageSize: number; hasQuery: boolean;
   counts: Record<string, number>; canWrite: boolean; canDelete: boolean;
 }) {
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>("grid");
   useEffect(() => {
     try { const v = localStorage.getItem(VIEW_KEY); if (v === "grid" || v === "table") setView(v); } catch { /* stockage indisponible */ }
   }, []);

@@ -128,7 +128,7 @@ export interface ResourceViewProps {
   /** Remplace le bandeau de synthèse par défaut (facultatif). */
   summaryNode?: React.ReactNode;
   /** Ajoute un affichage « Cartes » avec bascule Cartes / Tableau (facultatif). Le tableau reste disponible. */
-  cardView?: { storageKey: string; render: (row: RowData, api: CardApi) => React.ReactNode };
+  cardView?: { storageKey: string; render: (row: RowData, api: CardApi) => React.ReactNode; /** Ouvre la liste en affichage « Cartes » par défaut (sinon Tableau). */ defaultGrid?: boolean };
 }
 
 /** Liste ressource complète : recherche, filtres, tri, pagination, création/édition en tiroir, suppression confirmée. */
@@ -138,7 +138,7 @@ export function ResourceView(p: ResourceViewProps) {
   const params = useSearchParams();
   const confirm = useConfirm();
   const [drawer, setDrawer] = useState<{ open: boolean; row: RowData | null }>({ open: false, row: null });
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>(p.cardView?.defaultGrid ? "grid" : "table");
   const storageKey = p.cardView?.storageKey;
   useEffect(() => {
     if (!storageKey) return;
