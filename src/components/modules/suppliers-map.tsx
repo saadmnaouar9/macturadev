@@ -32,8 +32,8 @@ const VECTOR = "https://tiles.openfreemap.org/planet";
 const GLYPHS = "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf";
 const DEM = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 
-const HOME = { center: [-7.1, 31.8] as [number, number], zoom: 5, pitch: 58, bearing: -14 };
-const PITCH_3D = 58;
+const HOME = { center: [-7.1, 31.8] as [number, number], zoom: 5, pitch: 48, bearing: -10 };
+const PITCH_3D = 48;
 const COLUMN_RADIUS_PX = 7;
 const BUBBLE_SIZE = 34;
 
@@ -176,6 +176,14 @@ function popupContent(g: Group): HTMLElement {
   return root;
 }
 
+// Le worker est servi depuis /public (le bundler Next ne sait pas résoudre le worker intégré de MapLibre)
+let workerSet = false;
+function ensureWorker() {
+  if (workerSet) return;
+  workerSet = true;
+  maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+}
+
 const currentTheme = (): Theme => (typeof document !== "undefined" && document.documentElement.dataset.theme === "light" ? "light" : "dark");
 
 export default function SuppliersMap({ points }: { points: MapPoint[] }) {
@@ -231,6 +239,7 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
     if (!el.current || map.current) return;
     let m: maplibregl.Map;
     try {
+      ensureWorker();
       m = new maplibregl.Map({
         container: el.current,
         style: buildStyle(currentTheme(), buildColumns(groupsRef.current, HOME.zoom)),
@@ -328,7 +337,8 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
     if (groups.length > 1) {
       const b = new maplibregl.LngLatBounds();
       groups.forEach((g) => b.extend([g.lng, g.lat]));
-      m.fitBounds(b, { padding: { top: 90, bottom: 40, left: 50, right: 50 }, maxZoom: 7, pitch: m.getPitch(), bearing: HOME.bearing, animate: false });
+      m.fitBounds(b, { padding: { top: 70, bottom: 30, left: 40, right: 40 }, maxZoom: 7, pitch: m.getPitch(), bearing: HOME.bearing, animate: false });
+      m.jumpTo({ zoom: Math.min(m.getZoom() + 0.25, 7.5) });
     } else if (groups.length === 1) {
       m.jumpTo({ center: [groups[0].lng, groups[0].lat], zoom: 7 });
     }
@@ -352,7 +362,7 @@ export default function SuppliersMap({ points }: { points: MapPoint[] }) {
   return (
     <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_270px]">
       <div className="relative isolate h-[400px] lg:h-[500px]">
-        <div ref={el} className="sup-map absolute inset-0" role="application" aria-label="Carte 3D des fournisseurs" />
+        <div ref={el} className="sup-map" style={{ position: "absolute", inset: 0 }} role="application" aria-label="Carte 3D des fournisseurs" />
         {failed && (
           <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center gap-2 bg-canvas px-6 text-center">
             <Layers className="h-6 w-6 text-faint" />
