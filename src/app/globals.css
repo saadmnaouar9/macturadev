@@ -451,16 +451,16 @@ html[data-theme="light"] [data-auth] .split-form { background: #fff; }
 }
 .bp-avatar { color: #fff; border: 2px solid rgb(255 255 255 / 0.4); }
 
-/* ───────────── Carte des fournisseurs (Leaflet) ───────────── */
+/* ───────────── Carte 3D des fournisseurs (MapLibre GL) ───────────── */
 .sup-map { background: var(--color-canvas); font-family: inherit; z-index: 0; }
-.sup-map .leaflet-control-attribution { font-size: 10px; background: rgb(255 255 255 / 0.7); }
-html[data-theme="dark"] .sup-map .leaflet-tile-pane { filter: invert(1) hue-rotate(195deg) brightness(0.92) contrast(0.88) saturate(0.75); }
-html[data-theme="dark"] .sup-map .leaflet-control-attribution { background: rgb(7 14 36 / 0.7); color: #94a3c4; }
-html[data-theme="dark"] .sup-map .leaflet-control-attribution a { color: #9db8f5; }
-.sup-map .leaflet-bar { border: none; box-shadow: var(--shadow-md); border-radius: 12px; overflow: hidden; }
-.sup-map .leaflet-bar a { background: var(--color-surface); color: var(--color-ink); border-bottom: 1px solid var(--color-line-soft); width: 34px; height: 34px; line-height: 34px; }
-.sup-map .leaflet-bar a:hover { background: var(--color-subtle); }
-.sup-pin { background: none; border: none; }
+.sup-map .maplibregl-ctrl-attrib { font-size: 10px; background: rgb(255 255 255 / 0.7); }
+html[data-theme="dark"] .sup-map .maplibregl-ctrl-attrib { background: rgb(7 14 36 / 0.7); color: #94a3c4; }
+html[data-theme="dark"] .sup-map .maplibregl-ctrl-attrib a { color: #9db8f5; }
+.sup-map .maplibregl-ctrl-group { border: none; box-shadow: var(--shadow-md); border-radius: 12px; overflow: hidden; background: var(--color-surface); }
+.sup-map .maplibregl-ctrl-group button { width: 34px; height: 34px; border-bottom: 1px solid var(--color-line-soft); }
+.sup-map .maplibregl-ctrl-group button:hover { background: var(--color-subtle); }
+html[data-theme="dark"] .sup-map .maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1) brightness(1.2); }
+.sup-pin { background: none; border: none; padding: 0; cursor: pointer; }
 .sup-pin-bubble {
   position: relative; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 9999px;
   color: #fff; font-size: 14px; font-weight: 600; border: 2px solid rgb(255 255 255 / 0.92);
@@ -470,9 +470,10 @@ html[data-theme="dark"] .sup-map .leaflet-control-attribution a { color: #9db8f5
 }
 .sup-pin-bubble.is-due { background: var(--logo-orange); }
 .sup-pin:hover .sup-pin-bubble { transform: scale(1.14); }
-.sup-map .leaflet-popup-content-wrapper { background: var(--color-popover); color: var(--color-ink); border-radius: 16px; box-shadow: var(--shadow-lg); padding: 2px; }
-.sup-map .leaflet-popup-tip { background: var(--color-popover); }
-.sup-map .leaflet-popup-content { margin: 12px 14px; min-width: 200px; font-size: 13px; line-height: 1.4; }
+.sup-gl-popup .maplibregl-popup-content { background: var(--color-popover); color: var(--color-ink); border-radius: 16px; box-shadow: var(--shadow-lg); padding: 12px 14px; }
+.sup-gl-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: var(--color-popover); }
+.sup-gl-popup { z-index: 5; }
+.sup-gl-popup .sup-popup { min-width: 200px; font-size: 13px; line-height: 1.4; }
 .sup-popup-title { font-weight: 600; margin: 0 0 8px; }
 .sup-popup ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .sup-popup li { display: flex; flex-direction: column; }
